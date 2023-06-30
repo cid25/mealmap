@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Mealmap.Model;
+using Mealmap.Api.DataTransferObjects;
 
 
-namespace Mealmap.Controllers;
+namespace Mealmap.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -10,8 +10,8 @@ public class MealController : ControllerBase
 {
 
     [HttpGet(Name = "GetMeal")]
-    public ActionResult<Meal> Get()
+    public ActionResult<MealDto> Get()
     {
-        return new Meal(name: "Cheeseburger");
+        return new MealDto(name: "Cheeseburger");
     }
 }

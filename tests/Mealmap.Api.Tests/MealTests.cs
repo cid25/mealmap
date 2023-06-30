@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 using FluentAssertions;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Mealmap.Api.Tests
 {

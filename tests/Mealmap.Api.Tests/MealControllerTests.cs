@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using Mealmap.Controllers;
-using Mealmap.Model;
+using Mealmap.Api.Controllers;
+using Mealmap.Api.DataTransferObjects;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mealmap.Api.Tests
@@ -14,7 +14,7 @@ namespace Mealmap.Api.Tests
 
             var result = mealController.Get();
 
-            result.Should().BeOfType<ActionResult<Meal>>();
+            result.Should().BeOfType<ActionResult<MealDto>>();
             result.Value.Should().NotBeNull();
             result.Value!.Name.Should().Be("Cheeseburger");
         }
