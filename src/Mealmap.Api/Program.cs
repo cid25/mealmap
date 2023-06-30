@@ -1,4 +1,9 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using Mealmap.Model;
+using Mealmap.Repositories;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IMealRepository, SqlMealRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

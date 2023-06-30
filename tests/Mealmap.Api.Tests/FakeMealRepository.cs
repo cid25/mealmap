@@ -1,14 +1,13 @@
-﻿using System.ComponentModel;
-using Mealmap.Model;
+﻿using Mealmap.Model;
 
 
 namespace Mealmap.Api.Tests
 {
     internal class FakeMealRepository : Dictionary<Guid,Meal>, IMealRepository
     { 
-        public void Create(Meal meal)
+        public IEnumerable<Meal> GetAll()
         {
-            Add(meal.Id, meal);
+            return Values;
         }
 
         public Meal? GetById(Guid id)
@@ -17,6 +16,11 @@ namespace Mealmap.Api.Tests
             TryGetValue(id, out meal);
 
             return meal;
+        }
+
+        public void Create(Meal meal)
+        {
+            Add(meal.Id, meal);
         }
     }
 }

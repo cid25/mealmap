@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Mealmap.Model\Mealmap.Model.csproj" />
+    <ProjectReference Include="..\Mealmap.Repositories\Mealmap.Repositories.csproj" />
   </ItemGroup>
 
 </Project>

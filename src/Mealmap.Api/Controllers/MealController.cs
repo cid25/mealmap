@@ -5,7 +5,7 @@ using Mealmap.Model;
 namespace Mealmap.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("meals")]
 public class MealController : ControllerBase
 {
     private readonly IMealRepository _repository;
@@ -15,8 +15,15 @@ public class MealController : ControllerBase
         _repository = repository;
     }
 
+    [HttpGet(Name = "GetMeals")]
+    public ActionResult<IEnumerable<Meal>> GetMeals()
+    {
+        return new List<Meal>();
+    }
+
+
     [HttpGet("{id}", Name = "GetMeal")]
-    public ActionResult<MealDto> Get([FromRoute] Guid id)
+    public ActionResult<MealDto> GetMeal([FromRoute] Guid id)
     {
         Meal? meal = _repository.GetById(id);
                

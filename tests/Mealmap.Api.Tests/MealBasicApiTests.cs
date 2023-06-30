@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Mealmap.Api.Tests
 {
-    public class MealEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+    public class MealBasicApiTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly WebApplicationFactory<Program> _applicationFactory;
 
-        public MealEndpointTests(WebApplicationFactory<Program> applicationFactory)
+        public MealBasicApiTests(WebApplicationFactory<Program> applicationFactory)
         {
             _applicationFactory = applicationFactory;
         }
@@ -18,7 +18,7 @@ namespace Mealmap.Api.Tests
         {
             var client = _applicationFactory.CreateClient();
 
-            var response = await client.GetAsync("/meal");
+            var response = await client.GetAsync("/meals");
 
             response.Should().BeSuccessful();
         }
@@ -28,7 +28,7 @@ namespace Mealmap.Api.Tests
         {
             var client = _applicationFactory.CreateClient();
 
-            var response = await client.GetAsync("/meal");
+            var response = await client.GetAsync("/meals");
 
             response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
         }

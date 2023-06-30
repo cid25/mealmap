@@ -20,12 +20,12 @@ namespace Mealmap.Api.Tests
         }
 
         [Fact]
-        public void Get_WhenGivenValidId_ReturnsMeal()
+        public void GetMeal_WhenGivenValidId_ReturnsMeal()
         {
             MealController mealController = new(repository: _repository);
 
             Guid guid = _repository.ElementAt(0).Key;
-            var result = mealController.Get(guid);
+            var result = mealController.GetMeal(guid);
 
             result.Should().BeOfType<ActionResult<MealDto>>();
             result.Value.Should().NotBeNull();
@@ -33,12 +33,12 @@ namespace Mealmap.Api.Tests
         }
 
         [Fact]
-        public void Get_WhenGivenNonExistingId_ReturnsNotFound()
+        public void GetMeal_WhenGivenNonExistingId_ReturnsNotFound()
         {
             MealController mealController = new(repository: _repository);
 
             const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
-            var result = mealController.Get(new Guid(nonExistingGuid));
+            var result = mealController.GetMeal(new Guid(nonExistingGuid));
 
             result.Result.Should().BeOfType<NotFoundResult>();
         }
