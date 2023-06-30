@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Mealmap.Model;
+
 
 namespace Mealmap.Controllers;
 
@@ -8,8 +10,8 @@ public class MealController : ControllerBase
 {
 
     [HttpGet(Name = "GetMeal")]
-    public IActionResult Get()
+    public ActionResult<Meal> Get()
     {
-        return Ok();
+        return new Meal(name: "Cheeseburger");
     }
 }
