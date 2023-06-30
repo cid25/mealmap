@@ -1,9 +1,12 @@
 ﻿using Mealmap.Model;
 using Mealmap.Repositories;
+using AutoMapper;
+using Mealmap.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IMealRepository, SqlMealRepository>();
+builder.Services.AddAutoMapper(typeof(MealMapperProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

@@ -15,7 +15,7 @@ public class MealController : ControllerBase
         _repository = repository;
     }
 
-    [HttpGet(Name = "GetMeals")]
+    [HttpGet(Name = nameof(GetMeals))]
     [Produces("application/json")]
     public ActionResult<IEnumerable<Meal>> GetMeals()
     {
@@ -23,7 +23,7 @@ public class MealController : ControllerBase
     }
 
 
-    [HttpGet("{id}", Name = "GetMeal")]
+    [HttpGet("{id}", Name = nameof(GetMeal))]
     [Produces("application/json")]
     public ActionResult<MealDto> GetMeal([FromRoute] Guid id)
     {
