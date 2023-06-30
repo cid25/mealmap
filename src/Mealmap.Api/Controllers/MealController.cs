@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Mealmap.Api.DataTransferObjects;
-
+using Mealmap.Model;
 
 namespace Mealmap.Api.Controllers;
 
@@ -8,10 +8,23 @@ namespace Mealmap.Api.Controllers;
 [Route("[controller]")]
 public class MealController : ControllerBase
 {
+    private readonly IMealRepository _repository;
 
-    [HttpGet(Name = "GetMeal")]
-    public ActionResult<MealDto> Get()
+    public MealController(IMealRepository repository)
     {
-        return new MealDto(name: "Cheeseburger");
+        _repository = repository;
+    }
+
+    [HttpGet("{id}", Name = "GetMeal")]
+    public ActionResult<MealDto> Get([FromRoute] Guid id)
+    {
+        Meal? meal = _repository.GetById(id);
+               
+        if (meal == null)
+        { 
+            return NotFound();
+        }
+        
+        return new MealDto(meal.Id, meal.Name);
     }
 }
