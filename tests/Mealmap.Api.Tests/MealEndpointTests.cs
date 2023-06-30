@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-using FluentAssertions;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Mealmap.Api.Tests
 {
-    public class MealTests : IClassFixture<WebApplicationFactory<Program>>
+    public class MealEndpointTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly WebApplicationFactory<Program> _applicationFactory;
 
-        public MealTests(WebApplicationFactory<Program> applicationFactory)
+        public MealEndpointTests(WebApplicationFactory<Program> applicationFactory)
         {
             _applicationFactory = applicationFactory;
         }
@@ -18,7 +18,7 @@ namespace Mealmap.Api.Tests
         {
             var client = _applicationFactory.CreateClient();
 
-            var response = await client.GetAsync("/Meal");
+            var response = await client.GetAsync("/meal");
 
             response.Should().BeSuccessful();
         }
@@ -28,7 +28,7 @@ namespace Mealmap.Api.Tests
         {
             var client = _applicationFactory.CreateClient();
 
-            var response = await client.GetAsync("/Meal");
+            var response = await client.GetAsync("/meal");
 
             response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
         }

@@ -33,12 +33,12 @@ namespace Mealmap.Api.Tests
         }
 
         [Fact]
-        public void Get_WhenGivenInvalidId_ReturnsNotFound()
+        public void Get_WhenGivenNonExistingId_ReturnsNotFound()
         {
             MealController mealController = new(repository: _repository);
 
-            Guid guid = new("99999999-9999-9999-9999-999999999999");
-            var result = mealController.Get(guid);
+            const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
+            var result = mealController.Get(new Guid(nonExistingGuid));
 
             result.Result.Should().BeOfType<NotFoundResult>();
         }
