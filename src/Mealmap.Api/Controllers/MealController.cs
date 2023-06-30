@@ -16,6 +16,7 @@ public class MealController : ControllerBase
     }
 
     [HttpGet(Name = "GetMeals")]
+    [Produces("application/json")]
     public ActionResult<IEnumerable<Meal>> GetMeals()
     {
         return new List<Meal>();
@@ -23,6 +24,7 @@ public class MealController : ControllerBase
 
 
     [HttpGet("{id}", Name = "GetMeal")]
+    [Produces("application/json")]
     public ActionResult<MealDto> GetMeal([FromRoute] Guid id)
     {
         Meal? meal = _repository.GetById(id);
