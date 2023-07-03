@@ -23,7 +23,10 @@ public class MealsController : ControllerBase
     [Produces("application/json")]
     public ActionResult<IEnumerable<MealDto>> GetMeals()
     {
-        return new List<MealDto>();
+        var meals = _repository.GetAll();
+        var mealDtos = _mapper.Map<IEnumerable<Meal>, List<MealDto>>(meals);
+
+        return mealDtos;
     }
 
 

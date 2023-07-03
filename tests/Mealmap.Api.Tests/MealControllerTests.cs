@@ -24,7 +24,7 @@ namespace Mealmap.Api.Tests
         }
 
         [Fact]
-        public void GetMeal_WhenGivenExistingId_ReturnsListMealDtos()
+        public void GetMeals_ReturnsMealDtos()
         {
             var result = _controller.GetMeals();
 
