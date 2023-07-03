@@ -52,14 +52,15 @@ namespace Mealmap.Api.Tests
         }
 
         [Fact]
-        public void PostMeal_WhenGivenValidMeal_ReturnsOk()
+        public void PostMeal_WhenGivenValidMeal_ReturnsMealWithId()
         {
             const string someMealName = "Protoburger";
             MealDto mealDto = new(someMealName);
 
             var result = _controller.PostMeal(mealDto);
 
-            result.Should().BeOfType<OkResult>();
+            result.Value.Should().BeOfType<MealDto>();
+            result.Value!.Id.Should().NotBeNull().And.NotBeEmpty();
         }
 
         [Fact]
@@ -81,7 +82,7 @@ namespace Mealmap.Api.Tests
 
             var result = _controller.PostMeal(mealDto);
 
-            result.Should().BeOfType<BadRequestResult>();
+            result.Result.Should().BeOfType<BadRequestResult>();
         }
     }
 }

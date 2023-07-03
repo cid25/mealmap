@@ -48,7 +48,7 @@ public class MealsController : ControllerBase
 
     [HttpPost(Name = nameof(PostMeal))]
     [Consumes("application/json")]
-    public ActionResult PostMeal([FromBody] MealDto mealDto)
+    public ActionResult<MealDto> PostMeal([FromBody] MealDto mealDto)
     {
         if (mealDto.Id != null)
             return BadRequest();
@@ -58,6 +58,8 @@ public class MealsController : ControllerBase
 
         _repository.Create(meal);
 
-        return Ok();
+        var mealCreated = _mapper.Map<MealDto>(meal);
+
+        return mealCreated;
     }
 }
