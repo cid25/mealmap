@@ -46,12 +46,24 @@ namespace Mealmap.Api.Tests
         [Fact]
         public void PostMeal_WhenGivenValidMeal_ReturnsOk()
         {
-            const string randomName = "Cheeseburger";
-            MealDto mealDto = new(Guid.NewGuid(), randomName);
+            const string someMealName = "Cheeseburger";
+            MealDto mealDto = new(Guid.NewGuid(), someMealName);
 
             var result = _controller.PostMeal(mealDto);
 
             result.Should().BeOfType<OkResult>();
+        }
+
+        [Fact]
+        public void PostMeal_WhenGivenValidMeal_StoresMeal()
+        {
+            _repository.Clear();
+            const string someMealName = "Cheeseburger";
+            MealDto mealDto = new(Guid.NewGuid(), someMealName);
+
+            _ = _controller.PostMeal(mealDto);
+
+            _repository.Should().NotBeEmpty().And.HaveCount(1);
         }
     }
 }
