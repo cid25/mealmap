@@ -48,6 +48,7 @@ public class MealsController : ControllerBase
 
     [HttpPost(Name = nameof(PostMeal))]
     [Consumes("application/json")]
+    [Produces("application/json")]
     public ActionResult<MealDto> PostMeal([FromBody] MealDto mealDto)
     {
         if (mealDto.Id != null || String.IsNullOrWhiteSpace(mealDto.Name))
