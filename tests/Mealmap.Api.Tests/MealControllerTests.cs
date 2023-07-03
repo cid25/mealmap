@@ -84,5 +84,18 @@ namespace Mealmap.Api.Tests
 
             result.Result.Should().BeOfType<BadRequestResult>();
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public void PostMeal_WhenGivenMealWithEmptyName_ReturnsBadRequest(string name)
+        {
+            MealDto mealDto = new(name: name);
+
+            var result = _controller.PostMeal(mealDto);
+
+            result.Result.Should().BeOfType<BadRequestResult>();
+        }
     }
 }
