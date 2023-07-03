@@ -50,7 +50,12 @@ public class MealsController : ControllerBase
     [Consumes("application/json")]
     public ActionResult PostMeal([FromBody] MealDto mealDto)
     {
+        if (mealDto.Id != null)
+            return BadRequest();
+        
         var meal = _mapper.Map<Meal>(mealDto);
+        meal.Id = Guid.NewGuid();
+
         _repository.Create(meal);
 
         return Ok();

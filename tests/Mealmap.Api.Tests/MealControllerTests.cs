@@ -19,7 +19,7 @@ namespace Mealmap.Api.Tests
             _controller = new MealsController(_repository, mapperConfig.CreateMapper());
 
             const string firstGuid = "00000000-0000-0000-0000-000000000001";
-            var cheeseburger = new Meal(id: new Guid(firstGuid), name: "Cheeseburger");
+            var cheeseburger = new Meal("Cheeseburger") { Id = new Guid(firstGuid) };
             _repository.Create(cheeseburger);
         }
 
@@ -54,8 +54,8 @@ namespace Mealmap.Api.Tests
         [Fact]
         public void PostMeal_WhenGivenValidMeal_ReturnsOk()
         {
-            const string someMealName = "Cheeseburger";
-            MealDto mealDto = new(Guid.NewGuid(), someMealName);
+            const string someMealName = "Protoburger";
+            MealDto mealDto = new(someMealName);
 
             var result = _controller.PostMeal(mealDto);
 
@@ -65,12 +65,23 @@ namespace Mealmap.Api.Tests
         [Fact]
         public void PostMeal_WhenGivenValidMeal_StoresMeal()
         {;
-            const string someMealName = "Cheeseburger";
-            MealDto mealDto = new(Guid.NewGuid(), someMealName);
+            const string someMealName = "Protoburger";
+            MealDto mealDto = new(someMealName);
 
             _ = _controller.PostMeal(mealDto);
 
             _repository.Should().NotBeEmpty().And.HaveCount(2);
+        }
+
+        [Fact]
+        public void PostMeal_WhenGivenMealWithId_ReturnsBadRequest()
+        {
+            const string someMealName = "Protoburger";
+            MealDto mealDto = new(someMealName) { Id = Guid.NewGuid() };
+
+            var result = _controller.PostMeal(mealDto);
+
+            result.Should().BeOfType<BadRequestResult>();
         }
     }
 }

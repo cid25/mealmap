@@ -2,13 +2,12 @@
 {
     public class Meal
     {
-        public Guid Id { get; init; }
+        public Guid? Id { get; set; }
         public string Name { get; set; }
-        
-        public Meal(Guid id, string name)
+
+        public Meal(string name)
         {
-            Id = id;
             Name = name;
-        }
+        }   
     }
 }
