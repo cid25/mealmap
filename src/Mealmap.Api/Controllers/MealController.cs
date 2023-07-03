@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Model;
+using AutoMapper;
+
 
 namespace Mealmap.Api.Controllers;
 
@@ -9,17 +11,19 @@ namespace Mealmap.Api.Controllers;
 public class MealController : ControllerBase
 {
     private readonly IMealRepository _repository;
+    private readonly IMapper _mapper;
 
-    public MealController(IMealRepository repository)
+    public MealController(IMealRepository repository, IMapper mapper)
     {
         _repository = repository;
+        _mapper = mapper;
     }
 
     [HttpGet(Name = nameof(GetMeals))]
     [Produces("application/json")]
-    public ActionResult<IEnumerable<Meal>> GetMeals()
+    public ActionResult<IEnumerable<MealDto>> GetMeals()
     {
-        return new List<Meal>();
+        return new List<MealDto>();
     }
 
 
@@ -35,5 +39,15 @@ public class MealController : ControllerBase
         }
         
         return new MealDto(meal.Id, meal.Name);
+    }
+
+    [HttpPost(Name = nameof(PostMeal))]
+    [Consumes("application/json")]
+    public ActionResult PostMeal([FromBody] MealDto mealDto)
+    {
+        var meal = _mapper.Map<Meal>(mealDto);
+        _repository.Create(meal);
+
+        return Ok();
     }
 }

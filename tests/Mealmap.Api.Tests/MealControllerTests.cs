@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using AutoMapper;
+using FluentAssertions;
 using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Model;
@@ -9,10 +10,13 @@ namespace Mealmap.Api.Tests
     public class MealControllerTests
     {
         private readonly FakeMealRepository _repository;
+        private readonly MealController _controller;
 
         public MealControllerTests()
         {
             _repository = new FakeMealRepository();
+            var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MealMapperProfile>());
+            _controller = new MealController(_repository, mapperConfig.CreateMapper());
 
             const string firstGuid = "00000000-0000-0000-0000-000000000001";
             var cheeseburger = new Meal(id: new Guid(firstGuid), name: "Cheeseburger");
@@ -22,10 +26,8 @@ namespace Mealmap.Api.Tests
         [Fact]
         public void GetMeal_WhenGivenValidId_ReturnsMeal()
         {
-            MealController mealController = new(repository: _repository);
-
             Guid guid = _repository.ElementAt(0).Key;
-            var result = mealController.GetMeal(guid);
+            var result = _controller.GetMeal(guid);
 
             result.Should().BeOfType<ActionResult<MealDto>>();
             result.Value.Should().NotBeNull();
@@ -35,12 +37,21 @@ namespace Mealmap.Api.Tests
         [Fact]
         public void GetMeal_WhenGivenNonExistingId_ReturnsNotFound()
         {
-            MealController mealController = new(repository: _repository);
-
             const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
-            var result = mealController.GetMeal(new Guid(nonExistingGuid));
+            var result = _controller.GetMeal(new Guid(nonExistingGuid));
 
             result.Result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Fact]
+        public void PostMeal_WhenGivenValidMeal_ReturnsOk()
+        {
+            const string randomName = "Cheeseburger";
+            MealDto mealDto = new(Guid.NewGuid(), randomName);
+
+            var result = _controller.PostMeal(mealDto);
+
+            result.Should().BeOfType<OkResult>();
         }
     }
 }
