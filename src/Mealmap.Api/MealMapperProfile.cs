@@ -9,8 +9,8 @@ namespace Mealmap.Api
     {
         public MealMapperProfile()
         {
-            CreateMap<MealDto, Meal>();
-            CreateMap<Meal, MealDto>();
+            CreateMap<MealDTO, Meal>();
+            CreateMap<Meal, MealDTO>();
         }
     }
 }

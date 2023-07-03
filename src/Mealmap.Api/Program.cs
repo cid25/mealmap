@@ -10,7 +10,9 @@ builder.Services.AddAutoMapper(typeof(MealMapperProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+    c.CustomSchemaIds(type => type.Name.Replace("DTO", string.Empty))
+);
 
 var app = builder.Build();
 

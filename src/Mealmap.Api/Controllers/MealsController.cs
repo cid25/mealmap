@@ -21,10 +21,10 @@ public class MealsController : ControllerBase
 
     [HttpGet(Name = nameof(GetMeals))]
     [Produces("application/json")]
-    public ActionResult<IEnumerable<MealDto>> GetMeals()
+    public ActionResult<IEnumerable<MealDTO>> GetMeals()
     {
         var meals = _repository.GetAll();
-        var mealDtos = _mapper.Map<IEnumerable<Meal>, List<MealDto>>(meals);
+        var mealDtos = _mapper.Map<IEnumerable<Meal>, List<MealDTO>>(meals);
 
         return mealDtos;
     }
@@ -32,7 +32,7 @@ public class MealsController : ControllerBase
 
     [HttpGet("{id}", Name = nameof(GetMeal))]
     [Produces("application/json")]
-    public ActionResult<MealDto> GetMeal([FromRoute] Guid id)
+    public ActionResult<MealDTO> GetMeal([FromRoute] Guid id)
     {
         Meal? meal = _repository.GetById(id);
                
@@ -41,7 +41,7 @@ public class MealsController : ControllerBase
             return NotFound();
         }
 
-        var mealDto = _mapper.Map<MealDto>(meal);
+        var mealDto = _mapper.Map<MealDTO>(meal);
 
         return mealDto;
     }
@@ -49,7 +49,7 @@ public class MealsController : ControllerBase
     [HttpPost(Name = nameof(PostMeal))]
     [Consumes("application/json")]
     [Produces("application/json")]
-    public ActionResult<MealDto> PostMeal([FromBody] MealDto mealDto)
+    public ActionResult<MealDTO> PostMeal([FromBody] MealDTO mealDto)
     {
         if (mealDto.Id != null || String.IsNullOrWhiteSpace(mealDto.Name))
             return BadRequest();
@@ -59,7 +59,7 @@ public class MealsController : ControllerBase
 
         _repository.Create(meal);
 
-        var mealCreated = _mapper.Map<MealDto>(meal);
+        var mealCreated = _mapper.Map<MealDTO>(meal);
 
         return mealCreated;
     }

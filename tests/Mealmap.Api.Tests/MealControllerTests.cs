@@ -28,7 +28,7 @@ namespace Mealmap.Api.Tests
         {
             var result = _controller.GetMeals();
 
-            result.Should().BeOfType<ActionResult<IEnumerable<MealDto>>>();
+            result.Should().BeOfType<ActionResult<IEnumerable<MealDTO>>>();
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace Mealmap.Api.Tests
             Guid guid = _repository.ElementAt(0).Key;
             var result = _controller.GetMeal(guid);
 
-            result.Should().BeOfType<ActionResult<MealDto>>();
+            result.Should().BeOfType<ActionResult<MealDTO>>();
             result.Value.Should().NotBeNull();
             result.Value!.Id.Should().NotBeEmpty();
         }
@@ -55,11 +55,11 @@ namespace Mealmap.Api.Tests
         public void PostMeal_WhenGivenValidMeal_ReturnsMealWithId()
         {
             const string someMealName = "Protoburger";
-            MealDto mealDto = new(someMealName);
+            MealDTO mealDto = new(someMealName);
 
             var result = _controller.PostMeal(mealDto);
 
-            result.Value.Should().BeOfType<MealDto>();
+            result.Value.Should().BeOfType<MealDTO>();
             result.Value!.Id.Should().NotBeNull().And.NotBeEmpty();
         }
 
@@ -67,7 +67,7 @@ namespace Mealmap.Api.Tests
         public void PostMeal_WhenGivenValidMeal_StoresMeal()
         {;
             const string someMealName = "Protoburger";
-            MealDto mealDto = new(someMealName);
+            MealDTO mealDto = new(someMealName);
 
             _ = _controller.PostMeal(mealDto);
 
@@ -78,7 +78,7 @@ namespace Mealmap.Api.Tests
         public void PostMeal_WhenGivenMealWithId_ReturnsBadRequest()
         {
             const string someMealName = "Protoburger";
-            MealDto mealDto = new(someMealName) { Id = Guid.NewGuid() };
+            MealDTO mealDto = new(someMealName) { Id = Guid.NewGuid() };
 
             var result = _controller.PostMeal(mealDto);
 
@@ -91,7 +91,7 @@ namespace Mealmap.Api.Tests
         [InlineData(" ")]
         public void PostMeal_WhenGivenMealWithEmptyName_ReturnsBadRequest(string name)
         {
-            MealDto mealDto = new(name: name);
+            MealDTO mealDto = new(name: name);
 
             var result = _controller.PostMeal(mealDto);
 
