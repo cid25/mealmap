@@ -24,7 +24,15 @@ namespace Mealmap.Api.Tests
         }
 
         [Fact]
-        public void GetMeal_WhenGivenValidId_ReturnsMeal()
+        public void GetMeal_WhenGivenExistingId_ReturnsListMealDtos()
+        {
+            var result = _controller.GetMeals();
+
+            result.Should().BeOfType<ActionResult<IEnumerable<MealDto>>>();
+        }
+
+        [Fact]
+        public void GetMeal_WhenGivenExistingId_ReturnsMealDto()
         {
             Guid guid = _repository.ElementAt(0).Key;
             var result = _controller.GetMeal(guid);
@@ -56,14 +64,13 @@ namespace Mealmap.Api.Tests
 
         [Fact]
         public void PostMeal_WhenGivenValidMeal_StoresMeal()
-        {
-            _repository.Clear();
+        {;
             const string someMealName = "Cheeseburger";
             MealDto mealDto = new(Guid.NewGuid(), someMealName);
 
             _ = _controller.PostMeal(mealDto);
 
-            _repository.Should().NotBeEmpty().And.HaveCount(1);
+            _repository.Should().NotBeEmpty().And.HaveCount(2);
         }
     }
 }
