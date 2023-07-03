@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Mealmap.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Api.Repositories
 {
@@ -8,5 +9,7 @@ namespace Mealmap.Api.Repositories
             : base(options)
         {
         }
+
+        public DbSet<Meal> Meals { get; set; }
     }
 }

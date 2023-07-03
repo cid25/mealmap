@@ -1,5 +1,8 @@
-﻿namespace Mealmap.Model
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Mealmap.Model
 {
+    [Table("meals", Schema = "mealmap")]
     public class Meal
     {
         public Guid? Id { get; set; }

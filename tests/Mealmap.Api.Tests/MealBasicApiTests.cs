@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace Mealmap.Api.Tests
+namespace Mealmap.Api.UnitTests
 {
     public class MealBasicApiTests : IClassFixture<WebApplicationFactory<Program>>
     {

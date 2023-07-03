@@ -1,7 +1,7 @@
 ﻿using Mealmap.Model;
 
 
-namespace Mealmap.Api.Tests
+namespace Mealmap.Api.UnitTests
 {
     internal class FakeMealRepository : Dictionary<Guid,Meal>, IMealRepository
     { 

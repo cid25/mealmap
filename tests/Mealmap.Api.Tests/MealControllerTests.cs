@@ -5,7 +5,7 @@ using Mealmap.Api.DataTransferObjects;
 using Mealmap.Model;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mealmap.Api.Tests
+namespace Mealmap.Api.UnitTests
 {
     public class MealControllerTests
     {

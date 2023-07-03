@@ -5,9 +5,11 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api", "src\Mealmap.Api\Mealmap.Api.csproj", "{9B38E491-3837-4106-93C6-33283ACE0274}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.Tests", "tests\Mealmap.Api.Tests\Mealmap.Api.Tests.csproj", "{8899AFCD-81D7-4D26-9A0E-C8F3FFBB07F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.UnitTests", "tests\Mealmap.Api.Tests\Mealmap.Api.UnitTests.csproj", "{8899AFCD-81D7-4D26-9A0E-C8F3FFBB07F1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Model", "src\Mealmap.Model\Mealmap.Model.csproj", "{B57D2C53-7EDF-4E4C-9797-AF62DE7471F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mealmap.Api.IntegrationTests", "tests\Mealmap.Api.IntegrationTests\Mealmap.Api.IntegrationTests.csproj", "{378B7E73-D138-4C03-8694-9729EBE2A107}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{B57D2C53-7EDF-4E4C-9797-AF62DE7471F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B57D2C53-7EDF-4E4C-9797-AF62DE7471F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B57D2C53-7EDF-4E4C-9797-AF62DE7471F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{378B7E73-D138-4C03-8694-9729EBE2A107}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{378B7E73-D138-4C03-8694-9729EBE2A107}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{378B7E73-D138-4C03-8694-9729EBE2A107}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{378B7E73-D138-4C03-8694-9729EBE2A107}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

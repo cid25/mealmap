@@ -1,12 +1,21 @@
 ﻿using Mealmap.Model;
 
-namespace Mealmap.Repositories
+namespace Mealmap.Api.Repositories
 {
     public class SqlMealRepository : IMealRepository
     {
+        private MealmapDbContext _dbContext { get; }
+
+        public SqlMealRepository(MealmapDbContext dbContext)
+        { 
+            _dbContext = dbContext;
+        }
+
         public IEnumerable<Meal> GetAll()
         {
-            return new List<Meal>();
+            var meals = _dbContext.Meals.ToList();            
+            
+            return meals;
         }
 
         public Meal? GetById(Guid id)
