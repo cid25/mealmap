@@ -10,13 +10,13 @@ namespace Mealmap.Api.Tests
     public class MealControllerTests
     {
         private readonly FakeMealRepository _repository;
-        private readonly MealController _controller;
+        private readonly MealsController _controller;
 
         public MealControllerTests()
         {
             _repository = new FakeMealRepository();
             var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MealMapperProfile>());
-            _controller = new MealController(_repository, mapperConfig.CreateMapper());
+            _controller = new MealsController(_repository, mapperConfig.CreateMapper());
 
             const string firstGuid = "00000000-0000-0000-0000-000000000001";
             var cheeseburger = new Meal(id: new Guid(firstGuid), name: "Cheeseburger");

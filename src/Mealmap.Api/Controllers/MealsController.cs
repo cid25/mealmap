@@ -7,13 +7,13 @@ using AutoMapper;
 namespace Mealmap.Api.Controllers;
 
 [ApiController]
-[Route("meals")]
-public class MealController : ControllerBase
+[Route("[controller]")]
+public class MealsController : ControllerBase
 {
     private readonly IMealRepository _repository;
     private readonly IMapper _mapper;
 
-    public MealController(IMealRepository repository, IMapper mapper)
+    public MealsController(IMealRepository repository, IMapper mapper)
     {
         _repository = repository;
         _mapper = mapper;
