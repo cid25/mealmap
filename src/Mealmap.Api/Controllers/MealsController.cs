@@ -37,8 +37,10 @@ public class MealsController : ControllerBase
         { 
             return NotFound();
         }
-        
-        return new MealDto(meal.Id, meal.Name);
+
+        var mealDto = _mapper.Map<MealDto>(meal);
+
+        return mealDto;
     }
 
     [HttpPost(Name = nameof(PostMeal))]
