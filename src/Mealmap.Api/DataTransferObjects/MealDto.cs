@@ -1,9 +1,9 @@
 ﻿namespace Mealmap.Api.DataTransferObjects
 {
-    public class MealDto
+    public record MealDto
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
+        public Guid Id { get; init; }
+        public string Name { get; init; }
 
         public MealDto(Guid id, string name)
         {
