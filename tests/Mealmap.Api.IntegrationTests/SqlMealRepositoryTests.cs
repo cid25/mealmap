@@ -3,6 +3,7 @@ using Mealmap.Api.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Mealmap.Api.IntegrationTests
 {
@@ -40,6 +41,15 @@ namespace Mealmap.Api.IntegrationTests
             var result = _repository.GetAll();
 
             result.Should().NotBeEmpty().And.HaveCount(2);
+        }
+
+        [Fact]
+        public void GetById_WhenGivenNonExistingId_ReturnsNull()
+        {
+            const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
+            var result = _repository.GetById(new Guid(nonExistingGuid));
+
+            result.Should().BeNull();
         }
     }
 }

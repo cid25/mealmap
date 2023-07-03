@@ -13,14 +13,16 @@ namespace Mealmap.Api.Repositories
 
         public IEnumerable<Meal> GetAll()
         {
-            var meals = _dbContext.Meals.ToList();            
+            var meals = _dbContext.Meals.ToList();
             
             return meals;
         }
 
         public Meal? GetById(Guid id)
         {
-            throw new NotImplementedException();
+            var meal = _dbContext.Meals.FirstOrDefault(x => x.Id == id);
+
+            return meal;
         }
 
         public void Create(Meal meal)
