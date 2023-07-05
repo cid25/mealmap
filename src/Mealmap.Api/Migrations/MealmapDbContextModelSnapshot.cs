@@ -34,7 +34,7 @@ namespace Mealmap.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Dishes");
+                    b.ToTable("dishes", "mealmap");
                 });
 
             modelBuilder.Entity("Mealmap.Model.Meal", b =>

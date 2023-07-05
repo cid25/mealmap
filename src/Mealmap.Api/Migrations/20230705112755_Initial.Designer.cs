@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Mealmap.Api.Migrations
 {
     [DbContext(typeof(MealmapDbContext))]
-    [Migration("20230705112012_Initial")]
+    [Migration("20230705112755_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -37,7 +37,7 @@ namespace Mealmap.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Dishes");
+                    b.ToTable("dishes", "mealmap");
                 });
 
             modelBuilder.Entity("Mealmap.Model.Meal", b =>

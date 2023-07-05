@@ -15,7 +15,8 @@ namespace Mealmap.Api.Migrations
                 name: "mealmap");
 
             migrationBuilder.CreateTable(
-                name: "Dishes",
+                name: "dishes",
+                schema: "mealmap",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -23,7 +24,7 @@ namespace Mealmap.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Dishes", x => x.Id);
+                    table.PrimaryKey("PK_dishes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -43,7 +44,8 @@ namespace Mealmap.Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Dishes");
+                name: "dishes",
+                schema: "mealmap");
 
             migrationBuilder.DropTable(
                 name: "meals",
