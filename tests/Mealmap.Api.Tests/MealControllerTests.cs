@@ -15,7 +15,7 @@ namespace Mealmap.Api.UnitTests
         public MealControllerTests()
         {
             _repository = new FakeMealRepository();
-            var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MealMapperProfile>());
+            var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MealmapMapperProfile>());
             _controller = new MealsController(_repository, mapperConfig.CreateMapper());
 
             const string firstGuid = "00000000-0000-0000-0000-000000000001";

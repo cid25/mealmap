@@ -18,7 +18,11 @@ namespace Mealmap.Api.PipelineTests
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.RemoveAll<IMealRepository>().AddScoped<IMealRepository,FakeMealRepository>();
+                    services
+                    .RemoveAll<IMealRepository>()
+                    .AddScoped<IMealRepository, FakeMealRepository>()
+                    .RemoveAll<IDishRepository>()
+                    .AddScoped<IDishRepository, FakeDishRepository>();
                 });
             })
             .CreateClient();

@@ -2,5 +2,6 @@
 {
     public record DishDTO
     {
+        public Guid? Id { get; init; }
     }
 }

@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IMealRepository, SqlMealRepository>();
-builder.Services.AddAutoMapper(typeof(MealMapperProfile));
+builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
+builder.Services.AddAutoMapper(typeof(MealmapMapperProfile));
 builder.Services.AddDbContext<MealmapDbContext>(options
     => options.UseSqlServer(
         builder.Configuration.GetConnectionString("MealmapDb")));

@@ -11,5 +11,6 @@ namespace Mealmap.Api.Repositories
         }
 
         public DbSet<Meal> Meals { get; set; }
+        public DbSet<Dish> Dishes { get; set; }
     }
 }

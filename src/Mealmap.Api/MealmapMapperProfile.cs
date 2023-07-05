@@ -5,12 +5,14 @@ using Mealmap.Api.DataTransferObjects;
 
 namespace Mealmap.Api
 {
-    public class MealMapperProfile : Profile
+    public class MealmapMapperProfile : Profile
     {
-        public MealMapperProfile()
+        public MealmapMapperProfile()
         {
             CreateMap<MealDTO, Meal>();
             CreateMap<Meal, MealDTO>();
+            CreateMap<DishDTO, Dish>();
+            CreateMap<Dish, DishDTO>();
         }
     }
 }
