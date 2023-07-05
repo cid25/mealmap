@@ -32,7 +32,7 @@ namespace Mealmap.Api.PipelineTests
         [Fact]
         public async void Meals_ReturnsOk()
         {
-            var response = await _client.GetAsync("/meals");
+            var response = await _client.GetAsync("/api/meals");
 
             response.Should().BeSuccessful();
         }
@@ -40,7 +40,7 @@ namespace Mealmap.Api.PipelineTests
         [Fact]
         public async void Meals_ReturnsJson()
         {
-            var response = await _client.GetAsync("/meals");
+            var response = await _client.GetAsync("/api/meals");
 
             response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
         }

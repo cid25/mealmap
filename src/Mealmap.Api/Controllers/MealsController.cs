@@ -7,7 +7,7 @@ using AutoMapper;
 namespace Mealmap.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class MealsController : ControllerBase
 {
     private readonly IMealRepository _repository;
@@ -37,13 +37,9 @@ public class MealsController : ControllerBase
         Meal? meal = _repository.GetById(id);
                
         if (meal == null)
-        { 
             return NotFound();
-        }
 
-        var mealDto = _mapper.Map<MealDTO>(meal);
-
-        return mealDto;
+        return _mapper.Map<MealDTO>(meal);
     }
 
     [HttpPost(Name = nameof(PostMeal))]

@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Mealmap.Api.UnitTests
 {
-    public class MealControllerTests
+    public class MealsControllerTests
     {
         private readonly FakeMealRepository _repository;
         private readonly MealsController _controller;
 
-        public MealControllerTests()
+        public MealsControllerTests()
         {
             _repository = new FakeMealRepository();
             var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MealmapMapperProfile>());
@@ -32,7 +32,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void GetMeal_WhenGivenExistingId_ReturnsMealDTO()
+        public void GetMeal_WhenMealWithIdExisting_ReturnsMeal()
         {
             Guid guid = _repository.ElementAt(0).Key;
             var result = _controller.GetMeal(guid);
@@ -43,7 +43,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void GetMeal_WhenGivenNonExistingId_ReturnsNotFound()
+        public void GetMeal_WhenMealWithIdNotExisting_ReturnsNotFound()
         {
             const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
             var result = _controller.GetMeal(new Guid(nonExistingGuid));
