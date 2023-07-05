@@ -18,7 +18,7 @@ namespace Mealmap.Api.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet(Name = nameof(GetDishes))]
         [Produces("application/json")]
         public ActionResult<IEnumerable<DishDTO>> GetDishes()
         {
@@ -28,7 +28,7 @@ namespace Mealmap.Api.Controllers
             return dishDTOs;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = nameof(GetDish))]
         [Produces("application/json")]
         public ActionResult<DishDTO> GetDish([FromRoute] Guid id)
         {
@@ -38,6 +38,24 @@ namespace Mealmap.Api.Controllers
                 return NotFound();
 
             return _mapper.Map<DishDTO>(dish);
+        }
+
+        [HttpPost(Name = nameof(PostDish))]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public ActionResult<DishDTO> PostDish([FromBody] DishDTO dishDTO)
+        {
+            if (dishDTO.Id != null || String.IsNullOrWhiteSpace(dishDTO.Name))
+                return BadRequest();
+
+            var dish = _mapper.Map<Dish>(dishDTO);
+            dish.Id = Guid.NewGuid();
+
+            _repository.Create(dish);
+
+            var dishCreated = _mapper.Map<DishDTO>(dish);
+
+            return dishCreated;
         }
 
     }

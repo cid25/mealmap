@@ -17,5 +17,13 @@ namespace Mealmap.Api.UnitTests
 
             return dish;
         }
+
+        public void Create(Dish dish)
+        {
+            if (dish.Id == null)
+                throw new ArgumentNullException(nameof(dish.Id));
+
+            Add((Guid)dish.Id, dish);
+        }
     }
 }

@@ -22,5 +22,10 @@ namespace Mealmap.Api.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public void Create(Dish dish)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

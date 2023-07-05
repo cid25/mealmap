@@ -5,5 +5,7 @@
         public IEnumerable<Dish> GetAll();
 
         public Dish? GetById(Guid id);
+
+        public void Create(Dish dish);
     }
 }

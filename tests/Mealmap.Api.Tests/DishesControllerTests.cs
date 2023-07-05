@@ -19,8 +19,8 @@ namespace Mealmap.Api.UnitTests
             var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MealmapMapperProfile>());
             _controller = new DishesController(_repository, mapperConfig.CreateMapper());
 
-            const string firstGuid = "00000000-0000-0000-0000-000000000001";
-            _repository.Add(new Guid(firstGuid), new Dish() {Id = new Guid(firstGuid)} );
+            const string someGuid = "00000000-0000-0000-0000-000000000001";
+            _repository.Create(new Dish("Krabby Patty") { Id = new Guid(someGuid)} );
         }
 
         [Fact]
@@ -49,6 +49,53 @@ namespace Mealmap.Api.UnitTests
             var result = _controller.GetDish(new Guid(nonExistingGuid));
 
             result.Result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Fact]
+        public void PostDish_WhenGivenValidDish_ReturnsDishWithId()
+        {
+            const string someDishName = "Protoburger";
+            DishDTO dish = new(someDishName);
+
+            var result = _controller.PostDish(dish);
+
+            result.Value.Should().BeOfType<DishDTO>();
+            result.Value!.Id.Should().NotBeNull().And.NotBeEmpty();
+        }
+
+        [Fact]
+        public void PostDish_WhenDishIsValid_StoresDish()
+        {
+            const string someDishName = "Sailors Surprise";
+            DishDTO dish = new(someDishName);
+
+            _ = _controller.PostDish(dish);
+
+            _repository.Should().NotBeEmpty().And.HaveCountGreaterThan(1);
+        }
+
+        [Fact]
+        public void PostDish_WhenDishAlreadyHasId_ReturnsBadRequest()
+        {
+            const string someDishName = "Sailors Surprise";
+            DishDTO dish = new(someDishName) { Id = Guid.NewGuid() };
+
+            var result = _controller.PostDish(dish);
+
+            result.Result.Should().BeOfType<BadRequestResult>();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public void PostDish_WhenGivenDishWithEmptyName_ReturnsBadRequest(string name)
+        {
+            DishDTO dish = new(name: name);
+
+            var result = _controller.PostDish(dish);
+
+            result.Result.Should().BeOfType<BadRequestResult>();
         }
     }
 }
