@@ -47,7 +47,7 @@ public class MealsController : ControllerBase
     [Produces("application/json")]
     public ActionResult<MealDTO> PostMeal([FromBody] MealDTO mealDto)
     {
-        if (mealDto.Id != null || String.IsNullOrWhiteSpace(mealDto.Name))
+        if (mealDto.Id != null)
             return BadRequest();
         
         var meal = _mapper.Map<Meal>(mealDto);

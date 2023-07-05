@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Mealmap.Api.Migrations
 {
     [DbContext(typeof(MealmapDbContext))]
-    [Migration("20230705105348_Initial")]
+    [Migration("20230705112012_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -45,10 +45,6 @@ namespace Mealmap.Api.Migrations
                     b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

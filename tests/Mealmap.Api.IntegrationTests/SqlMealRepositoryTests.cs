@@ -31,8 +31,8 @@ namespace Mealmap.Api.IntegrationTests
 
         private void seedData(MealmapDbContext dbContext)
         {
-            dbContext.Meals.Add(new Meal("Krabby Patty") { Id = new Guid("00000000-0000-0000-0000-000000000001") } );
-            dbContext.Meals.Add(new Meal("Sailors Surprise") { Id = new Guid("00000000-0000-0000-0000-000000000010") });
+            dbContext.Meals.Add(new Meal() { Id = new Guid("00000000-0000-0000-0000-000000000001") } );
+            dbContext.Meals.Add(new Meal() { Id = new Guid("00000000-0000-0000-0000-000000000010") });
             dbContext.SaveChanges();
         }
 
@@ -63,14 +63,12 @@ namespace Mealmap.Api.IntegrationTests
             var result = _repository.GetById(new Guid(existingGuid));
 
             result.Should().NotBeNull();
-            result!.Name.Should().Be("Krabby Patty");
         }
 
         [Fact]
         public void Create_WhenGivenMealWithoutId_ThrowsArgumentNullException()
         {
-            const string someMealName = "Salty Sea Dog";
-            Meal meal = new(someMealName);
+            Meal meal = new();
             
             Action act = () => _repository.Create(meal);
 
@@ -80,12 +78,12 @@ namespace Mealmap.Api.IntegrationTests
         [Fact]
         public void Create_WhenGivenMealWithId_CreatesEntry()
         {
-            const string someMealName = "Salty Sea Dog";
-            Meal meal = new(someMealName) { Id = Guid.NewGuid() };
+            var guid = Guid.NewGuid();
+            Meal meal = new() { Id = guid };
 
             _repository.Create(meal);
 
-            _dbContext.Meals.First(x => x.Name == someMealName).Should().NotBeNull();
+            _dbContext.Meals.First(x => x.Id == guid).Should().NotBeNull();
         }
     }
 }
