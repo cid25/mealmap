@@ -9,9 +9,9 @@ namespace Mealmap.Api.Controllers
     {
         [HttpGet]
         [Produces("application/json")]
-        public ActionResult<DishDTO> GetDishes()
+        public ActionResult<IEnumerable<DishDTO>> GetDishes()
         {
-            return new DishDTO();
+            return new List<DishDTO>();
         }
     }
 }

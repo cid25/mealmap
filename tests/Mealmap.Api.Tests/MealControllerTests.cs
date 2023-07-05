@@ -24,7 +24,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void GetMeals_ReturnsMealDtos()
+        public void GetMeals_ReturnsMealDTOs()
         {
             var result = _controller.GetMeals();
 
@@ -32,7 +32,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void GetMeal_WhenGivenExistingId_ReturnsMealDto()
+        public void GetMeal_WhenGivenExistingId_ReturnsMealDTO()
         {
             Guid guid = _repository.ElementAt(0).Key;
             var result = _controller.GetMeal(guid);
