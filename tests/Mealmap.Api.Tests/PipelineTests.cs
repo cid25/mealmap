@@ -8,11 +8,11 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Mealmap.Api.PipelineTests
 {
-    public class BasicApiTests : IClassFixture<WebApplicationFactory<Program>>
+    public class PipelineTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
 
-        public BasicApiTests(WebApplicationFactory<Program> applicationFactory)
+        public PipelineTests(WebApplicationFactory<Program> applicationFactory)
         {
             _client = applicationFactory.WithWebHostBuilder(builder =>
             {
