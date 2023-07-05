@@ -64,7 +64,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void PostMeal_WhenGivenValidMeal_StoresMeal()
+        public void PostMeal_WhenMealIsValid_StoresMeal()
         {;
             const string someMealName = "Protoburger";
             MealDTO mealDto = new(someMealName);
@@ -75,7 +75,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void PostMeal_WhenGivenMealWithId_ReturnsBadRequest()
+        public void PostMeal_WhenMealAlreadyHasId_ReturnsBadRequest()
         {
             const string someMealName = "Protoburger";
             MealDTO mealDto = new(someMealName) { Id = Guid.NewGuid() };

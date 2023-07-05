@@ -1,20 +1,18 @@
-﻿using Mealmap.Model;
+﻿using FluentAssertions;
 using Mealmap.Api.Repositories;
+using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace Mealmap.Api.IntegrationTests
 {
     [Collection("InSequence")]
-    public class SqlMealRepositoryTests
+    public class SqlDishRepositoryTests
     {
         private readonly MealmapDbContext _dbContext;
-        private readonly SqlMealRepository _repository;
+        private readonly SqlDishRepository _repository;
 
-        public SqlMealRepositoryTests()
+        public SqlDishRepositoryTests()
         {
             var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
             var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
@@ -26,21 +24,21 @@ namespace Mealmap.Api.IntegrationTests
             _dbContext.Database.EnsureCreated();
             seedData(_dbContext);
 
-            _repository = new SqlMealRepository(_dbContext);
+            _repository = new SqlDishRepository(_dbContext);
         }
 
         private void seedData(MealmapDbContext dbContext)
         {
-            dbContext.Meals.Add(new Meal("Krabby Patty") { Id = new Guid("00000000-0000-0000-0000-000000000001") } );
-            dbContext.Meals.Add(new Meal("Sailors Surprise") { Id = new Guid("00000000-0000-0000-0000-000000000010") });
+            dbContext.Dishes.Add(new Dish("Krabby Patty") { Id = new Guid("00000000-0000-0000-0000-000000000001") } );
+            dbContext.Dishes.Add(new Dish("Sailors Surprise") { Id = new Guid("00000000-0000-0000-0000-000000000010") });
             dbContext.SaveChanges();
         }
 
 
         [Fact]
-        public void GetAll_ReturnsAllMeals()
+        public void GetAll_ReturnsAllDishes()
         {
-            var expectedCount = _dbContext.Meals.Count();
+            var expectedCount = _dbContext.Dishes.Count();
             
             var result = _repository.GetAll();
 
@@ -48,7 +46,7 @@ namespace Mealmap.Api.IntegrationTests
         }
 
         [Fact]
-        public void GetById_WhenGivenNonExistingId_ReturnsNull()
+        public void GetById_WhenIdNonExisting_ReturnsNull()
         {
             const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
             var result = _repository.GetById(new Guid(nonExistingGuid));
@@ -57,7 +55,7 @@ namespace Mealmap.Api.IntegrationTests
         }
 
         [Fact]
-        public void GetById_WhenGivenExistingId_ReturnsMeal()
+        public void GetById_WhenIdExists_ReturnsDish()
         {
             const string existingGuid = "00000000-0000-0000-0000-000000000001";
             var result = _repository.GetById(new Guid(existingGuid));
@@ -67,25 +65,25 @@ namespace Mealmap.Api.IntegrationTests
         }
 
         [Fact]
-        public void Create_WhenGivenMealWithoutId_ThrowsArgumentNullException()
+        public void Create_WhenDishHasNoId_ThrowsArgumentNullException()
         {
-            const string someMealName = "Salty Sea Dog";
-            Meal meal = new(someMealName);
+            const string someDishName = "Salty Sea Dog";
+            Dish dish = new(someDishName);
             
-            Action act = () => _repository.Create(meal);
+            Action act = () => _repository.Create(dish);
 
             act.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void Create_WhenGivenMealWithId_CreatesEntry()
+        public void Create_WhenDishValid_CreatesEntry()
         {
-            const string someMealName = "Salty Sea Dog";
-            Meal meal = new(someMealName) { Id = Guid.NewGuid() };
+            const string someDishName = "Salty Sea Dog";
+            Dish dish = new(someDishName) { Id = Guid.NewGuid() };
 
-            _repository.Create(meal);
+            _repository.Create(dish);
 
-            _dbContext.Meals.First(x => x.Name == someMealName).Should().NotBeNull();
+            _dbContext.Dishes.First(x => x.Name == someDishName).Should().NotBeNull();
         }
     }
 }

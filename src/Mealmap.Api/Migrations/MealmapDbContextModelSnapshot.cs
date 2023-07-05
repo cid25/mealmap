@@ -22,6 +22,21 @@ namespace Mealmap.Api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Mealmap.Model.Dish", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Dishes");
+                });
+
             modelBuilder.Entity("Mealmap.Model.Meal", b =>
                 {
                     b.Property<Guid?>("Id")

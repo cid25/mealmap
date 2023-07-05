@@ -20,12 +20,16 @@ namespace Mealmap.Api.Repositories
 
         public Dish? GetById(Guid id)
         {
-            throw new NotImplementedException();
+            return _dbContext.Dishes.Find(id);
         }
 
         public void Create(Dish dish)
         {
-            throw new NotImplementedException();
+            if (dish.Id == null)
+                throw new ArgumentNullException(nameof(dish.Id));
+
+            _dbContext.Dishes.Add(dish);
+            _dbContext.SaveChanges();
         }
     }
 }
