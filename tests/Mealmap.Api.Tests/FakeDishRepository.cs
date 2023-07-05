@@ -9,5 +9,13 @@ namespace Mealmap.Api.UnitTests
         {
             return Values;
         }
+
+        public Dish? GetById(Guid id)
+        {
+            Dish? dish;
+            TryGetValue(id, out dish);
+
+            return dish;
+        }
     }
 }

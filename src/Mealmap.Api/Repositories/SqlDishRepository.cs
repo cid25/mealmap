@@ -17,5 +17,10 @@ namespace Mealmap.Api.Repositories
             
             return dishes;
         }
+
+        public Dish? GetById(Guid id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

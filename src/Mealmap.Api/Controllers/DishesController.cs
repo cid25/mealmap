@@ -27,5 +27,18 @@ namespace Mealmap.Api.Controllers
 
             return dishDTOs;
         }
+
+        [HttpGet("{id}")]
+        [Produces("application/json")]
+        public ActionResult<DishDTO> GetDish([FromRoute] Guid id)
+        {
+            var dish = _repository.GetById(id);
+
+            if (dish == null)
+                return NotFound();
+
+            return _mapper.Map<DishDTO>(dish);
+        }
+
     }
 }
