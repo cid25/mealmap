@@ -49,9 +49,9 @@ public class MealsController : ControllerBase
     {
         if (mealDto.Id != null)
             return BadRequest();
-        
+
+        mealDto = mealDto with { Id = Guid.NewGuid() };
         var meal = _mapper.Map<Meal>(mealDto);
-        meal.Id = Guid.NewGuid();
 
         _repository.Create(meal);
 

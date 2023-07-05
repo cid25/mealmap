@@ -48,8 +48,8 @@ namespace Mealmap.Api.Controllers
             if (dishDTO.Id != null || String.IsNullOrWhiteSpace(dishDTO.Name))
                 return BadRequest();
 
+            dishDTO = dishDTO with { Id = Guid.NewGuid() };
             var dish = _mapper.Map<Dish>(dishDTO);
-            dish.Id = Guid.NewGuid();
 
             _repository.Create(dish);
 

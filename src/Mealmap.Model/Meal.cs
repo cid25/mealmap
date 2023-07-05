@@ -5,6 +5,6 @@ namespace Mealmap.Model
     [Table("meals", Schema = "mealmap")]
     public class Meal
     {
-        public Guid? Id { get; set; }
+        public Guid Id { get; init; }
     }
 }

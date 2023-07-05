@@ -25,9 +25,6 @@ namespace Mealmap.Api.Repositories
 
         public void Create(Dish dish)
         {
-            if (dish.Id == null)
-                throw new ArgumentNullException(nameof(dish.Id));
-
             _dbContext.Dishes.Add(dish);
             _dbContext.SaveChanges();
         }

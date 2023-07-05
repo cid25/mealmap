@@ -48,7 +48,7 @@ namespace Mealmap.Api.IntegrationTests
         }
 
         [Fact]
-        public void GetById_WhenGivenNonExistingId_ReturnsNull()
+        public void GetById_WhenIdNonExisting_ReturnsNull()
         {
             const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
             var result = _repository.GetById(new Guid(nonExistingGuid));
@@ -57,7 +57,7 @@ namespace Mealmap.Api.IntegrationTests
         }
 
         [Fact]
-        public void GetById_WhenGivenExistingId_ReturnsMeal()
+        public void GetById_WhenIdExisting_ReturnsMeal()
         {
             const string existingGuid = "00000000-0000-0000-0000-000000000001";
             var result = _repository.GetById(new Guid(existingGuid));
@@ -66,17 +66,7 @@ namespace Mealmap.Api.IntegrationTests
         }
 
         [Fact]
-        public void Create_WhenGivenMealWithoutId_ThrowsArgumentNullException()
-        {
-            Meal meal = new();
-            
-            Action act = () => _repository.Create(meal);
-
-            act.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void Create_WhenGivenMealWithId_CreatesEntry()
+        public void Create_WhenMealValid_CreatesEntry()
         {
             var guid = Guid.NewGuid();
             Meal meal = new() { Id = guid };

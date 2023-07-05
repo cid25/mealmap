@@ -18,9 +18,8 @@ namespace Mealmap.Api.UnitTests
             var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MealmapMapperProfile>());
             _controller = new MealsController(_repository, mapperConfig.CreateMapper());
 
-            const string firstGuid = "00000000-0000-0000-0000-000000000001";
-            var cheeseburger = new Meal() { Id = new Guid(firstGuid) };
-            _repository.Create(cheeseburger);
+            const string someGuid = "00000000-0000-0000-0000-000000000001";
+            _repository.Create(new Meal() { Id = new Guid(someGuid) });
         }
 
         [Fact]
@@ -32,7 +31,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void GetMeal_WhenMealWithIdExisting_ReturnsMeal()
+        public void GetMeal_WhenMealWithIdExists_ReturnsMeal()
         {
             Guid guid = _repository.ElementAt(0).Key;
             var result = _controller.GetMeal(guid);
@@ -43,7 +42,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void GetMeal_WhenMealWithIdNotExisting_ReturnsNotFound()
+        public void GetMeal_WhenMealWithIdNotExists_ReturnsNotFound()
         {
             const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
             var result = _controller.GetMeal(new Guid(nonExistingGuid));
@@ -52,7 +51,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void PostMeal_WhenGivenValidMeal_ReturnsMealWithId()
+        public void PostMeal_WhenMealIsValid_ReturnsMealWithId()
         {
             MealDTO mealDto = new();
 
@@ -64,7 +63,7 @@ namespace Mealmap.Api.UnitTests
 
         [Fact]
         public void PostMeal_WhenMealIsValid_StoresMeal()
-        {;
+        {
             MealDTO mealDto = new();
 
             _ = _controller.PostMeal(mealDto);
@@ -73,7 +72,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void PostMeal_WhenMealAlreadyHasId_ReturnsBadRequest()
+        public void PostMeal_WhenMealHasId_ReturnsBadRequest()
         {
             MealDTO mealDto = new() { Id = Guid.NewGuid() };
 

@@ -65,25 +65,15 @@ namespace Mealmap.Api.IntegrationTests
         }
 
         [Fact]
-        public void Create_WhenDishHasNoId_ThrowsArgumentNullException()
-        {
-            const string someDishName = "Salty Sea Dog";
-            Dish dish = new(someDishName);
-            
-            Action act = () => _repository.Create(dish);
-
-            act.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
         public void Create_WhenDishValid_CreatesEntry()
         {
             const string someDishName = "Salty Sea Dog";
-            Dish dish = new(someDishName) { Id = Guid.NewGuid() };
+            Guid someGuid = Guid.NewGuid();
+            Dish dish = new(someDishName) { Id = someGuid };
 
             _repository.Create(dish);
 
-            _dbContext.Dishes.First(x => x.Name == someDishName).Should().NotBeNull();
+            _dbContext.Dishes.First(x => x.Id == someGuid).Should().NotBeNull();
         }
     }
 }

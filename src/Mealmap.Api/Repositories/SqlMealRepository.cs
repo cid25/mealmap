@@ -27,9 +27,6 @@ namespace Mealmap.Api.Repositories
 
         public void Create(Meal meal)
         {
-            if (meal.Id == null)
-                throw new ArgumentNullException(nameof(meal.Id));
-
             _dbContext.Meals.Add(meal);
             _dbContext.SaveChanges();
         }

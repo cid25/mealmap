@@ -52,9 +52,9 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void PostDish_WhenGivenValidDish_ReturnsDishWithId()
+        public void PostDish_WhenDishIsValid_ReturnsDishWithId()
         {
-            const string someDishName = "Protoburger";
+            const string someDishName = "Sailors Surprise";
             DishDTO dish = new(someDishName);
 
             var result = _controller.PostDish(dish);

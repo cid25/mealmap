@@ -19,10 +19,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         public void Create(Meal meal)
-        {
-            if (meal.Id == null)
-                throw new ArgumentNullException(nameof(meal.Id));
-            
+        {            
             Add((Guid) meal.Id, meal);
         }
     }
