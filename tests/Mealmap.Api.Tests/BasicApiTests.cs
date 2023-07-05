@@ -26,7 +26,7 @@ namespace Mealmap.Api.PipelineTests
 
 
         [Fact]
-        public async void Meal_ReturnsOk()
+        public async void Meals_ReturnsOk()
         {
             var response = await _client.GetAsync("/meals");
 
@@ -34,9 +34,25 @@ namespace Mealmap.Api.PipelineTests
         }
 
         [Fact]
-        public async void Meal_ReturnsJson()
+        public async void Meals_ReturnsJson()
         {
             var response = await _client.GetAsync("/meals");
+
+            response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+        }
+
+        [Fact]
+        public async void Dishes_ReturnsOk()
+        {
+            var response = await _client.GetAsync("/api/dishes");
+
+            response.Should().BeSuccessful();
+        }
+
+        [Fact]
+        public async void Dishes_ReturnsJson()
+        {
+            var response = await _client.GetAsync("/api/dishes");
 
             response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
         }
