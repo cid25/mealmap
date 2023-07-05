@@ -6,5 +6,9 @@ namespace Mealmap.Model
     public class Meal
     {
         public Guid Id { get; init; }
+
+        public DateOnly Date { get; set; }
+
+        public Dish? Dish { get; set; }
     }
 }

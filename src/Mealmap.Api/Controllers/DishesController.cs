@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Mealmap.Api.DataTransferObjects;
+using Mealmap.Api.DataTransfer;
 using Mealmap.Model;
 using Microsoft.AspNetCore.Mvc;
 

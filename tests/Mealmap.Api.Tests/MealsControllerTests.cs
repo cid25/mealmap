@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FluentAssertions;
 using Mealmap.Api.Controllers;
-using Mealmap.Api.DataTransferObjects;
+using Mealmap.Api.DataTransfer;
 using Mealmap.Model;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,17 +9,37 @@ namespace Mealmap.Api.UnitTests
 {
     public class MealsControllerTests
     {
-        private readonly FakeMealRepository _repository;
+        private readonly FakeMealRepository _mealRepository;
+        private readonly FakeDishRepository _dishRepository;
         private readonly MealsController _controller;
 
         public MealsControllerTests()
         {
-            _repository = new FakeMealRepository();
-            var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MealmapMapperProfile>());
-            _controller = new MealsController(_repository, mapperConfig.CreateMapper());
+            _dishRepository = new FakeDishRepository();
+            _mealRepository = new FakeMealRepository();         
 
-            const string someGuid = "00000000-0000-0000-0000-000000000001";
-            _repository.Create(new Meal() { Id = new Guid(someGuid) });
+            _controller = new MealsController(
+                _mealRepository,
+                _dishRepository,
+                new MealMapper(
+                    new MapperConfiguration(cfg => cfg.AddProfile<MealmapMapperProfile>()).CreateMapper()
+                    , _dishRepository));
+
+            fakeData(_mealRepository, _dishRepository);
+        }
+
+        private void fakeData(FakeMealRepository mealRepository, FakeDishRepository dishRepository)
+        {
+            Dish krabbyPatty = new("Krabby Patty") { Id = new Guid("00000000-0000-0000-0000-000000000001") };
+            dishRepository.Create(krabbyPatty);
+
+            Meal yesterdaysMeal = new Meal()
+            {
+                Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                Date = new DateOnly(2020, 1, 1),
+                Dish = krabbyPatty
+            };
+            mealRepository.Create(yesterdaysMeal);
         }
 
         [Fact]
@@ -28,12 +48,14 @@ namespace Mealmap.Api.UnitTests
             var result = _controller.GetMeals();
 
             result.Should().BeOfType<ActionResult<IEnumerable<MealDTO>>>();
+            result.Value.Should().HaveCountGreaterThan(0);
+            result.Value.Should().NotContain(x => x.Id == null || x.Id == Guid.Empty);
         }
 
         [Fact]
         public void GetMeal_WhenMealWithIdExists_ReturnsMeal()
         {
-            Guid guid = _repository.ElementAt(0).Key;
+            Guid guid = _mealRepository.ElementAt(0).Key;
             var result = _controller.GetMeal(guid);
 
             result.Should().BeOfType<ActionResult<MealDTO>>();
@@ -53,7 +75,8 @@ namespace Mealmap.Api.UnitTests
         [Fact]
         public void PostMeal_WhenMealIsValid_ReturnsMealWithId()
         {
-            MealDTO mealDto = new();
+            var dishId = _dishRepository.ElementAt(0).Key;
+            MealDTO mealDto = new() { Date = new DateOnly(2020, 1, 2), Dish = dishId };
 
             var result = _controller.PostMeal(mealDto);
 
@@ -64,17 +87,19 @@ namespace Mealmap.Api.UnitTests
         [Fact]
         public void PostMeal_WhenMealIsValid_StoresMeal()
         {
-            MealDTO mealDto = new();
+            var dishId = _dishRepository.ElementAt(0).Key;
+            MealDTO mealDto = new() { Date = new DateOnly(2020,1,2), Dish = dishId };
 
             _ = _controller.PostMeal(mealDto);
 
-            _repository.Should().NotBeEmpty().And.HaveCount(2);
+            _mealRepository.Should().NotBeEmpty().And.HaveCountGreaterThan(1);
         }
 
         [Fact]
         public void PostMeal_WhenMealHasId_ReturnsBadRequest()
         {
-            MealDTO mealDto = new() { Id = Guid.NewGuid() };
+            Guid anyGuid = Guid.NewGuid();
+            MealDTO mealDto = new() { Id = anyGuid };
 
             var result = _controller.PostMeal(mealDto);
 

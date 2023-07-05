@@ -1,4 +1,4 @@
-﻿using Mealmap.Api;
+﻿using Mealmap.Api.DataTransfer;
 using Mealmap.Api.Repositories;
 using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IMealRepository, SqlMealRepository>();
 builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
 builder.Services.AddAutoMapper(typeof(MealmapMapperProfile));
+builder.Services.AddScoped<MealMapper>();
 builder.Services.AddDbContext<MealmapDbContext>(options
     => options.UseSqlServer(
         builder.Configuration.GetConnectionString("MealmapDb")));

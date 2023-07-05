@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Mealmap.Api.DataTransferObjects;
+using Mealmap.Api.DataTransfer;
 using Mealmap.Model;
 using AutoMapper;
 
@@ -10,12 +10,14 @@ namespace Mealmap.Api.Controllers;
 [Route("api/[controller]")]
 public class MealsController : ControllerBase
 {
-    private readonly IMealRepository _repository;
-    private readonly IMapper _mapper;
+    private readonly IMealRepository _mealRepository;
+    private readonly IDishRepository _dishRepository;
+    private readonly MealMapper _mapper;
 
-    public MealsController(IMealRepository repository, IMapper mapper)
+    public MealsController(IMealRepository mealRepository, IDishRepository dishRepository, MealMapper mapper)
     {
-        _repository = repository;
+        _mealRepository = mealRepository;
+        _dishRepository = dishRepository;
         _mapper = mapper;
     }
 
@@ -23,10 +25,10 @@ public class MealsController : ControllerBase
     [Produces("application/json")]
     public ActionResult<IEnumerable<MealDTO>> GetMeals()
     {
-        var meals = _repository.GetAll();
-        var mealDtos = _mapper.Map<IEnumerable<Meal>, List<MealDTO>>(meals);
+        var meals = _mealRepository.GetAll();
+        var mealDTOs = _mapper.Map(meals);
 
-        return mealDtos;
+        return mealDTOs;
     }
 
 
@@ -34,12 +36,12 @@ public class MealsController : ControllerBase
     [Produces("application/json")]
     public ActionResult<MealDTO> GetMeal([FromRoute] Guid id)
     {
-        Meal? meal = _repository.GetById(id);
+        Meal? meal = _mealRepository.GetById(id);
                
         if (meal == null)
             return NotFound();
 
-        return _mapper.Map<MealDTO>(meal);
+        return _mapper.Map(meal);
     }
 
     [HttpPost(Name = nameof(PostMeal))]
@@ -51,11 +53,11 @@ public class MealsController : ControllerBase
             return BadRequest();
 
         mealDto = mealDto with { Id = Guid.NewGuid() };
-        var meal = _mapper.Map<Meal>(mealDto);
+        var meal = _mapper.Map(mealDto);
 
-        _repository.Create(meal);
+        _mealRepository.Create(meal);
 
-        var mealCreated = _mapper.Map<MealDTO>(meal);
+        var mealCreated = _mapper.Map(meal);
 
         return mealCreated;
     }

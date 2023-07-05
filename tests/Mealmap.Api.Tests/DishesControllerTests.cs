@@ -1,8 +1,7 @@
-﻿using System.Diagnostics.Contracts;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentAssertions;
 using Mealmap.Api.Controllers;
-using Mealmap.Api.DataTransferObjects;
+using Mealmap.Api.DataTransfer;
 using Mealmap.Model;
 using Microsoft.AspNetCore.Mvc;
 

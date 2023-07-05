@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Mealmap.Api.DataTransferObjects
+namespace Mealmap.Api.DataTransfer
 {
     public record DishDTO
     {

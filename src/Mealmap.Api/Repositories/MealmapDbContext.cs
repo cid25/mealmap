@@ -1,5 +1,7 @@
-﻿using Mealmap.Model;
+﻿using System.ComponentModel;
+using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace Mealmap.Api.Repositories
 {
@@ -8,6 +10,18 @@ namespace Mealmap.Api.Repositories
         public MealmapDbContext(DbContextOptions<MealmapDbContext> options)
             : base(options)
         {
+        }
+        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder
+                .Entity<Meal>()
+                .Property(e => e.Date)
+                .HasColumnType("date")
+                .HasConversion(
+                    v => v.ToString("yyyy-MM-dd"),
+                    v => DateOnly.Parse(v)
+                );
         }
 
         public DbSet<Meal> Meals { get; set; }
