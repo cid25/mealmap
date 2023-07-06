@@ -1,10 +1,8 @@
-﻿using Mealmap.Model;
+﻿using FluentAssertions;
 using Mealmap.Api.Repositories;
+using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace Mealmap.Api.IntegrationTests
 {
@@ -31,8 +29,9 @@ namespace Mealmap.Api.IntegrationTests
 
         private void seedData(MealmapDbContext dbContext)
         {
-            dbContext.Meals.Add(new Meal() { Id = new Guid("00000000-0000-0000-0000-000000000001") } );
-            dbContext.Meals.Add(new Meal() { Id = new Guid("00000000-0000-0000-0000-000000000010") });
+            var dish = new Dish("Sailors Surprise") { Id = new Guid("00000000-0000-0000-0000-000000000001") };
+            dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000001"), Date = new DateOnly(2020,1,1), Dish = dish } );
+            dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000010"), Date = new DateOnly(2020, 1, 2), Dish = dish });
             dbContext.SaveChanges();
         }
 
@@ -48,7 +47,7 @@ namespace Mealmap.Api.IntegrationTests
         }
 
         [Fact]
-        public void GetById_WhenIdNonExisting_ReturnsNull()
+        public void GetById_WhenMealWithIdNonExisting_ReturnsNull()
         {
             const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
             var result = _repository.GetById(new Guid(nonExistingGuid));
@@ -57,9 +56,9 @@ namespace Mealmap.Api.IntegrationTests
         }
 
         [Fact]
-        public void GetById_WhenIdExisting_ReturnsMeal()
+        public void GetById_WhenMealWithIdExists_ReturnsMeal()
         {
-            const string existingGuid = "00000000-0000-0000-0000-000000000001";
+            const string existingGuid = "10000000-0000-0000-0000-000000000001";
             var result = _repository.GetById(new Guid(existingGuid));
 
             result.Should().NotBeNull();
@@ -68,8 +67,9 @@ namespace Mealmap.Api.IntegrationTests
         [Fact]
         public void Create_WhenMealValid_CreatesEntry()
         {
+            var dish = _dbContext.Dishes.First();
             var guid = Guid.NewGuid();
-            Meal meal = new() { Id = guid };
+            Meal meal = new() { Id = guid, Date = new DateOnly(2020,12,31), Dish = dish};
 
             _repository.Create(meal);
 

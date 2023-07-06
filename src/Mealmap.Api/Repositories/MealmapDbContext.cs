@@ -17,8 +17,8 @@ namespace Mealmap.Api.Repositories
                 .Property(e => e.Date)
                 .HasColumnType("date")
                 .HasConversion(
-                    v => v.ToString("yyyy-MM-dd"),
-                    v => DateOnly.Parse(v)
+                    v => v.ToDateTime(TimeOnly.MinValue),
+                    v => DateOnly.FromDateTime(v)
                 );
         }
 
