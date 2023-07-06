@@ -105,5 +105,15 @@ namespace Mealmap.Api.UnitTests
 
             result.Result.Should().BeOfType<BadRequestResult>();
         }
+
+        [Fact]
+        public void PostMeal_WhenMealHasEmptyId_ReturnsBadRequest()
+        {
+            MealDTO mealDto = new() { Id = Guid.Empty };
+
+            var result = _controller.PostMeal(mealDto);
+
+            result.Result.Should().BeOfType<BadRequestResult>();
+        }
     }
 }
