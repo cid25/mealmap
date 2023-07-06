@@ -22,6 +22,7 @@ public class MealsController : ControllerBase
 
     [HttpGet(Name = nameof(GetMeals))]
     [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult<IEnumerable<MealDTO>> GetMeals()
     {
         var meals = _mealRepository.GetAll();
@@ -33,6 +34,8 @@ public class MealsController : ControllerBase
 
     [HttpGet("{id}", Name = nameof(GetMeal))]
     [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<MealDTO> GetMeal([FromRoute] Guid id)
     {
         Meal? meal = _mealRepository.GetById(id);
@@ -46,6 +49,8 @@ public class MealsController : ControllerBase
     [HttpPost(Name = nameof(PostMeal))]
     [Consumes("application/json")]
     [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public ActionResult<MealDTO> PostMeal([FromBody] MealDTO mealDto)
     {
         if (mealDto.Id != null)

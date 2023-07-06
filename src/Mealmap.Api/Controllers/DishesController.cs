@@ -20,6 +20,7 @@ namespace Mealmap.Api.Controllers
 
         [HttpGet(Name = nameof(GetDishes))]
         [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<DishDTO>> GetDishes()
         {
             var dishes = _repository.GetAll();
@@ -30,6 +31,8 @@ namespace Mealmap.Api.Controllers
 
         [HttpGet("{id}", Name = nameof(GetDish))]
         [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<DishDTO> GetDish([FromRoute] Guid id)
         {
             var dish = _repository.GetById(id);
@@ -43,6 +46,8 @@ namespace Mealmap.Api.Controllers
         [HttpPost(Name = nameof(PostDish))]
         [Consumes("application/json")]
         [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<DishDTO> PostDish([FromBody] DishDTO dishDTO)
         {
             if (dishDTO.Id != null || String.IsNullOrWhiteSpace(dishDTO.Name))
