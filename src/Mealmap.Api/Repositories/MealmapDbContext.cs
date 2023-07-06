@@ -1,7 +1,5 @@
-﻿using System.ComponentModel;
-using Mealmap.Model;
+﻿using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 namespace Mealmap.Api.Repositories
 {

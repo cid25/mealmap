@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Mealmap.Api.DataTransfer;
+﻿using Mealmap.Api.DataTransfer;
 using Mealmap.Model;
-using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace Mealmap.Api.Controllers;
