@@ -26,7 +26,7 @@ public class MealsController : ControllerBase
     public ActionResult<IEnumerable<MealDTO>> GetMeals()
     {
         var meals = _mealRepository.GetAll();
-        var mealDTOs = _mapper.Map(meals);
+        var mealDTOs = _mapper.MapFromEntities(meals);
 
         return mealDTOs;
     }
@@ -43,7 +43,7 @@ public class MealsController : ControllerBase
         if (meal == null)
             return NotFound();
 
-        return _mapper.Map(meal);
+        return _mapper.MapFromEntity(meal);
     }
 
     [HttpPost(Name = nameof(PostMeal))]
@@ -57,12 +57,12 @@ public class MealsController : ControllerBase
             return BadRequest();
 
         mealDto = mealDto with { Id = Guid.NewGuid() };
-        var meal = _mapper.Map(mealDto);
+        var meal = _mapper.MapFromDTO(mealDto);
 
         _mealRepository.Create(meal);
 
-        var mealCreated = _mapper.Map(meal);
+        var mealCreated = _mapper.MapFromEntity(meal);
 
-        return mealCreated;
+        return CreatedAtAction(nameof(GetMeal), new { id = mealCreated.Id }, mealCreated);
     }
 }

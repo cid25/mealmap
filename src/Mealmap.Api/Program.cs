@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IMealRepository, SqlMealRepository>();
 builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
-builder.Services.AddAutoMapper(typeof(MealmapMapperProfile));
+builder.Services.AddAutoMapper(typeof(MapperProfile));
 builder.Services.AddScoped<MealMapper>();
 builder.Services.AddDbContext<MealmapDbContext>(options
     => options.UseSqlServer(

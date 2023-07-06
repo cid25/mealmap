@@ -15,7 +15,7 @@ namespace Mealmap.Api.UnitTests
         public DishesControllerTests()
         {
             _repository = new FakeDishRepository();
-            var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MealmapMapperProfile>());
+            var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>());
             _controller = new DishesController(_repository, mapperConfig.CreateMapper());
 
             const string someGuid = "00000000-0000-0000-0000-000000000001";
@@ -58,8 +58,10 @@ namespace Mealmap.Api.UnitTests
 
             var result = _controller.PostDish(dish);
 
-            result.Value.Should().BeOfType<DishDTO>();
-            result.Value!.Id.Should().NotBeNull().And.NotBeEmpty();
+            result.Result.Should().BeOfType<CreatedAtActionResult>();
+            ((CreatedAtActionResult)result.Result!).Value.Should().BeOfType<DishDTO>();
+            var value = (DishDTO)((CreatedAtActionResult)result.Result!).Value!;
+            value.Id.Should().NotBeNull().And.NotBeEmpty();
         }
 
         [Fact]

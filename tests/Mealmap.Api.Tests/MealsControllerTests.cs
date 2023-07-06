@@ -22,7 +22,7 @@ namespace Mealmap.Api.UnitTests
                 _mealRepository,
                 _dishRepository,
                 new MealMapper(
-                    new MapperConfiguration(cfg => cfg.AddProfile<MealmapMapperProfile>()).CreateMapper()
+                    new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper()
                     , _dishRepository));
 
             fakeData(_mealRepository, _dishRepository);
@@ -79,9 +79,11 @@ namespace Mealmap.Api.UnitTests
             MealDTO mealDto = new() { Date = new DateOnly(2020, 1, 2), Dish = dishId };
 
             var result = _controller.PostMeal(mealDto);
-
-            result.Value.Should().BeOfType<MealDTO>();
-            result.Value!.Id.Should().NotBeNull().And.NotBeEmpty();
+            
+            result.Result.Should().BeOfType<CreatedAtActionResult>();
+            ((CreatedAtActionResult)result.Result!).Value.Should().BeOfType<MealDTO>();
+            var value = (MealDTO)((CreatedAtActionResult)result.Result!).Value!;
+            value.Id.Should().NotBeNull().And.NotBeEmpty();
         }
 
         [Fact]

@@ -14,7 +14,7 @@ namespace Mealmap.Api.DataTransfer
             _dishRepository = dishRepository;
         }
 
-        public Meal Map(MealDTO dto)
+        public Meal MapFromDTO(MealDTO dto)
         {
             var meal = _mapper.Map<Meal>(dto);
 
@@ -24,12 +24,12 @@ namespace Mealmap.Api.DataTransfer
             return meal;
         }
 
-        public MealDTO Map(Meal meal)
+        public MealDTO MapFromEntity(Meal meal)
         {
             return _mapper.Map<MealDTO>(meal);
         }
 
-        public List<MealDTO> Map(IEnumerable<Meal> meals)
+        public List<MealDTO> MapFromEntities(IEnumerable<Meal> meals)
         {
             return _mapper.Map<IEnumerable<Meal>, List<MealDTO>>(meals);
         }

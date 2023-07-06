@@ -60,7 +60,7 @@ namespace Mealmap.Api.Controllers
 
             var dishCreated = _mapper.Map<DishDTO>(dish);
 
-            return dishCreated;
+            return CreatedAtAction(nameof(GetDish), new { id = dishCreated.Id }, dishCreated );
         }
 
     }
