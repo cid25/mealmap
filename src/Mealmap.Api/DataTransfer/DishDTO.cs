@@ -6,6 +6,10 @@ namespace Mealmap.Api.DataTransfer
     {
         public Guid? Id { get; init; }
 
+        /// <summary>
+        /// The name of the dish.
+        /// </summary>
+        /// <example>Pineapple Pizza</example>
         [Required]
         public string Name { get; init; }
 

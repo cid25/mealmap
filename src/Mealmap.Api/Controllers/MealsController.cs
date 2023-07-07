@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Mealmap.Api.Controllers;
 
+/// <summary>
+/// 
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class MealsController : ControllerBase
@@ -20,6 +23,10 @@ public class MealsController : ControllerBase
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Lists meals.
+    /// </summary>
+    /// <response code="200">Meals Returned</response>
     [HttpGet(Name = nameof(GetMeals))]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -31,7 +38,12 @@ public class MealsController : ControllerBase
         return mealDTOs;
     }
 
-
+    /// <summary>
+    /// Retrieves a specific meal.
+    /// </summary>
+    /// <param name="id">The id of the meal.</param>
+    /// <response code="200">Meal Returned</response>
+    /// <response code="404">Meal Not Found</response>
     [HttpGet("{id}", Name = nameof(GetMeal))]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -46,18 +58,20 @@ public class MealsController : ControllerBase
         return _mapper.MapFromEntity(meal);
     }
 
+    /// <summary>
+    /// Creates a meal.
+    /// </summary>
+    /// <param name="mealDTO"></param>
+    /// <response code="201">Meal Created</response>
     [HttpPost(Name = nameof(PostMeal))]
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<MealDTO> PostMeal([FromBody] MealDTO mealDto)
+    public ActionResult<MealDTO> PostMeal([FromBody] MealDTO mealDTO)
     {
-        if (mealDto.Id != null)
-            return BadRequest();
-
-        mealDto = mealDto with { Id = Guid.NewGuid() };
-        var meal = _mapper.MapFromDTO(mealDto);
+        mealDTO = mealDTO with { Id = Guid.NewGuid() };
+        var meal = _mapper.MapFromDTO(mealDTO);
 
         _mealRepository.Create(meal);
 

@@ -76,14 +76,16 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void PostDish_WhenDishAlreadyHasId_ReturnsBadRequest()
+        public void PostDish_WhenDishAlreadyHasId_ReplacesId()
         {
             const string someDishName = "Sailors Surprise";
-            DishDTO dish = new(someDishName) { Id = Guid.NewGuid() };
+            var someGuid = Guid.NewGuid();
+            DishDTO dish = new(someDishName) { Id = someGuid };
 
             var result = _controller.PostDish(dish);
 
-            result.Result.Should().BeOfType<BadRequestResult>();
+            var value = (DishDTO)((CreatedAtActionResult)result.Result!).Value!;
+            value.Id.Should().NotBeNull().And.NotBeEmpty().And.NotBe(someGuid);
         }
 
         [Theory]

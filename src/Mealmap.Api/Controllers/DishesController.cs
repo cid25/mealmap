@@ -18,9 +18,13 @@ namespace Mealmap.Api.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Lists dishes.
+        /// </summary>
+        /// <response code="200">Dishes Returned</response>
         [HttpGet(Name = nameof(GetDishes))]
         [Produces("application/json")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<DishDTO>),StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<DishDTO>> GetDishes()
         {
             var dishes = _repository.GetAll();
@@ -29,9 +33,15 @@ namespace Mealmap.Api.Controllers
             return dishDTOs;
         }
 
+        /// <summary>
+        /// Retrieves a specific dish.
+        /// </summary>
+        /// <param name="id">The id of the dish.</param>
+        /// <response code="200">Dish Returned</response>
+        /// <response code="404">Dish Not Found</response>
         [HttpGet("{id}", Name = nameof(GetDish))]
         [Produces("application/json")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DishDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<DishDTO> GetDish([FromRoute] Guid id)
         {
@@ -43,14 +53,20 @@ namespace Mealmap.Api.Controllers
             return _mapper.Map<DishDTO>(dish);
         }
 
+        /// <summary>
+        /// Creates a dish.
+        /// </summary>
+        /// <param name="dishDTO"></param>
+        /// <response code="201">Dish Created</response>
+        /// <response code="400">Bad Request</response>
         [HttpPost(Name = nameof(PostDish))]
         [Consumes("application/json")]
         [Produces("application/json")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(DishDTO), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<DishDTO> PostDish([FromBody] DishDTO dishDTO)
         {
-            if (dishDTO.Id != null || String.IsNullOrWhiteSpace(dishDTO.Name))
+            if (String.IsNullOrWhiteSpace(dishDTO.Name))
                 return BadRequest();
 
             dishDTO = dishDTO with { Id = Guid.NewGuid() };

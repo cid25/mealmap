@@ -98,24 +98,15 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void PostMeal_WhenMealHasId_ReturnsBadRequest()
+        public void PostMeal_WhenMealHasId_ReplacesId()
         {
-            Guid anyGuid = Guid.NewGuid();
-            MealDTO mealDto = new() { Id = anyGuid };
+            Guid someGuid = Guid.NewGuid();
+            MealDTO mealDto = new() { Id = someGuid };
 
             var result = _controller.PostMeal(mealDto);
 
-            result.Result.Should().BeOfType<BadRequestResult>();
-        }
-
-        [Fact]
-        public void PostMeal_WhenMealHasEmptyId_ReturnsBadRequest()
-        {
-            MealDTO mealDto = new() { Id = Guid.Empty };
-
-            var result = _controller.PostMeal(mealDto);
-
-            result.Result.Should().BeOfType<BadRequestResult>();
+            var value = (MealDTO)((CreatedAtActionResult)result.Result!).Value!;
+            value.Id.Should().NotBeNull().And.NotBeEmpty().And.NotBe(someGuid);
         }
     }
 }
