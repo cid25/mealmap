@@ -4,21 +4,26 @@ using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransfer;
 using Mealmap.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Mealmap.Api.UnitTests
 {
     public class MealsControllerTests
     {
+        private readonly ILogger<MealsController> _logger;
         private readonly FakeMealRepository _mealRepository;
         private readonly FakeDishRepository _dishRepository;
         private readonly MealsController _controller;
 
         public MealsControllerTests()
         {
+            _logger = (new Mock<ILogger<MealsController>>().Object);
             _dishRepository = new FakeDishRepository();
             _mealRepository = new FakeMealRepository();         
 
             _controller = new MealsController(
+                _logger,
                 _mealRepository,
                 _dishRepository,
                 new MealMapper(

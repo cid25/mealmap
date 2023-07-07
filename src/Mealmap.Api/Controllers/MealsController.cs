@@ -12,12 +12,18 @@ namespace Mealmap.Api.Controllers;
 [Route("api/[controller]")]
 public class MealsController : ControllerBase
 {
+    private readonly ILogger<MealsController> _logger;
     private readonly IMealRepository _mealRepository;
     private readonly IDishRepository _dishRepository;
     private readonly MealMapper _mapper;
 
-    public MealsController(IMealRepository mealRepository, IDishRepository dishRepository, MealMapper mapper)
+    public MealsController(
+        ILogger<MealsController> logger,
+        IMealRepository mealRepository, 
+        IDishRepository dishRepository, 
+        MealMapper mapper)
     {
+        _logger = logger;
         _mealRepository = mealRepository;
         _dishRepository = dishRepository;
         _mapper = mapper;
@@ -51,9 +57,12 @@ public class MealsController : ControllerBase
     public ActionResult<MealDTO> GetMeal([FromRoute] Guid id)
     {
         Meal? meal = _mealRepository.GetById(id);
-               
+
         if (meal == null)
+        {
+            _logger.LogInformation("Attempt to retrieve non-existing meal");
             return NotFound();
+        }
 
         return _mapper.MapFromEntity(meal);
     }
@@ -74,6 +83,7 @@ public class MealsController : ControllerBase
         var meal = _mapper.MapFromDTO(mealDTO);
 
         _mealRepository.Create(meal);
+        _logger.LogInformation("Meal with id {guid} created", meal.Id);
 
         var mealCreated = _mapper.MapFromEntity(meal);
 

@@ -9,11 +9,13 @@ namespace Mealmap.Api.Controllers
     [ApiController]
     public class DishesController : ControllerBase
     {
+        private ILogger<DishesController> _logger;
         private readonly IDishRepository _repository;
         private readonly IMapper _mapper;
 
-        public DishesController(IDishRepository repository, IMapper mapper)
+        public DishesController(ILogger<DishesController> logger, IDishRepository repository, IMapper mapper)
         {
+            _logger = logger;
             _repository = repository;
             _mapper = mapper;
         }
@@ -48,7 +50,10 @@ namespace Mealmap.Api.Controllers
             var dish = _repository.GetById(id);
 
             if (dish == null)
+            {
+                _logger.LogInformation("Attempt to retrieve non-existing dish");
                 return NotFound();
+            }
 
             return _mapper.Map<DishDTO>(dish);
         }
@@ -67,12 +72,16 @@ namespace Mealmap.Api.Controllers
         public ActionResult<DishDTO> PostDish([FromBody] DishDTO dishDTO)
         {
             if (String.IsNullOrWhiteSpace(dishDTO.Name))
+            {
+                _logger.LogInformation("Attempt to create dish with empty name");
                 return BadRequest();
+            }
 
             dishDTO = dishDTO with { Id = Guid.NewGuid() };
             var dish = _mapper.Map<Dish>(dishDTO);
 
             _repository.Create(dish);
+            _logger.LogInformation("Dish with id {guid} created", dish.Id);
 
             var dishCreated = _mapper.Map<DishDTO>(dish);
 

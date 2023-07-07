@@ -4,19 +4,24 @@ using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransfer;
 using Mealmap.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Mealmap.Api.UnitTests
 {
     public class DishesControllerTests
     {
+        ILogger<DishesController> _logger;
         FakeDishRepository _repository;
         DishesController _controller;
         
         public DishesControllerTests()
         {
+            _logger = (new Mock<ILogger<DishesController>>()).Object;
             _repository = new FakeDishRepository();
-            var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>());
-            _controller = new DishesController(_repository, mapperConfig.CreateMapper());
+            var mapper = (new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>())).CreateMapper();
+
+            _controller = new DishesController(_logger, _repository, mapper);
 
             const string someGuid = "00000000-0000-0000-0000-000000000001";
             _repository.Create(new Dish("Krabby Patty") { Id = new Guid(someGuid)} );
