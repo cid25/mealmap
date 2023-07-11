@@ -1,7 +1,7 @@
 ﻿using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mealmap.Api.Repositories
+namespace Mealmap.Api.DataAccess
 {
     public class MealmapDbContext : DbContext
     {

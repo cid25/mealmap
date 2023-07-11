@@ -1,6 +1,6 @@
 ﻿using Mealmap.Model;
 
-namespace Mealmap.Api.Repositories
+namespace Mealmap.Api.DataAccess
 {
     public class SqlDishRepository : IDishRepository
     {

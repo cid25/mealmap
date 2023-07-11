@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Mealmap.Api.Repositories;
+using Mealmap.Api.DataAccess;
 using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
