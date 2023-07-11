@@ -9,8 +9,9 @@ namespace Mealmap.Model
         public Guid Id { get; init; }
 
         [Required]
+        [MaxLength(100)]
         public string Name { get; set; }
-
+                
         public string? Description { get; set; }
 
         public Dish(string name)

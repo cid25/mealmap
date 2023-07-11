@@ -11,6 +11,7 @@ namespace Mealmap.Api.DataTransfer
         /// </summary>
         /// <example>Pineapple Pizza</example>
         [Required]
+        [MaxLength(100)]
         public string Name { get; init; }
 
         /// <summary>
