@@ -41,7 +41,7 @@ namespace Mealmap.Api.UnitTests
             Meal yesterdaysMeal = new Meal()
             {
                 Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                Date = new DateOnly(2020, 1, 1),
+                DiningDate = new DateOnly(2020, 1, 1),
                 Dish = krabbyPatty
             };
             mealRepository.Create(yesterdaysMeal);
@@ -81,7 +81,7 @@ namespace Mealmap.Api.UnitTests
         public void PostMeal_WhenMealIsValid_ReturnsMealWithId()
         {
             var dishId = _dishRepository.ElementAt(0).Key;
-            MealDTO mealDto = new() { Date = new DateOnly(2020, 1, 2), DishId = dishId };
+            MealDTO mealDto = new() { DiningDate = new DateOnly(2020, 1, 2), DishId = dishId };
 
             var result = _controller.PostMeal(mealDto);
             
@@ -95,7 +95,7 @@ namespace Mealmap.Api.UnitTests
         public void PostMeal_WhenMealIsValid_StoresMeal()
         {
             var dishId = _dishRepository.ElementAt(0).Key;
-            MealDTO mealDto = new() { Date = new DateOnly(2020,1,2), DishId = dishId };
+            MealDTO mealDto = new() { DiningDate = new DateOnly(2020,1,2), DishId = dishId };
 
             _ = _controller.PostMeal(mealDto);
 

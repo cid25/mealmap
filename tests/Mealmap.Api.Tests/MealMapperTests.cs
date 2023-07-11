@@ -27,7 +27,7 @@ namespace Mealmap.Api.UnitTests
             var mealDate = DateOnly.FromDateTime(DateTime.Now);
             var dto = new MealDTO()
             {
-                Date = mealDate,
+                DiningDate = mealDate,
                 DishId = new Guid("00000000-0000-0000-0000-000000000001"),
                 Id = mealGuid
             };
@@ -35,7 +35,7 @@ namespace Mealmap.Api.UnitTests
             var meal = _mealMapper.MapFromDTO(dto);
 
             meal.Id.Should().Be(mealGuid);
-            meal.Date.Should().Be(mealDate);
+            meal.DiningDate.Should().Be(mealDate);
             meal.Dish.Should().NotBeNull();
         }
     }

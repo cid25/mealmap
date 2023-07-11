@@ -7,7 +7,7 @@ namespace Mealmap.Model
     {
         public Guid Id { get; init; }
 
-        public DateOnly Date { get; set; }
+        public DateOnly DiningDate { get; set; }
 
         public Dish? Dish { get; set; }
     }

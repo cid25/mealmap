@@ -30,8 +30,8 @@ namespace Mealmap.Api.IntegrationTests
         private void seedData(MealmapDbContext dbContext)
         {
             var dish = new Dish("Sailors Surprise") { Id = new Guid("00000000-0000-0000-0000-000000000001") };
-            dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000001"), Date = new DateOnly(2020,1,1), Dish = dish } );
-            dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000010"), Date = new DateOnly(2020, 1, 2), Dish = dish });
+            dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000001"), DiningDate = new DateOnly(2020,1,1), Dish = dish } );
+            dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000010"), DiningDate = new DateOnly(2020, 1, 2), Dish = dish });
             dbContext.SaveChanges();
         }
 
@@ -69,7 +69,7 @@ namespace Mealmap.Api.IntegrationTests
         {
             var dish = _dbContext.Dishes.First();
             var guid = Guid.NewGuid();
-            Meal meal = new() { Id = guid, Date = new DateOnly(2020,12,31), Dish = dish};
+            Meal meal = new() { Id = guid, DiningDate = new DateOnly(2020,12,31), Dish = dish};
 
             _repository.Create(meal);
 

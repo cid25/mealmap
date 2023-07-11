@@ -14,7 +14,7 @@ namespace Mealmap.Api.DataAccess
         {
             modelBuilder
                 .Entity<Meal>()
-                .Property(e => e.Date)
+                .Property(e => e.DiningDate)
                 .HasColumnType("date")
                 .HasConversion(
                     v => v.ToDateTime(TimeOnly.MinValue),
