@@ -24,9 +24,12 @@ namespace Mealmap.Api.Migrations
 
             modelBuilder.Entity("Mealmap.Model.Dish", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -39,13 +42,30 @@ namespace Mealmap.Api.Migrations
 
             modelBuilder.Entity("Mealmap.Model.Meal", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DiningDate")
+                        .HasColumnType("date");
+
+                    b.Property<Guid?>("DishId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DishId");
+
                     b.ToTable("meals", "mealmap");
+                });
+
+            modelBuilder.Entity("Mealmap.Model.Meal", b =>
+                {
+                    b.HasOne("Mealmap.Model.Dish", "Dish")
+                        .WithMany()
+                        .HasForeignKey("DishId");
+
+                    b.Navigation("Dish");
                 });
 #pragma warning restore 612, 618
         }

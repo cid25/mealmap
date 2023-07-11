@@ -13,6 +13,12 @@ namespace Mealmap.Api.DataTransfer
         [Required]
         public string Name { get; init; }
 
+        /// <summary>
+        /// A short description of the dish.
+        /// </summary>
+        /// <example>An italian-style Pizza with Pineapple and Mozarella.</example>
+        public string? Description { get; init; }
+
         public DishDTO(string name)
         {
             Name = name;
