@@ -28,7 +28,7 @@ namespace Mealmap.Api.UnitTests
             var dto = new MealDTO()
             {
                 Date = mealDate,
-                Dish = new Guid("00000000-0000-0000-0000-000000000001"),
+                DishId = new Guid("00000000-0000-0000-0000-000000000001"),
                 Id = mealGuid
             };
 

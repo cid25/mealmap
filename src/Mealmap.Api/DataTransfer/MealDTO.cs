@@ -16,6 +16,6 @@ namespace Mealmap.Api.DataTransfer
         /// <summary>
         /// The dish served at the meal.
         /// </summary>
-        public Guid? Dish { get; init; }
+        public Guid? DishId { get; init; }
     }
 }

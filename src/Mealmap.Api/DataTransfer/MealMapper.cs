@@ -18,8 +18,8 @@ namespace Mealmap.Api.DataTransfer
         {
             var meal = _mapper.Map<Meal>(dto);
 
-            if (dto.Dish != null && dto.Dish != Guid.Empty)
-                meal.Dish = _dishRepository.GetById((Guid)dto.Dish);
+            if (dto.DishId != null && dto.DishId != Guid.Empty)
+                meal.Dish = _dishRepository.GetById((Guid)dto.DishId);
 
             return meal;
         }

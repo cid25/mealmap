@@ -11,9 +11,9 @@ namespace Mealmap.Api.DataTransfer
             CreateMap<Dish, Guid>();
             CreateMap<MealDTO, Meal>()
                 .ForMember(d => d.Dish, opt => opt.Ignore())
-                .ForSourceMember(s => s.Dish, opt => opt.DoNotValidate());
+                .ForSourceMember(s => s.DishId, opt => opt.DoNotValidate());
             CreateMap<Meal, MealDTO>()
-                .ForMember(d => d.Dish, opt => opt.MapFrom(src => src.Dish!.Id));
+                .ForMember(d => d.DishId, opt => opt.MapFrom(src => src.Dish!.Id));
             CreateMap<Dish, DishDTO>()
                 .ReverseMap();
         }
