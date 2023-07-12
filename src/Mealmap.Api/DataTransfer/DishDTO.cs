@@ -4,6 +4,10 @@ namespace Mealmap.Api.DataTransfer
 {
     public record DishDTO
     {
+        /// <summary>
+        /// The identity of the dish.
+        /// </summary>
+        /// <example>3fa85f64-5717-4562-b3fc-2c963f66afa6</example>
         public Guid? Id { get; init; }
 
         /// <summary>
@@ -19,6 +23,12 @@ namespace Mealmap.Api.DataTransfer
         /// </summary>
         /// <example>An italian-style Pizza with Pineapple and Mozarella.</example>
         public string? Description { get; init; }
+
+        /// <summary>
+        /// A short description of the dish.
+        /// </summary>
+        /// <example>https://host.com/api/dishes/3fa85f64-5717-4562-b3fc-2c963f66afa6/image</example>
+        public Uri? ImageUrl { get; set; }
 
         public DishDTO(string name)
         {

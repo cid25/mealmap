@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using FluentAssertions;
+using Mealmap.Api.Formatters;
 using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransfer;
 using Mealmap.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -14,17 +16,32 @@ namespace Mealmap.Api.UnitTests
         ILogger<DishesController> _logger;
         FakeDishRepository _repository;
         DishesController _controller;
-        
+
         public DishesControllerTests()
         {
             _logger = (new Mock<ILogger<DishesController>>()).Object;
             _repository = new FakeDishRepository();
-            var mapper = (new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>())).CreateMapper();
 
-            _controller = new DishesController(_logger, _repository, mapper);
+            _controller = new DishesController(
+                _logger, 
+                _repository,
+                new DishMapper(
+                    new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper()));
 
             const string someGuid = "00000000-0000-0000-0000-000000000001";
-            _repository.Create(new Dish("Krabby Patty") { Id = new Guid(someGuid)} );
+            var dishWithoutImage = new Dish("Krabby Patty") { Id = new Guid(someGuid) };
+            _repository.Create(dishWithoutImage);
+
+            const string anotherGuid = "00000000-0000-0000-0000-000000000002";
+            var dishWithImage = new Dish("Tuna Supreme") { 
+                Id = new Guid(anotherGuid),
+                Image = new DishImage(content: new byte[1], contentType: "image/jpeg")
+            };
+            _repository.Create(dishWithImage);
+
+            var imageDummy = Mock.Of<IFormFile>(d =>
+     d.Length == 0 &&
+     d.ContentType == "image/jpeg");
         }
 
         [Fact]
@@ -37,20 +54,21 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void GetDish_WhenDishWithIdExisting_ReturnsDish()
+        public void GetDish_WhenDishExists_ReturnsDish()
         {
-            const string existingGuid = "00000000-0000-0000-0000-000000000001";
-            var result = _controller.GetDish(new Guid(existingGuid));
+            var existingId = _repository.ElementAt(0).Key;
+
+            var result = _controller.GetDish(existingId);
 
             result.Should().BeOfType<ActionResult<DishDTO>>();
-            result.Value!.Id.Should().Be(existingGuid);
+            result.Value!.Id.Should().Be(existingId);
         }
-        
+
         [Fact]
-        public void GetDish_WhenDishWithIdNotExisting_ReturnsNotFound()
+        public void GetDish_WhenDishWithIdDoesntExist_ReturnsNotFound()
         {
-            const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
-            var result = _controller.GetDish(new Guid(nonExistingGuid));
+            const string nonExistingId = "99999999-9999-9999-9999-999999999999";
+            var result = _controller.GetDish(new Guid(nonExistingId));
 
             result.Result.Should().BeOfType<NotFoundResult>();
         }
@@ -97,13 +115,78 @@ namespace Mealmap.Api.UnitTests
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void PostDish_WhenGivenDishWithEmptyName_ReturnsBadRequest(string name)
+        public void PostDish_WhenDishHasEmptyName_ReturnsBadRequest(string name)
         {
             DishDTO dish = new(name: name);
 
             var result = _controller.PostDish(dish);
 
             result.Result.Should().BeOfType<BadRequestResult>();
+        }
+
+        [Theory]
+        [InlineData("image/jpeg")]
+        [InlineData("image/png")]
+        public void PutDishImage_WhenImageIsProper_ReturnsStatusCodeCreated(string contentType)
+        {
+            var dishId = _repository.ElementAt(0).Key;
+            var imageDummy = new Image(
+                content: new byte[1],
+                contentType: contentType
+            );
+
+            var result = _controller.PutDishImage(dishId, imageDummy);
+
+            result.Should().BeOfType<StatusCodeResult>();
+            ((StatusCodeResult)result).StatusCode.Should().Be(201);
+        }
+
+        [Fact]
+        public void PutDishImage_WhenImageIsProper_UpdatesDish()
+        {
+            var idOfDishWithoutImage = _repository.ElementAt(0).Key;
+            var imageDummy = new Image(
+                content: new byte[1],
+                contentType: "image/jpeg"
+            );
+
+            _controller.PutDishImage(idOfDishWithoutImage, imageDummy);
+
+            Dish? result;
+            _repository.TryGetValue(idOfDishWithoutImage, out result);
+            if (result == null)
+                throw new ArgumentNullException(nameof(result));
+            result.Image.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void GetDishImage_WhenImageExists_ReturnsFileContentResult()
+        {
+            Guid guidOfDishWithImage = new Guid("00000000-0000-0000-0000-000000000002");
+
+            var result = _controller.GetDishImage(guidOfDishWithImage);
+
+            result.Should().BeOfType<FileContentResult>();
+        }
+
+        [Fact]
+        public void GetDishImage_WhenImageDoesntExist_ReturnsNoContent()
+        {
+            Guid guidOfDishWithoutImage = new Guid("00000000-0000-0000-0000-000000000001");
+
+            var result = _controller.GetDishImage(guidOfDishWithoutImage);
+
+            result.Should().BeOfType<NoContentResult>();
+        }
+
+        [Fact]
+        public void GetDishImage_WhenDishDoesntExist_ReturnsNotFound()
+        {
+            Guid nonExistingDishGuid = new Guid("99999999-9999-9999-9999-999999999999");
+
+            var result = _controller.GetDishImage(nonExistingDishGuid);
+
+            result.Should().BeOfType<NotFoundResult>();
         }
     }
 }

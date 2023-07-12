@@ -14,6 +14,8 @@ namespace Mealmap.Model
                 
         public string? Description { get; set; }
 
+        public DishImage? Image { get; set; }
+
         public Dish(string name)
         {
             Name = name;

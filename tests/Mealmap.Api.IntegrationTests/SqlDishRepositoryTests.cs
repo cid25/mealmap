@@ -75,5 +75,22 @@ namespace Mealmap.Api.IntegrationTests
 
             _dbContext.Dishes.First(x => x.Id == someGuid).Should().NotBeNull();
         }
+
+        [Fact] 
+        public void Update_WhenGivenDisconnectedDish_UpdatesEntry()
+        {
+            const string someDishName = "Salty Sea Dog";
+            Guid guid = Guid.NewGuid();
+            Dish initialDish = new(someDishName) { Id = guid };
+            _dbContext.Dishes.Add(initialDish);
+            _dbContext.SaveChanges();
+            _dbContext.Entry(initialDish).State = EntityState.Detached;
+
+            const string anotherDishName = "Tuna Supreme";
+            var newDisconnectedDish = new Dish(anotherDishName) { Id = guid };
+            _repository.Update(newDisconnectedDish);
+
+            _dbContext.Dishes.First(d => d.Id == guid).Name.Should().Be(anotherDishName);
+        }
     }
 }

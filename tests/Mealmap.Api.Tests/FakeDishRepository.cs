@@ -22,5 +22,13 @@ namespace Mealmap.Api.UnitTests
         {
             Add((Guid)dish.Id, dish);
         }
+
+        public void Update(Dish dish)
+        {
+            if(!Remove(dish.Id))
+                throw new InvalidOperationException();
+
+            Add(dish.Id, dish);
+        }
     }
 }

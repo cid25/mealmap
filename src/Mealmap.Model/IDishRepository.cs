@@ -7,5 +7,7 @@
         public Dish? GetById(Guid id);
 
         public void Create(Dish dish);
+
+        public void Update(Dish dish);
     }
 }

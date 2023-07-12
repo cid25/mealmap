@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using Mealmap.Api.DataTransfer;
+﻿using Mealmap.Api.DataTransfer;
+using Mealmap.Api.Formatters;
 using Mealmap.Model;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +11,12 @@ namespace Mealmap.Api.Controllers
     {
         private ILogger<DishesController> _logger;
         private readonly IDishRepository _repository;
-        private readonly IMapper _mapper;
+        private readonly DishMapper _mapper;
 
-        public DishesController(ILogger<DishesController> logger, IDishRepository repository, IMapper mapper)
+        public DishesController(
+            ILogger<DishesController> logger, 
+            IDishRepository repository, 
+            DishMapper mapper)
         {
             _logger = logger;
             _repository = repository;
@@ -26,11 +29,11 @@ namespace Mealmap.Api.Controllers
         /// <response code="200">Dishes Returned</response>
         [HttpGet(Name = nameof(GetDishes))]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<DishDTO>),StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<DishDTO>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<DishDTO>> GetDishes()
         {
             var dishes = _repository.GetAll();
-            var dishDTOs = _mapper.Map<IEnumerable<Dish>, List<DishDTO>>(dishes);
+            var dishDTOs = _mapper.MapFromEntities(dishes);
 
             return dishDTOs;
         }
@@ -55,7 +58,13 @@ namespace Mealmap.Api.Controllers
                 return NotFound();
             }
 
-            return _mapper.Map<DishDTO>(dish);
+            var dto = _mapper.MapFromEntity(dish);
+            
+            var imageLink = ActionLink(action: nameof(GetDishImage), values: new { id = id });
+            if (imageLink != null)
+                dto.ImageUrl = new Uri(imageLink);
+
+            return dto;
         }
 
         /// <summary>
@@ -78,15 +87,84 @@ namespace Mealmap.Api.Controllers
             }
 
             dishDTO = dishDTO with { Id = Guid.NewGuid() };
-            var dish = _mapper.Map<Dish>(dishDTO);
+            var dish = _mapper.MapFromDTO(dishDTO);
 
             _repository.Create(dish);
             _logger.LogInformation("Dish with id {guid} created", dish.Id);
 
-            var dishCreated = _mapper.Map<DishDTO>(dish);
+            var dishCreated = _mapper.MapFromEntity(dish);
 
-            return CreatedAtAction(nameof(GetDish), new { id = dishCreated.Id }, dishCreated );
+            return CreatedAtAction(nameof(GetDish), new { id = dishCreated.Id }, dishCreated);
         }
 
+        /// <summary>
+        /// Sets the image of a dish.
+        /// </summary>
+        /// <param name="id">The id of the dish to attach the image to.</param>
+        /// <param name="image">The image to attach.</param>
+        /// <response code="201">Image Set</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">Dish Not Found</response>
+        /// <response code="415">Image Type Not Supported</response>
+        [HttpPut("{id}/image", Name = nameof(PutDishImage))]
+        [Consumes("image/jpeg", "image/png")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status415UnsupportedMediaType)]
+        public ActionResult PutDishImage([FromRoute] Guid id, [FromBody] Image image)
+        {
+            var dish = _repository.GetById(id);
+            if (dish == null)
+                return NotFound();
+
+            dish.Image = new DishImage(content: image.Content, contentType: image.ContentType);
+            _repository.Update(dish);
+
+            var actionLink = ActionLink(action: nameof(GetDishImage), values: new { id = id });
+
+            if (actionLink != null)
+                HttpContext.Response.Headers.Location = actionLink;
+
+            return new StatusCodeResult(StatusCodes.Status201Created);
+        }
+
+        /// <summary>
+        /// Retrieves the image of a dish.
+        /// </summary>
+        /// <param name="id">The id of the dish to retrieve the image from.</param>
+        /// <response code="201">Image Set</response>
+        /// <response code="204">No Image</response>
+        /// <response code="404">Dish Not Found</response>
+        [HttpGet("{id}/image", Name = nameof(GetDishImage))]
+        [Produces("image/jpeg", "image/png")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        public ActionResult GetDishImage([FromRoute] Guid id)
+        {
+            var dish = _repository.GetById(id);
+
+            if (dish == null)
+                return NotFound();
+            if (dish.Image == null)
+                return NoContent();
+
+            return File(dish.Image.Content, dish.Image.ContentType);
+        }
+
+        private string? ActionLink(string action, object? values)
+        {
+            if (Url == null)
+                return null;
+            
+            return Url.ActionLink(
+                action: nameof(GetDishImage),
+                controller: null,
+                values: values,
+                protocol: HttpContext.Request.Scheme,
+                host: HttpContext.Request.Host.Value
+            );
+        }
     }
 }

@@ -1,9 +1,13 @@
 ﻿using System.Reflection;
 using Mealmap.Api.DataTransfer;
 using Mealmap.Api.DataAccess;
+using Mealmap.Api.Formatters;
 using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,11 +15,14 @@ builder.Services.AddScoped<IMealRepository, SqlMealRepository>();
 builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 builder.Services.AddScoped<MealMapper>();
+builder.Services.AddScoped<DishMapper>();
 builder.Services.AddDbContext<MealmapDbContext>(options
     => options.UseSqlServer(
         builder.Configuration.GetConnectionString("MealmapDb")));
 
-builder.Services.AddControllers()
+builder.Services.AddControllers(options =>
+    options.InputFormatters.Insert(0, new ImageInputFormatter())
+    )
     .ConfigureApiBehaviorOptions(options =>
         options.SuppressMapClientErrors = true
     );

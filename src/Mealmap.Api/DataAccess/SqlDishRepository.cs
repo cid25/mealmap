@@ -28,5 +28,11 @@ namespace Mealmap.Api.DataAccess
             _dbContext.Dishes.Add(dish);
             _dbContext.SaveChanges();
         }
+
+        public void Update(Dish dish)
+        {
+            _dbContext.Update(dish);
+            _dbContext.SaveChanges();
+        }
     }
 }
