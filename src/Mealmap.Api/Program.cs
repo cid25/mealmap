@@ -11,6 +11,13 @@ using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+builder.Services.AddScoped(x => {
+    var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+    var factory = x.GetRequiredService<IUrlHelperFactory>();
+    return factory.GetUrlHelper(actionContext!);
+});
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IMealRepository, SqlMealRepository>();
 builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
 builder.Services.AddAutoMapper(typeof(MapperProfile));

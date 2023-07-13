@@ -59,10 +59,6 @@ namespace Mealmap.Api.Controllers
             }
 
             var dto = _mapper.MapFromEntity(dish);
-            
-            var imageLink = ActionLink(action: nameof(GetDishImage), values: new { id = id });
-            if (imageLink != null)
-                dto.ImageUrl = new Uri(imageLink);
 
             return dto;
         }
@@ -159,7 +155,7 @@ namespace Mealmap.Api.Controllers
                 return null;
             
             return Url.ActionLink(
-                action: nameof(GetDishImage),
+                action: action,
                 controller: null,
                 values: values,
                 protocol: HttpContext.Request.Scheme,

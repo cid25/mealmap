@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using FluentAssertions;
-using Mealmap.Api.Formatters;
 using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransfer;
+using Mealmap.Api.Formatters;
 using Mealmap.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,10 +23,11 @@ namespace Mealmap.Api.UnitTests
             _repository = new FakeDishRepository();
 
             _controller = new DishesController(
-                _logger, 
+                _logger,
                 _repository,
                 new DishMapper(
-                    new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper()));
+                    new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper(),
+                    Mock.Of<IHttpContextAccessor>()));
 
             const string someGuid = "00000000-0000-0000-0000-000000000001";
             var dishWithoutImage = new Dish("Krabby Patty") { Id = new Guid(someGuid) };
@@ -38,10 +39,6 @@ namespace Mealmap.Api.UnitTests
                 Image = new DishImage(content: new byte[1], contentType: "image/jpeg")
             };
             _repository.Create(dishWithImage);
-
-            var imageDummy = Mock.Of<IFormFile>(d =>
-     d.Length == 0 &&
-     d.ContentType == "image/jpeg");
         }
 
         [Fact]
