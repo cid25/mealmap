@@ -1,22 +1,13 @@
 ﻿using System.Reflection;
-using Mealmap.Api.DataTransfer;
 using Mealmap.Api.DataAccess;
+using Mealmap.Api.DataTransfer;
 using Mealmap.Api.Formatters;
 using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-builder.Services.AddScoped(x => {
-    var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
-    var factory = x.GetRequiredService<IUrlHelperFactory>();
-    return factory.GetUrlHelper(actionContext!);
-});
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IMealRepository, SqlMealRepository>();
 builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
