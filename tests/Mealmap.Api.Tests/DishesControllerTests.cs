@@ -27,7 +27,10 @@ namespace Mealmap.Api.UnitTests
                 _repository,
                 new DishMapper(
                     new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper(),
-                    Mock.Of<IHttpContextAccessor>()));
+                    Mock.Of<IHttpContextAccessor>(accessor => 
+                        accessor.HttpContext == Mock.Of<HttpContext>(context =>
+                            context.Request == Mock.Of<HttpRequest>(request =>
+                                request.Scheme == "https" && request.Host == new HostString("test.com", 443))))));
 
             const string someGuid = "00000000-0000-0000-0000-000000000001";
             var dishWithoutImage = new Dish("Krabby Patty") { Id = new Guid(someGuid) };

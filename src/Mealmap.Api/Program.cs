@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Mealmap.Api;
 using Mealmap.Api.DataAccess;
 using Mealmap.Api.DataTransfer;
 using Mealmap.Api.Formatters;
@@ -7,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<HostingOptions>(
+    builder.Configuration.GetSection(HostingOptions.SectionName));
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IMealRepository, SqlMealRepository>();
@@ -33,7 +37,8 @@ builder.Services.AddSwaggerGen(options =>
             Title = "Mealmap API",
             Description = "An API for managing dishes and meals."
         });
-
+        
+        options.DocumentFilter<ServersDocumentFilter>();
         options.CustomSchemaIds(type => type.Name.Replace("DTO", string.Empty));
 
         var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
