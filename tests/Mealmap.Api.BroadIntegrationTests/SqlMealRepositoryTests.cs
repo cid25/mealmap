@@ -4,9 +4,10 @@ using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace Mealmap.Api.IntegrationTests
+namespace Mealmap.Api.BroadIntegrationTests
 {
     [Collection("InSequence")]
+    [Trait("Target", "Database")]
     public class SqlMealRepositoryTests
     {
         private readonly MealmapDbContext _dbContext;
