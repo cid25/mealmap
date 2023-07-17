@@ -5,13 +5,27 @@ namespace Mealmap.Model.Tests
     public class DishTests
     {
         [Fact]
-        public void AddIngredient_AddsIngredient()
+        public void AddIngredientToEmptySet_AddsIngredient()
         {
             Dish dish = new("Tuna Supreme");
 
             dish.AddIngredient(1, "Kilogram", "Sardine filets");
 
             dish.Ingredients.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public void AddIngredientToNonemptySet_AddsIngredient()
+        {
+            Dish dish = new("Tuna Supreme") { 
+                Ingredients = new List<Ingredient>() { 
+                    new Ingredient(100, "Mililiter", "Milk")
+                } 
+            };
+
+            dish.AddIngredient(1, "Kilogram", "Sardine filets");
+
+            dish.Ingredients.Should().HaveCount(2);
         }
 
         [Fact]

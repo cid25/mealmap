@@ -28,7 +28,9 @@ namespace Mealmap.Model
             Ingredient ingredient = new(quantity, unitOfMeasurementName, description);
 
             if (Ingredients is null)
-                Ingredients = new List<Ingredient>() { ingredient };
+                Ingredients = new List<Ingredient>();
+
+            Ingredients.Add(ingredient);
         }
 
         public void RemoveIngredient(decimal quantity, string unitOfMeasurementName, string description)
