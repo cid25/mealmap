@@ -24,7 +24,9 @@ namespace Mealmap.Model
                 new UnitOfMeasurement(UnitOfMeasurementCodes.Mililiter, "ml", "Volume"),
                 new UnitOfMeasurement(UnitOfMeasurementCodes.Piece, "pcs", "Quantity"),
                 new UnitOfMeasurement(UnitOfMeasurementCodes.Bag, "bag"),
-                new UnitOfMeasurement(UnitOfMeasurementCodes.Can, "can")
+                new UnitOfMeasurement(UnitOfMeasurementCodes.Can, "can"),
+                new UnitOfMeasurement(UnitOfMeasurementCodes.Slice, "slc"),
+                new UnitOfMeasurement(UnitOfMeasurementCodes.Pinch, "pnch"),
             };
         }
 
@@ -53,6 +55,11 @@ namespace Mealmap.Model
                 throw new ArgumentException($"UnitOfMeasurement must match an existing unit of measurement, but is {0}.", unitOfMeasurement);
             }
 
+        }
+
+        public string Stringify()
+        {
+            return Enum.GetName(typeof(UnitOfMeasurementCodes), UnitOfMeasurementCode)!;
         }
     }
 }

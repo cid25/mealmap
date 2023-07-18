@@ -30,8 +30,29 @@ namespace Mealmap.Api.BroadIntegrationTests
 
         private void seedData(MealmapDbContext dbContext)
         {
-            dbContext.Dishes.Add(new Dish("Krabby Patty") { Id = new Guid("00000000-0000-0000-0000-000000000001") } );
-            dbContext.Dishes.Add(new Dish("Sailors Surprise") { Id = new Guid("00000000-0000-0000-0000-000000000010") });
+            dbContext.Dishes.Add(new Dish("Krabby Patty") { 
+                Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                Description = "The fishiest burger in town.",
+                Servings = 2,
+                Ingredients = new()
+                {
+                    new Ingredient(4, new UnitOfMeasurement(UnitOfMeasurementCodes.Slice), "Old bread"),
+                    new Ingredient(2, new UnitOfMeasurement(UnitOfMeasurementCodes.Piece), "Unidentifiable meat"),
+                    new Ingredient(20, new UnitOfMeasurement(UnitOfMeasurementCodes.Mililiter), "Fishy sauce"),
+                }
+            });
+            dbContext.Dishes.Add(new Dish("Sailors Surprise") { 
+                Id = new Guid("00000000-0000-0000-0000-000000000010"),
+                Description = "The darkest, wettest dream of every boatsman.",
+                Servings = 4,
+                Ingredients = new()
+                {
+                    new Ingredient(800, new UnitOfMeasurement(UnitOfMeasurementCodes.Mililiter), "Seawater"),
+                    new Ingredient(6, new UnitOfMeasurement(UnitOfMeasurementCodes.Piece), "Sea cucumber"),
+                    new Ingredient(8, new UnitOfMeasurement(UnitOfMeasurementCodes.Piece), "Crab meat"),
+                    new Ingredient(1, new UnitOfMeasurement(UnitOfMeasurementCodes.Pinch), "Salt"),
+                }
+            });
             dbContext.SaveChanges();
         }
 
@@ -107,6 +128,46 @@ namespace Mealmap.Api.BroadIntegrationTests
             _repository.Update(newDisconnectedDish);
 
             _dbContext.Dishes.First(d => d.Id == guid).Name.Should().Be(anotherDishName);
+        }
+
+        [Fact]
+        public void Update_WhenIngredientAdded_AddsIngredient()
+        {
+            var originalDish = _dbContext.Dishes.First();
+            var originalIngredientCount = originalDish.Ingredients!.Count();
+            _dbContext.Entry(originalDish).State = EntityState.Detached;
+            var adaptedDish = new Dish(originalDish.Name)
+            {
+                Id = originalDish.Id,
+                Description = originalDish.Description,
+                Servings = originalDish.Servings,
+                Ingredients = originalDish.Ingredients!.ToArray<Ingredient>().ToList<Ingredient>()
+            };
+
+            adaptedDish.Ingredients!.Add(new Ingredient(1, UnitOfMeasurementCodes.Pinch, "Pepper"));
+            _repository.Update(adaptedDish);
+
+            _dbContext.Dishes.First(d => d.Id == originalDish.Id).Ingredients.Should().HaveCount(originalIngredientCount + 1);
+        }
+
+        [Fact]
+        public void Update_WhenIngredientRemoved_RemovesIngredient()
+        {
+            var originalDish = _dbContext.Dishes.First(d => d.Ingredients != null && d.Ingredients.Count > 2);
+            var originalIngredientCount = originalDish.Ingredients!.Count();
+            _dbContext.Entry(originalDish).State = EntityState.Detached;
+            var adaptedDish = new Dish(originalDish.Name)
+            {
+                Id = originalDish.Id,
+                Description = originalDish.Description,
+                Servings = originalDish.Servings,
+                Ingredients = originalDish.Ingredients!.ToArray<Ingredient>().ToList<Ingredient>()
+            };
+
+            adaptedDish.Ingredients.RemoveAt(0);
+            _repository.Update(adaptedDish);
+
+            _dbContext.Dishes.First(d => d.Id == originalDish.Id).Ingredients.Should().HaveCount(originalIngredientCount - 1);
         }
     }
 }

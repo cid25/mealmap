@@ -1,4 +1,5 @@
 ﻿using Mealmap.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Api.DataAccess
 {
@@ -31,8 +32,29 @@ namespace Mealmap.Api.DataAccess
 
         public void Update(Dish dish)
         {
+            var existingDish = _dbContext.Dishes.Find(dish.Id);
+            if (existingDish == null)
+                return;
+
+            RemoveIngredientsFrom(existingDish);
+            _dbContext.Entry(existingDish).State = EntityState.Detached;
+
             _dbContext.Update(dish);
+            AddIngredientsTo(dish);
+
             _dbContext.SaveChanges();
+        }
+
+        private void RemoveIngredientsFrom(Dish dish)
+        {
+            if (dish.Ingredients != null)
+                _dbContext.RemoveRange(dish.Ingredients);
+        }
+
+        private void AddIngredientsTo(Dish dish) 
+        {
+            if (dish.Ingredients != null)
+                _dbContext.AddRange(dish.Ingredients);
         }
     }
 }

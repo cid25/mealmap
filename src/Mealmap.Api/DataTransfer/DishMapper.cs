@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using Mealmap.Api.Controllers;
 using Mealmap.Model;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Mealmap.Api.DataTransfer
 {

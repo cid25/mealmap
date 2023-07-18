@@ -10,14 +10,20 @@ namespace Mealmap.Api.DataTransfer
         {
             CreateMap<Dish, Guid>();
             CreateMap<MealDTO, Meal>()
-                .ForMember(d => d.Dish, opt => opt.Ignore())
-                .ForSourceMember(s => s.DishId, opt => opt.DoNotValidate());
+                .ForMember(meal => meal.Dish, opt => opt.Ignore())
+                .ForSourceMember(dto => dto.DishId, opt => opt.DoNotValidate());
             CreateMap<Meal, MealDTO>()
-                .ForMember(d => d.DishId, opt => opt.MapFrom(src => src.Dish!.Id));
+                .ForMember(dto => dto.DishId, opt => opt.MapFrom(meal => meal.Dish!.Id));
             CreateMap<DishDTO, Dish>()
-                .ForMember(d => d.Image, opt => opt.Ignore());
+                .ForMember(dish => dish.Image, opt => opt.Ignore());
             CreateMap<Dish, DishDTO>()
-                .ForMember(d => d.ImageUrl, opt => opt.Ignore());
+                .ForMember(dto => dto.ImageUrl, opt => opt.Ignore());
+            CreateMap<UnitOfMeasurement, string>()
+                .ConvertUsing(unit => unit.Stringify());
+            CreateMap<string, UnitOfMeasurement>()
+                .ConvertUsing(str => new UnitOfMeasurement(str));
+            CreateMap<Ingredient, IngredientDTO>();
+            CreateMap<IngredientDTO, Ingredient>();
         }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Mealmap.Model
 {
     [Owned]
+    [Table("ingredients", Schema = "mealmap")]
     public record Ingredient
     {
         public decimal Quantity { get; init; }

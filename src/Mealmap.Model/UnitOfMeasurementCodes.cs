@@ -8,12 +8,14 @@ namespace Mealmap.Model
 {
     public enum UnitOfMeasurementCodes
     {
-        Gram = 0,
+        Gram = 1,
         Kilogram = 2,
-        Liter = 10,
-        Mililiter = 11,
+        Mililiter = 10,
+        Liter = 11,
         Piece = 50,
         Bag = 51,
-        Can = 52
+        Can = 52,
+        Slice = 53,
+        Pinch = 54
     }
 }

@@ -8,13 +8,15 @@ namespace Mealmap.Model
     {
         public Guid Id { get; init; }
 
-        [Required]
         [MaxLength(100)]
         public string Name { get; set; }
 
         public string? Description { get; set; }
 
         public DishImage? Image { get; set; }
+
+        [Range(1, 20)]
+        public byte Servings { get; set; }
 
         public List<Ingredient>? Ingredients { get; set; }
 
