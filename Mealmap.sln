@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.BroadIntegratio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mealmap.Model.Tests", "tests\Mealmap.Model.Tests\Mealmap.Model.Tests.csproj", "{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Testdata", "src\Mealmap.Testdata\Mealmap.Testdata.csproj", "{8A82CA7F-0833-480A-8780-3EBA1C275BD3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A82CA7F-0833-480A-8780-3EBA1C275BD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A82CA7F-0833-480A-8780-3EBA1C275BD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A82CA7F-0833-480A-8780-3EBA1C275BD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A82CA7F-0833-480A-8780-3EBA1C275BD3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
