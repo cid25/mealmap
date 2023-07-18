@@ -14,12 +14,17 @@ namespace Mealmap.Api.DataAccess
         {
             modelBuilder
                 .Entity<Meal>()
-                .Property(e => e.DiningDate)
+                .Property(m => m.DiningDate)
                 .HasColumnType("date")
                 .HasConversion(
                     v => v.ToDateTime(TimeOnly.MinValue),
                     v => DateOnly.FromDateTime(v)
                 );
+            modelBuilder
+                .Entity<Meal>()
+                .Navigation(m => m.Dish)
+                .AutoInclude();
+
 
             modelBuilder
                 .Entity<Dish>()
