@@ -6,22 +6,22 @@ namespace Mealmap.Model.Tests
     public class UnitOfMeasurementTests
     {
         [Fact]
-        public void FromName_WhenValidName_ReturnsUnitOfMeasurement()
+        public void From_WhenValidName_ReturnsUnitOfMeasurement()
         {
             const string validUnitName = "Kilogram";
 
-            var result = UnitOfMeasurement.FromName(validUnitName);
+            var result = new UnitOfMeasurement(validUnitName);
 
             result.Should().NotBeNull();
             result.Should().BeOfType<UnitOfMeasurement>();
         }
 
         [Fact]
-        public void FromName_WhenInvalidName_ReturnsUnitOfMeasurement()
+        public void From_WhenInvalidName_ThrowsArgumentException()
         {
             const string invalidUnitName = "Kawabunga";
 
-            Action action = () => UnitOfMeasurement.FromName(invalidUnitName);
+            Action action = () => new UnitOfMeasurement(invalidUnitName);
 
             action.Should().Throw<ArgumentException>();
         }

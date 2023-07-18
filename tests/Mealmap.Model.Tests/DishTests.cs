@@ -19,8 +19,8 @@ namespace Mealmap.Model.Tests
         {
             Dish dish = new("Tuna Supreme") { 
                 Ingredients = new List<Ingredient>() { 
-                    new Ingredient(100, "Mililiter", "Milk")
-                } 
+                    new Ingredient(100, new UnitOfMeasurement("Mililiter"), "Milk")
+                }
             };
 
             dish.AddIngredient(1, "Kilogram", "Sardine filets");
@@ -31,7 +31,9 @@ namespace Mealmap.Model.Tests
         [Fact]
         public void RemoveIngredient_RemovesIngredient()
         {
-            Dish dish = new("Tuna Supreme") { Ingredients = new List<Ingredient>() { new Ingredient(1, "Kilogram", "Sardine filets") } };
+            Dish dish = new("Tuna Supreme") { Ingredients = new List<Ingredient>() { 
+                new Ingredient(1, new UnitOfMeasurement("Kilogram"), "Sardine filets") }
+            };
 
             dish.RemoveIngredient(1, "Kilogram", "Sardine filets");
 

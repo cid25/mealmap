@@ -11,7 +11,7 @@ namespace Mealmap.Model
         [Required]
         [MaxLength(100)]
         public string Name { get; set; }
-                
+
         public string? Description { get; set; }
 
         public DishImage? Image { get; set; }
@@ -25,7 +25,8 @@ namespace Mealmap.Model
         
         public void AddIngredient(decimal quantity, string unitOfMeasurementName, string description)
         {
-            Ingredient ingredient = new(quantity, unitOfMeasurementName, description);
+            var unit = new UnitOfMeasurement(unitOfMeasurementName);
+            Ingredient ingredient = new(quantity, unit, description);
 
             if (Ingredients is null)
                 Ingredients = new List<Ingredient>();
@@ -37,17 +38,11 @@ namespace Mealmap.Model
         {
             if (Ingredients is null)
                 return;
-            
-            Ingredient newIngredient = new(quantity, unitOfMeasurementName, description);
 
-            foreach (var ingredient in Ingredients)
-            {
-                if (ingredient.Equals(newIngredient))
-                {
-                    Ingredients.Remove(ingredient);
-                    break;
-                }
-            }
+            var unit = new UnitOfMeasurement(unitOfMeasurementName);
+            Ingredient newIngredient = new(quantity, unit, description);
+
+            Ingredients.Remove(newIngredient);
         }
     }
 }

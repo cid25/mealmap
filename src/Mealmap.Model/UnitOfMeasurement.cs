@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mealmap.Model
 {
     [NotMapped]
-    public class UnitOfMeasurement
+    public record UnitOfMeasurement
     {
         private static readonly IEnumerable<UnitOfMeasurement> _units;
 
-        public string Name { get; init; }
+        public UnitOfMeasurementCodes UnitOfMeasurementCode { get; init; }
 
         public string Symbol { get; init; }
 
@@ -22,29 +18,41 @@ namespace Mealmap.Model
         {
             _units = new List<UnitOfMeasurement>()
             {
-                new UnitOfMeasurement("Gram", "g", "Mass"),
-                new UnitOfMeasurement("Kilogram", "kg", "Mass"),
-                new UnitOfMeasurement("Liter", "l", "Volume"),
-                new UnitOfMeasurement("Mililiter", "ml", "Volume"),
-                new UnitOfMeasurement("Piece", "pc", "Quantity"),
-                new UnitOfMeasurement("Bag", ""),
-                new UnitOfMeasurement("Can", ""),
+                new UnitOfMeasurement(UnitOfMeasurementCodes.Gram, "g", "Mass"),
+                new UnitOfMeasurement(UnitOfMeasurementCodes.Kilogram, "kg", "Mass"),
+                new UnitOfMeasurement(UnitOfMeasurementCodes.Liter, "l", "Volume"),
+                new UnitOfMeasurement(UnitOfMeasurementCodes.Mililiter, "ml", "Volume"),
+                new UnitOfMeasurement(UnitOfMeasurementCodes.Piece, "pcs", "Quantity"),
+                new UnitOfMeasurement(UnitOfMeasurementCodes.Bag, "bag"),
+                new UnitOfMeasurement(UnitOfMeasurementCodes.Can, "can")
             };
         }
 
-        private UnitOfMeasurement(string name, string symbol, string? measure = null)
-            => (Name, Symbol, Measure) = (name, symbol, measure);
+        private UnitOfMeasurement(UnitOfMeasurementCodes unitOfMeasurementCode, string symbol, string? measure = null)
+            => (UnitOfMeasurementCode, Symbol, Measure) = (unitOfMeasurementCode, symbol, measure);
 
-        public static UnitOfMeasurement FromName(string name)
+        public UnitOfMeasurement(UnitOfMeasurementCodes unitOfMeasurementCode)
         {
-            try
-            {
-                return _units.First(x => x.Name == name);
+            var unit = _units.First(u => u.UnitOfMeasurementCode == unitOfMeasurementCode);
+            (UnitOfMeasurementCode, Symbol, Measure) = (unitOfMeasurementCode, unit.Symbol, unit.Measure);
+        }
+
+        public UnitOfMeasurement(string unitOfMeasurement)
+        {
+            try {
+                var code = (UnitOfMeasurementCodes) Enum.Parse(typeof(UnitOfMeasurementCodes), unitOfMeasurement);
+                var unit = _units.First(u => u.UnitOfMeasurementCode == code);
+
+                UnitOfMeasurementCode = code;
+                Symbol = unit.Symbol;
+                Measure = unit.Measure;
+
             }
-            catch (InvalidOperationException)
+            catch (ArgumentException)
             {
-                throw new ArgumentException("{name} must match an existing unit of measurement", name);
+                throw new ArgumentException($"UnitOfMeasurement must match an existing unit of measurement, but is {0}.", unitOfMeasurement);
             }
+
         }
     }
 }

@@ -77,6 +77,21 @@ namespace Mealmap.Api.BroadIntegrationTests
             _dbContext.Dishes.First(x => x.Id == someGuid).Should().NotBeNull();
         }
 
+        [Fact]
+        public void Create_WhenDishHasIngredients_CreatesIngredients()
+        {
+            const string someDishName = "Salty Sea Dog";
+            Guid someGuid = Guid.NewGuid();
+            Dish dish = new(someDishName) { Id = someGuid };
+            dish.AddIngredient(1, "Kilogram", "Sausages");
+            dish.AddIngredient(0.5m, "Liter", "Ketchup");
+            dish.AddIngredient(0.3m, "Liter", "Mustard");
+
+            _repository.Create(dish);
+
+            _dbContext.Dishes.First(x => x.Id == someGuid).Ingredients.Should().HaveCount(3);
+        }
+
         [Fact] 
         public void Update_WhenGivenDisconnectedDish_UpdatesEntry()
         {

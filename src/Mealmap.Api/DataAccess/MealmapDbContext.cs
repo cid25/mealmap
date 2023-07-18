@@ -20,6 +20,13 @@ namespace Mealmap.Api.DataAccess
                     v => v.ToDateTime(TimeOnly.MinValue),
                     v => DateOnly.FromDateTime(v)
                 );
+
+            modelBuilder
+                .Entity<Dish>()
+                .OwnsMany(d => d.Ingredients, i =>
+                {
+                    i.Property("_unitOfMeasurementCode").HasColumnName("UnitOfMeasurementCode");
+                });
         }
 
         public DbSet<Meal> Meals { get; set; }

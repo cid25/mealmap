@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Model
@@ -12,14 +8,26 @@ namespace Mealmap.Model
     {
         public decimal Quantity { get; init; }
 
+        [NotMapped]
         public UnitOfMeasurement UnitOfMeasurement { get; init; }
 
         public string Description { get; init; }
 
-        public Ingredient(decimal quantity, string unitOfMeasurementName, string description)
+        private UnitOfMeasurementCodes _unitOfMeasurementCode;
+
+        public Ingredient(decimal quantity, UnitOfMeasurement unitOfMeasurement, string description)
         {
             Quantity = quantity;
-            UnitOfMeasurement = UnitOfMeasurement.FromName(unitOfMeasurementName);
+            _unitOfMeasurementCode = unitOfMeasurement.UnitOfMeasurementCode;
+            UnitOfMeasurement = unitOfMeasurement;
+            Description = description;
+        }
+
+        public Ingredient(decimal quantity, UnitOfMeasurementCodes unitOfMeasurementCode, string description)
+        {
+            Quantity = quantity;
+            _unitOfMeasurementCode = unitOfMeasurementCode;
+            UnitOfMeasurement = new UnitOfMeasurement(unitOfMeasurementCode);
             Description = description;
         }
     }
