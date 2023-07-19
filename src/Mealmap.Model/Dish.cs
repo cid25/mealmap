@@ -24,14 +24,13 @@ namespace Mealmap.Model
         {
             Name = name;
         }
-        
+
         public void AddIngredient(decimal quantity, string unitOfMeasurementName, string description)
         {
             var unit = new UnitOfMeasurement(unitOfMeasurementName);
             Ingredient ingredient = new(quantity, unit, description);
 
-            if (Ingredients is null)
-                Ingredients = new List<Ingredient>();
+            Ingredients ??= new List<Ingredient>();
 
             Ingredients.Add(ingredient);
         }

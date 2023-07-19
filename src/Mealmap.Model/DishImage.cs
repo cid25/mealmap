@@ -1,11 +1,10 @@
-﻿using System.Xml.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Model
 {
     [Owned]
     public record DishImage
-    {      
+    {
         public byte[] Content { get; init; }
 
         public string ContentType { get; init; }

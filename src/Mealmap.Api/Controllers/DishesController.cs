@@ -9,13 +9,13 @@ namespace Mealmap.Api.Controllers
     [ApiController]
     public class DishesController : ControllerBase
     {
-        private ILogger<DishesController> _logger;
+        private readonly ILogger<DishesController> _logger;
         private readonly IDishRepository _repository;
         private readonly DishMapper _mapper;
 
         public DishesController(
-            ILogger<DishesController> logger, 
-            IDishRepository repository, 
+            ILogger<DishesController> logger,
+            IDishRepository repository,
             DishMapper mapper)
         {
             _logger = logger;
@@ -86,7 +86,7 @@ namespace Mealmap.Api.Controllers
             var dish = _mapper.MapFromDTO(dishDTO);
 
             _repository.Create(dish);
-            _logger.LogInformation("Dish with id {guid} created", dish.Id);
+            _logger.LogInformation("Dish with id {Id} created", dish.Id);
 
             var dishCreated = _mapper.MapFromEntity(dish);
 
@@ -117,7 +117,7 @@ namespace Mealmap.Api.Controllers
             dish.Image = new DishImage(content: image.Content, contentType: image.ContentType);
             _repository.Update(dish);
 
-            var actionLink = ActionLink(action: nameof(GetDishImage), values: new { id = id });
+            var actionLink = ActionLink(action: nameof(GetDishImage), values: new { id });
 
             if (actionLink != null)
                 HttpContext.Response.Headers.Location = actionLink;
@@ -153,7 +153,7 @@ namespace Mealmap.Api.Controllers
         {
             if (Url == null)
                 return null;
-            
+
             return Url.ActionLink(
                 action: action,
                 controller: null,

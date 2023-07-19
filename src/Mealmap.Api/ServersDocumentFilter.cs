@@ -10,7 +10,7 @@ namespace Mealmap.Api
     {
         private readonly HostingOptions _options;
         private readonly IServer _server;
-        
+
         public ServersDocumentFilter(IOptions<HostingOptions> options, IServer server)
           => (_options, _server) = (options.Value, server);
 
@@ -24,8 +24,7 @@ namespace Mealmap.Api
                 {
                     var scheme = address.Split("://")[0];
                     var maybePort = address.Split(":")[^1];
-                    int port;
-                    if (!int.TryParse(maybePort, out port) 
+                    if (!int.TryParse(maybePort, out var port)
                         || (scheme == "http" && port == 80)
                         || (scheme == "https" && port == 443)
                     )

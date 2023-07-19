@@ -13,9 +13,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.NarrowIntegrati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.BroadIntegrationTests", "tests\Mealmap.Api.BroadIntegrationTests\Mealmap.Api.BroadIntegrationTests.csproj", "{F869DD60-0C7B-428E-9C50-54A4600EF10B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mealmap.Model.Tests", "tests\Mealmap.Model.Tests\Mealmap.Model.Tests.csproj", "{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Model.Tests", "tests\Mealmap.Model.Tests\Mealmap.Model.Tests.csproj", "{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Testdata", "src\Mealmap.Testdata\Mealmap.Testdata.csproj", "{8A82CA7F-0833-480A-8780-3EBA1C275BD3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A608CA3F-1681-4128-91FE-0B1FEE3102F2}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

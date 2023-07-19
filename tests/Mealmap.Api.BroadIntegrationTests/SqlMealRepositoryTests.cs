@@ -23,18 +23,18 @@ namespace Mealmap.Api.BroadIntegrationTests
 
             _dbContext.Database.EnsureDeleted();
             _dbContext.Database.EnsureCreated();
-            seedData(_dbContext);
+            seedData();
             Helpers.DetachAllEntities(_dbContext);
 
             _repository = new SqlMealRepository(_dbContext);
         }
 
-        private void seedData(MealmapDbContext dbContext)
+        private void seedData()
         {
             var dish = new Dish("Sailors Surprise") { Id = new Guid("00000000-0000-0000-0000-000000000001") };
-            dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000001"), DiningDate = new DateOnly(2020,1,1), Dish = dish } );
-            dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000010"), DiningDate = new DateOnly(2020, 1, 2), Dish = dish });
-            dbContext.SaveChanges();
+            _dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000001"), DiningDate = new DateOnly(2020, 1, 1), Dish = dish });
+            _dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000010"), DiningDate = new DateOnly(2020, 1, 2), Dish = dish });
+            _dbContext.SaveChanges();
         }
 
 
@@ -42,7 +42,7 @@ namespace Mealmap.Api.BroadIntegrationTests
         public void GetAll_ReturnsAllMeals()
         {
             var expectedCount = _dbContext.Meals.Count();
-            
+
             var result = _repository.GetAll();
 
             result.Should().NotBeEmpty().And.HaveCount(expectedCount);
@@ -59,12 +59,12 @@ namespace Mealmap.Api.BroadIntegrationTests
 
         [Fact]
         public void GetById_WhenMealWithIdExists_ReturnsMealWithDish()
-        { 
+        {
             const string existingGuid = "10000000-0000-0000-0000-000000000001";
             var result = _repository.GetById(new Guid(existingGuid));
 
             result.Should().NotBeNull();
-            result.Dish.Should().NotBeNull();
+            result!.Dish.Should().NotBeNull();
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace Mealmap.Api.BroadIntegrationTests
         {
             var dish = _dbContext.Dishes.First();
             var guid = Guid.NewGuid();
-            Meal meal = new() { Id = guid, DiningDate = new DateOnly(2020,12,31), Dish = dish};
+            Meal meal = new() { Id = guid, DiningDate = new DateOnly(2020, 12, 31), Dish = dish };
 
             _repository.Create(meal);
 

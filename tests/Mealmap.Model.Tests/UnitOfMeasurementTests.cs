@@ -1,5 +1,4 @@
-﻿using Mealmap.Model;
-using FluentAssertions;
+﻿using FluentAssertions;
 
 namespace Mealmap.Model.Tests
 {
@@ -21,7 +20,10 @@ namespace Mealmap.Model.Tests
         {
             const string invalidUnitName = "Kawabunga";
 
-            Action action = () => new UnitOfMeasurement(invalidUnitName);
+            Action action = () =>
+            {
+                var unitOfMeasurement = new UnitOfMeasurement(invalidUnitName);
+            };
 
             action.Should().Throw<ArgumentException>();
         }

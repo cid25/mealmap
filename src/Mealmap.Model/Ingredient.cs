@@ -14,7 +14,9 @@ namespace Mealmap.Model
 
         public string Description { get; init; }
 
-        private UnitOfMeasurementCodes _unitOfMeasurementCode;
+# pragma warning disable IDE0052
+        private readonly UnitOfMeasurementCodes _unitOfMeasurementCode;
+# pragma warning restore IDE0052
 
         public Ingredient(decimal quantity, UnitOfMeasurement unitOfMeasurement, string description)
         {

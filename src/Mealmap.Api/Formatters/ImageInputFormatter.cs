@@ -34,18 +34,16 @@ namespace Mealmap.Api.Formatters
             var contentType = context.HttpContext.Request.ContentType!;
 
             const int defaultStreamCapacity = 1024;
-            using (var ms = new MemoryStream(defaultStreamCapacity))
-            {
-                
-                await request.Body.CopyToAsync(ms);
+            using var ms = new MemoryStream(defaultStreamCapacity);
 
-                var image = new Image(
-                    content: ms.ToArray(),
-                    contentType: contentType
-                );
+            await request.Body.CopyToAsync(ms);
 
-                return await InputFormatterResult.SuccessAsync(image);
-            }
+            var image = new Image(
+                content: ms.ToArray(),
+                contentType: contentType
+            );
+
+            return await InputFormatterResult.SuccessAsync(image);
         }
     }
 }

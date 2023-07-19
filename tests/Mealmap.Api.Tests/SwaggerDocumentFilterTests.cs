@@ -1,5 +1,4 @@
-﻿using AutoMapper.Features;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -60,7 +59,7 @@ namespace Mealmap.Api.UnitTests
             servers.ElementAt(0).Url.Should().EndWith("test.com");
         }
 
-        private ServersDocumentFilter setupFilter(string[] addresses, string[] hosts)
+        private static ServersDocumentFilter setupFilter(string[] addresses, string[] hosts)
         {
             var adress = new List<string>();
             adress.AddRange(addresses.ToList());
@@ -73,7 +72,7 @@ namespace Mealmap.Api.UnitTests
             );
         }
 
-        private DocumentFilterContext mockDocumentFilterContext()
+        private static DocumentFilterContext mockDocumentFilterContext()
         {
             return new DocumentFilterContext(
                 Mock.Of<IEnumerable<ApiDescription>>(),
@@ -82,11 +81,11 @@ namespace Mealmap.Api.UnitTests
             );
         }
 
-        private (List<OpenApiServer>, OpenApiDocument) mockDocument()
+        private static (List<OpenApiServer>, OpenApiDocument) mockDocument()
         {
             var servers = new List<OpenApiServer>();
             var swaggerDoc = Mock.Of<OpenApiDocument>(m => m.Servers == servers);
-            
+
             return (servers, swaggerDoc);
         }
     }

@@ -24,7 +24,7 @@ namespace Mealmap.Api.DataTransfer
         public DishDTO MapFromEntity(Dish dish)
         {
             if (_httpContext is null)
-                throw new ArgumentNullException();
+                throw new InvalidOperationException($"Mapping from DishDTO to Dish cannot be executed with an httpContext");
 
             var dto = _mapper.Map<DishDTO>(dish);
 
@@ -39,14 +39,14 @@ namespace Mealmap.Api.DataTransfer
                 };
 
                 dto.ImageUrl = builder.Uri;
-            }         
+            }
 
             return dto;
         }
 
         public List<DishDTO> MapFromEntities(IEnumerable<Dish> dishes)
         {
-            List<DishDTO> dtos = new ();
+            List<DishDTO> dtos = new();
 
             foreach (var dish in dishes)
                 dtos.Add(MapFromEntity(dish));

@@ -19,8 +19,8 @@ public class MealsController : ControllerBase
 
     public MealsController(
         ILogger<MealsController> logger,
-        IMealRepository mealRepository, 
-        IDishRepository dishRepository, 
+        IMealRepository mealRepository,
+        IDishRepository dishRepository,
         MealMapper mapper)
     {
         _logger = logger;
@@ -83,7 +83,7 @@ public class MealsController : ControllerBase
         var meal = _mapper.MapFromDTO(mealDTO);
 
         _mealRepository.Create(meal);
-        _logger.LogInformation("Meal with id {guid} created", meal.Id);
+        _logger.LogInformation("Meal with id {Id} created", meal.Id);
 
         var mealCreated = _mapper.MapFromEntity(meal);
 

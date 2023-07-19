@@ -23,15 +23,16 @@ namespace Mealmap.Api.BroadIntegrationTests
 
             _dbContext.Database.EnsureDeleted();
             _dbContext.Database.EnsureCreated();
-            seedData(_dbContext);
+            seedData();
             Helpers.DetachAllEntities(_dbContext);
 
             _repository = new SqlDishRepository(_dbContext);
         }
 
-        private void seedData(MealmapDbContext dbContext)
+        private void seedData()
         {
-            dbContext.Dishes.Add(new Dish("Krabby Patty") { 
+            _dbContext.Dishes.Add(new Dish("Krabby Patty")
+            {
                 Id = new Guid("00000000-0000-0000-0000-000000000001"),
                 Description = "The fishiest burger in town.",
                 Servings = 2,
@@ -42,7 +43,8 @@ namespace Mealmap.Api.BroadIntegrationTests
                     new Ingredient(20, new UnitOfMeasurement(UnitOfMeasurementCodes.Mililiter), "Fishy sauce"),
                 }
             });
-            dbContext.Dishes.Add(new Dish("Sailors Surprise") { 
+            _dbContext.Dishes.Add(new Dish("Sailors Surprise")
+            {
                 Id = new Guid("00000000-0000-0000-0000-000000000010"),
                 Description = "The darkest, wettest dream of every boatsman.",
                 Servings = 4,
@@ -54,7 +56,7 @@ namespace Mealmap.Api.BroadIntegrationTests
                     new Ingredient(1, new UnitOfMeasurement(UnitOfMeasurementCodes.Pinch), "Salt"),
                 }
             });
-            dbContext.SaveChanges();
+            _dbContext.SaveChanges();
         }
 
 
@@ -62,7 +64,7 @@ namespace Mealmap.Api.BroadIntegrationTests
         public void GetAll_ReturnsAllDishes()
         {
             var expectedCount = _dbContext.Dishes.Count();
-            
+
             var result = _repository.GetAll();
 
             result.Should().NotBeEmpty().And.HaveCount(expectedCount);
@@ -114,7 +116,7 @@ namespace Mealmap.Api.BroadIntegrationTests
             _dbContext.Dishes.First(x => x.Id == someGuid).Ingredients.Should().HaveCount(3);
         }
 
-        [Fact] 
+        [Fact]
         public void Update_WhenGivenDisconnectedDish_UpdatesEntry()
         {
             const string someDishName = "Salty Sea Dog";
@@ -135,7 +137,7 @@ namespace Mealmap.Api.BroadIntegrationTests
         public void Update_WhenIngredientAdded_AddsIngredient()
         {
             var originalDish = _dbContext.Dishes.First();
-            var originalIngredientCount = originalDish.Ingredients!.Count();
+            var originalIngredientCount = originalDish.Ingredients!.Count;
             _dbContext.Entry(originalDish).State = EntityState.Detached;
             var adaptedDish = new Dish(originalDish.Name)
             {
@@ -155,7 +157,7 @@ namespace Mealmap.Api.BroadIntegrationTests
         public void Update_WhenIngredientRemoved_RemovesIngredient()
         {
             var originalDish = _dbContext.Dishes.First(d => d.Ingredients != null && d.Ingredients.Count > 2);
-            var originalIngredientCount = originalDish.Ingredients!.Count();
+            var originalIngredientCount = originalDish.Ingredients!.Count;
             _dbContext.Entry(originalDish).State = EntityState.Detached;
             var adaptedDish = new Dish(originalDish.Name)
             {

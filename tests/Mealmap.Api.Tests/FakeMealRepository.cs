@@ -3,8 +3,8 @@
 
 namespace Mealmap.Api.UnitTests
 {
-    internal class FakeMealRepository : Dictionary<Guid,Meal>, IMealRepository
-    { 
+    internal class FakeMealRepository : Dictionary<Guid, Meal>, IMealRepository
+    {
         public IEnumerable<Meal> GetAll()
         {
             return Values;
@@ -12,15 +12,14 @@ namespace Mealmap.Api.UnitTests
 
         public Meal? GetById(Guid id)
         {
-            Meal? meal;
-            TryGetValue(id, out meal);
+            TryGetValue(id, out var meal);
 
             return meal;
         }
 
         public void Create(Meal meal)
-        {            
-            Add((Guid) meal.Id, meal);
+        {
+            Add((Guid)meal.Id, meal);
         }
     }
 }

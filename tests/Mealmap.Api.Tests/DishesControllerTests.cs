@@ -13,9 +13,9 @@ namespace Mealmap.Api.UnitTests
 {
     public class DishesControllerTests
     {
-        ILogger<DishesController> _logger;
-        FakeDishRepository _repository;
-        DishesController _controller;
+        private readonly ILogger<DishesController> _logger;
+        private readonly FakeDishRepository _repository;
+        private readonly DishesController _controller;
 
         public DishesControllerTests()
         {
@@ -27,7 +27,7 @@ namespace Mealmap.Api.UnitTests
                 _repository,
                 new DishMapper(
                     new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper(),
-                    Mock.Of<IHttpContextAccessor>(accessor => 
+                    Mock.Of<IHttpContextAccessor>(accessor =>
                         accessor.HttpContext == Mock.Of<HttpContext>(context =>
                             context.Request == Mock.Of<HttpRequest>(request =>
                                 request.Scheme == "https" && request.Host == new HostString("test.com", 443))))));
@@ -37,7 +37,8 @@ namespace Mealmap.Api.UnitTests
             _repository.Create(dishWithoutImage);
 
             const string anotherGuid = "00000000-0000-0000-0000-000000000002";
-            var dishWithImage = new Dish("Tuna Supreme") { 
+            var dishWithImage = new Dish("Tuna Supreme")
+            {
                 Id = new Guid(anotherGuid),
                 Image = new DishImage(content: new byte[1], contentType: "image/jpeg")
             };
@@ -152,8 +153,7 @@ namespace Mealmap.Api.UnitTests
 
             _controller.PutDishImage(idOfDishWithoutImage, imageDummy);
 
-            Dish? result;
-            _repository.TryGetValue(idOfDishWithoutImage, out result);
+            _repository.TryGetValue(idOfDishWithoutImage, out var result);
             if (result == null)
                 throw new ArgumentNullException(nameof(result));
             result.Image.Should().NotBeNull();

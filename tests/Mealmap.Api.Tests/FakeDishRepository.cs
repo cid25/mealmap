@@ -3,8 +3,8 @@
 
 namespace Mealmap.Api.UnitTests
 {
-    internal class FakeDishRepository : Dictionary<Guid,Dish>, IDishRepository
-    { 
+    internal class FakeDishRepository : Dictionary<Guid, Dish>, IDishRepository
+    {
         public IEnumerable<Dish> GetAll()
         {
             return Values;
@@ -12,8 +12,7 @@ namespace Mealmap.Api.UnitTests
 
         public Dish? GetById(Guid id)
         {
-            Dish? dish;
-            TryGetValue(id, out dish);
+            TryGetValue(id, out var dish);
 
             return dish;
         }
@@ -25,7 +24,7 @@ namespace Mealmap.Api.UnitTests
 
         public void Update(Dish dish)
         {
-            if(!Remove(dish.Id))
+            if (!Remove(dish.Id))
                 throw new InvalidOperationException();
 
             Add(dish.Id, dish);

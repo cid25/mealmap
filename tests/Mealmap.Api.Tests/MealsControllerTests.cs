@@ -20,7 +20,7 @@ namespace Mealmap.Api.UnitTests
         {
             _logger = (new Mock<ILogger<MealsController>>().Object);
             _dishRepository = new FakeDishRepository();
-            _mealRepository = new FakeMealRepository();         
+            _mealRepository = new FakeMealRepository();
 
             _controller = new MealsController(
                 _logger,
@@ -30,13 +30,13 @@ namespace Mealmap.Api.UnitTests
                     new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper()
                     , _dishRepository));
 
-            fakeData(_mealRepository, _dishRepository);
+            fakeData();
         }
 
-        private void fakeData(FakeMealRepository mealRepository, FakeDishRepository dishRepository)
+        private void fakeData()
         {
             Dish krabbyPatty = new("Krabby Patty") { Id = new Guid("00000000-0000-0000-0000-000000000001") };
-            dishRepository.Create(krabbyPatty);
+            _dishRepository.Create(krabbyPatty);
 
             Meal yesterdaysMeal = new Meal()
             {
@@ -44,7 +44,7 @@ namespace Mealmap.Api.UnitTests
                 DiningDate = new DateOnly(2020, 1, 1),
                 Dish = krabbyPatty
             };
-            mealRepository.Create(yesterdaysMeal);
+            _mealRepository.Create(yesterdaysMeal);
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace Mealmap.Api.UnitTests
             MealDTO mealDto = new() { DiningDate = new DateOnly(2020, 1, 2), DishId = dishId };
 
             var result = _controller.PostMeal(mealDto);
-            
+
             result.Result.Should().BeOfType<CreatedAtActionResult>();
             ((CreatedAtActionResult)result.Result!).Value.Should().BeOfType<MealDTO>();
             var value = (MealDTO)((CreatedAtActionResult)result.Result!).Value!;
@@ -95,7 +95,7 @@ namespace Mealmap.Api.UnitTests
         public void PostMeal_WhenMealIsValid_StoresMeal()
         {
             var dishId = _dishRepository.ElementAt(0).Key;
-            MealDTO mealDto = new() { DiningDate = new DateOnly(2020,1,2), DishId = dishId };
+            MealDTO mealDto = new() { DiningDate = new DateOnly(2020, 1, 2), DishId = dishId };
 
             _ = _controller.PostMeal(mealDto);
 

@@ -37,7 +37,7 @@ builder.Services.AddSwaggerGen(options =>
             Title = "Mealmap API",
             Description = "An API for managing dishes and meals."
         });
-        
+
         options.DocumentFilter<ServersDocumentFilter>();
         options.CustomSchemaIds(type => type.Name.Replace("DTO", string.Empty));
 
@@ -65,6 +65,5 @@ app.MapControllers();
 app.Run();
 
 
-#pragma warning disable CS1591
+
 public partial class Program { }
-#pragma warning restore CS1591

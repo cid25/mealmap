@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Mealmap.Model
 {
@@ -41,8 +40,9 @@ namespace Mealmap.Model
 
         public UnitOfMeasurement(string unitOfMeasurement)
         {
-            try {
-                var code = (UnitOfMeasurementCodes) Enum.Parse(typeof(UnitOfMeasurementCodes), unitOfMeasurement);
+            try
+            {
+                var code = (UnitOfMeasurementCodes)Enum.Parse(typeof(UnitOfMeasurementCodes), unitOfMeasurement);
                 var unit = _units.First(u => u.UnitOfMeasurementCode == code);
 
                 UnitOfMeasurementCode = code;
