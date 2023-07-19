@@ -24,6 +24,7 @@ namespace Mealmap.Api.BroadIntegrationTests
             _dbContext.Database.EnsureDeleted();
             _dbContext.Database.EnsureCreated();
             seedData(_dbContext);
+            Helpers.DetachAllEntities(_dbContext);
 
             _repository = new SqlMealRepository(_dbContext);
         }
@@ -57,12 +58,13 @@ namespace Mealmap.Api.BroadIntegrationTests
         }
 
         [Fact]
-        public void GetById_WhenMealWithIdExists_ReturnsMeal()
-        {
+        public void GetById_WhenMealWithIdExists_ReturnsMealWithDish()
+        { 
             const string existingGuid = "10000000-0000-0000-0000-000000000001";
             var result = _repository.GetById(new Guid(existingGuid));
 
             result.Should().NotBeNull();
+            result.Dish.Should().NotBeNull();
         }
 
         [Fact]
@@ -76,5 +78,6 @@ namespace Mealmap.Api.BroadIntegrationTests
 
             _dbContext.Meals.First(x => x.Id == guid).Should().NotBeNull();
         }
+
     }
 }

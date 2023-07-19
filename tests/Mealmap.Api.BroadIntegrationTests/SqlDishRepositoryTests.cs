@@ -24,6 +24,7 @@ namespace Mealmap.Api.BroadIntegrationTests
             _dbContext.Database.EnsureDeleted();
             _dbContext.Database.EnsureCreated();
             seedData(_dbContext);
+            Helpers.DetachAllEntities(_dbContext);
 
             _repository = new SqlDishRepository(_dbContext);
         }
