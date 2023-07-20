@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Mealmap.Api.DataTransfer
 {
@@ -8,6 +9,7 @@ namespace Mealmap.Api.DataTransfer
         /// The identity of the dish.
         /// </summary>
         /// <example>3fa85f64-5717-4562-b3fc-2c963f66afa6</example>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Guid? Id { get; init; }
 
         /// <summary>
@@ -25,9 +27,10 @@ namespace Mealmap.Api.DataTransfer
         public string? Description { get; init; }
 
         /// <summary>
-        /// A short description of the dish.
+        /// The Url to fetch the dish's image from.
         /// </summary>
         /// <example>https://host.com/api/dishes/3fa85f64-5717-4562-b3fc-2c963f66afa6/image</example>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Uri? ImageUrl { get; set; }
 
         /// <summary>

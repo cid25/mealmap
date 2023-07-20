@@ -1,7 +1,9 @@
 ﻿using Mealmap.Api.DataTransfer;
 using Mealmap.Api.Formatters;
+using Mealmap.Api.Swashbuckle;
 using Mealmap.Model;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Mealmap.Api.Controllers
 {
@@ -74,6 +76,8 @@ namespace Mealmap.Api.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(DishDTO), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [SwaggerRequestExample(typeof(DishDTO), typeof(DishPostRequestExample))]
+        [SwaggerResponseExample(201, typeof(DishPostResponseExample))]
         public ActionResult<DishDTO> PostDish([FromBody] DishDTO dishDTO)
         {
             if (String.IsNullOrWhiteSpace(dishDTO.Name))

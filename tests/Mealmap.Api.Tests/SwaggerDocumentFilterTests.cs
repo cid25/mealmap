@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Mealmap.Api.Swashbuckle;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;

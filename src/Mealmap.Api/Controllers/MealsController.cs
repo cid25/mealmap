@@ -1,7 +1,8 @@
 ﻿using Mealmap.Api.DataTransfer;
+using Mealmap.Api.Swashbuckle;
 using Mealmap.Model;
 using Microsoft.AspNetCore.Mvc;
-
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Mealmap.Api.Controllers;
 
@@ -77,6 +78,8 @@ public class MealsController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [SwaggerRequestExample(typeof(MealDTO), typeof(MealPostRequestExample))]
+    [SwaggerResponseExample(201, typeof(MealPostResponseExample))]
     public ActionResult<MealDTO> PostMeal([FromBody] MealDTO mealDTO)
     {
         mealDTO = mealDTO with { Id = Guid.NewGuid() };

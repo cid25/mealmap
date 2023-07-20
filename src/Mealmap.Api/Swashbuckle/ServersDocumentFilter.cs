@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Mealmap.Api
+namespace Mealmap.Api.Swashbuckle
 {
     public class ServersDocumentFilter : IDocumentFilter
     {
@@ -25,8 +25,8 @@ namespace Mealmap.Api
                     var scheme = address.Split("://")[0];
                     var maybePort = address.Split(":")[^1];
                     if (!int.TryParse(maybePort, out var port)
-                        || (scheme == "http" && port == 80)
-                        || (scheme == "https" && port == 443)
+                        || scheme == "http" && port == 80
+                        || scheme == "https" && port == 443
                     )
                         port = -1;
 
@@ -34,7 +34,7 @@ namespace Mealmap.Api
                     {
                         if (host != string.Empty)
                         {
-                            UriBuilder addressBuilder = new UriBuilder()
+                            var addressBuilder = new UriBuilder()
                             {
                                 Scheme = scheme,
                                 Host = host,
