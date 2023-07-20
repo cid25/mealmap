@@ -19,7 +19,14 @@ namespace Mealmap.Api.DataTransfer
             var meal = _mapper.Map<Meal>(dto);
 
             if (dto.DishId != null && dto.DishId != Guid.Empty)
-                meal.Dish = _dishRepository.GetById((Guid)dto.DishId);
+            {
+                var dish = _dishRepository.GetById((Guid)dto.DishId);
+
+                if (dish == null)
+                    throw new ArgumentException("Dish doesn't exist");
+
+                meal.Dish = dish;
+            }
 
             return meal;
         }

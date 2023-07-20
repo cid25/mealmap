@@ -3,10 +3,6 @@ using FluentAssertions;
 using Mealmap.Api.DataTransfer;
 using Mealmap.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Routing;
 using Moq;
 
 namespace Mealmap.Api.UnitTests
@@ -21,9 +17,9 @@ namespace Mealmap.Api.UnitTests
 
             _dishMapper = new DishMapper(
                 basicMapper,
-                Mock.Of<IHttpContextAccessor>(m => 
-                    m.HttpContext == Mock.Of<HttpContext>(c => 
-                        c.Request  == Mock.Of<HttpRequest>(r =>
+                Mock.Of<IHttpContextAccessor>(m =>
+                    m.HttpContext == Mock.Of<HttpContext>(c =>
+                        c.Request == Mock.Of<HttpRequest>(r =>
                             r.Scheme == "https" && r.Host == new HostString("test.com:5000")))));
         }
 

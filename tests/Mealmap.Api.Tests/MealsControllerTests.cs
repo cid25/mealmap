@@ -113,5 +113,20 @@ namespace Mealmap.Api.UnitTests
             var value = (MealDTO)((CreatedAtActionResult)result.Result!).Value!;
             value.Id.Should().NotBeNull().And.NotBeEmpty().And.NotBe(someGuid);
         }
+
+        [Fact]
+        public void PostMeal_DishDoesntExist_ReturnsBadRequest()
+        {
+            Guid nonExistingDishGuid = Guid.NewGuid();
+            MealDTO mealDto = new()
+            {
+                DiningDate = DateOnly.FromDateTime(DateTime.Now),
+                DishId = nonExistingDishGuid
+            };
+
+            var result = _controller.PostMeal(mealDto);
+
+            result.Result.Should().BeOfType<BadRequestObjectResult>();
+        }
     }
 }

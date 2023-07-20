@@ -83,13 +83,21 @@ public class MealsController : ControllerBase
     public ActionResult<MealDTO> PostMeal([FromBody] MealDTO mealDTO)
     {
         mealDTO = mealDTO with { Id = Guid.NewGuid() };
-        var meal = _mapper.MapFromDTO(mealDTO);
+        Meal meal;
+
+        try
+        {
+            meal = _mapper.MapFromDTO(mealDTO);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
 
         _mealRepository.Create(meal);
         _logger.LogInformation("Meal with id {Id} created", meal.Id);
 
         var mealCreated = _mapper.MapFromEntity(meal);
-
         return CreatedAtAction(nameof(GetMeal), new { id = mealCreated.Id }, mealCreated);
     }
 }
