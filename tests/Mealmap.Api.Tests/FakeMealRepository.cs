@@ -5,7 +5,7 @@ namespace Mealmap.Api.UnitTests
 {
     internal class FakeMealRepository : Dictionary<Guid, Meal>, IMealRepository
     {
-        public IEnumerable<Meal> GetMultiple(DateOnly? fromDate = null, DateOnly? toDate = null)
+        public IEnumerable<Meal> GetAll(DateOnly? fromDate = null, DateOnly? toDate = null)
         {
             return Values
                 .Where(v => v.DiningDate >= (fromDate ?? new DateOnly(1990, 1, 1))
@@ -26,7 +26,8 @@ namespace Mealmap.Api.UnitTests
 
         public void Remove(Meal meal)
         {
-            Remove(meal.Id);
+            if (!Remove(meal.Id))
+                throw new InvalidOperationException();
         }
     }
 }

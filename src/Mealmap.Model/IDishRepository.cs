@@ -4,10 +4,12 @@
     {
         public IEnumerable<Dish> GetAll();
 
-        public Dish? GetById(Guid id);
+        public Dish? GetSingle(Guid id);
 
-        public void Create(Dish dish);
+        public void Add(Dish dish);
 
         public void Update(Dish dish);
+
+        public void Remove(Dish dish);
     }
 }

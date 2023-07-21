@@ -35,7 +35,7 @@ namespace Mealmap.Api.UnitTests
 
             const string someGuid = "00000000-0000-0000-0000-000000000001";
             var dishWithoutImage = new Dish("Krabby Patty") { Id = new Guid(someGuid) };
-            _repository.Create(dishWithoutImage);
+            _repository.Add(dishWithoutImage);
 
             const string anotherGuid = "00000000-0000-0000-0000-000000000002";
             var dishWithImage = new Dish("Tuna Supreme")
@@ -43,7 +43,7 @@ namespace Mealmap.Api.UnitTests
                 Id = new Guid(anotherGuid),
                 Image = new DishImage(content: new byte[1], contentType: "image/jpeg")
             };
-            _repository.Create(dishWithImage);
+            _repository.Add(dishWithImage);
         }
 
         [Fact]
@@ -123,6 +123,27 @@ namespace Mealmap.Api.UnitTests
             var result = _controller.PostDish(dish);
 
             result.Result.Should().BeOfType<BadRequestObjectResult>();
+        }
+
+        [Fact]
+        public void Delete_WhenDishExists_ReturnsOkAndDish()
+        {
+            var dish = _repository.GetAll().First();
+
+            var result = _controller.DeleteDish(dish.Id);
+
+            result.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)result.Result!).Value.Should().BeOfType<DishDTO>();
+        }
+
+        [Fact]
+        public void Delete_WhenDishDoesntExist_ReturnsNotFound()
+        {
+            Guid nonExistingDishGuid = new Guid("99999999-9999-9999-9999-999999999999");
+
+            var result = _controller.DeleteDish(nonExistingDishGuid);
+
+            result.Result.Should().BeOfType<NotFoundObjectResult>();
         }
 
         [Theory]

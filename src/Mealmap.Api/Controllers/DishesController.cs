@@ -43,16 +43,16 @@ namespace Mealmap.Api.Controllers
         /// <summary>
         /// Retrieves a specific dish.
         /// </summary>
-        /// <param name="id">The id of the dish.</param>
+        /// <param name="id">The id of the dish to retrieve.</param>
         /// <response code="200">Dish Returned</response>
         /// <response code="404">Dish Not Found</response>
         [HttpGet("{id}", Name = nameof(GetDish))]
         [Produces("application/json")]
         [ProducesResponseType(typeof(DishDTO), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public ActionResult<DishDTO> GetDish([FromRoute] Guid id)
         {
-            var dish = _repository.GetById(id);
+            var dish = _repository.GetSingle(id);
 
             if (dish == null)
             {
@@ -75,7 +75,7 @@ namespace Mealmap.Api.Controllers
         [Consumes("application/json")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(DishDTO), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         [SwaggerRequestExample(typeof(DishDTO), typeof(DishPostRequestExample))]
         [SwaggerResponseExample(201, typeof(DishPostResponseExample))]
         public ActionResult<DishDTO> PostDish([FromBody] DishDTO dishDTO)
@@ -91,12 +91,33 @@ namespace Mealmap.Api.Controllers
                 return BadRequest(ex.Message);
             }
 
-            _repository.Create(dish);
+            _repository.Add(dish);
             _logger.LogInformation("Created dish with id {Id}", dish.Id);
 
             var dishCreated = _mapper.MapFromEntity(dish);
 
             return CreatedAtAction(nameof(GetDish), new { id = dishCreated.Id }, dishCreated);
+        }
+
+        /// <summary>
+        /// Deletes a specific dish.
+        /// </summary>
+        /// <param name="id">The id of the dish to delete.</param>
+        [HttpDelete("{id}", Name = nameof(DeleteDish))]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(DishDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        public ActionResult<DishDTO> DeleteDish([FromRoute] Guid id)
+        {
+            var dish = _repository.GetSingle(id);
+
+            if (dish == null)
+                return NotFound($"Dish with id {id} doesn't exist.");
+
+            _repository.Remove(dish);
+
+            var dto = _mapper.MapFromEntity(dish);
+            return Ok(dto);
         }
 
         /// <summary>
@@ -116,7 +137,7 @@ namespace Mealmap.Api.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status415UnsupportedMediaType)]
         public ActionResult PutDishImage([FromRoute] Guid id, [FromBody] Image image)
         {
-            var dish = _repository.GetById(id);
+            var dish = _repository.GetSingle(id);
             if (dish == null)
                 return NotFound();
 
@@ -145,7 +166,7 @@ namespace Mealmap.Api.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public ActionResult GetDishImage([FromRoute] Guid id)
         {
-            var dish = _repository.GetById(id);
+            var dish = _repository.GetSingle(id);
 
             if (dish == null)
                 return NotFound();

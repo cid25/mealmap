@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.UnitTests", "te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Model", "src\Mealmap.Model\Mealmap.Model.csproj", "{B57D2C53-7EDF-4E4C-9797-AF62DE7471F9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.NarrowIntegrationTests", "tests\Mealmap.Api.NarrowIntegrationTests\Mealmap.Api.NarrowIntegrationTests.csproj", "{3A44C2EE-E07A-42D0-A693-6FC65E310031}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.BoundaryTests", "tests\Mealmap.Api.NarrowIntegrationTests\Mealmap.Api.BoundaryTests.csproj", "{3A44C2EE-E07A-42D0-A693-6FC65E310031}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.BroadIntegrationTests", "tests\Mealmap.Api.BroadIntegrationTests\Mealmap.Api.BroadIntegrationTests.csproj", "{F869DD60-0C7B-428E-9C50-54A4600EF10B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.DataAccess.IntegrationTests", "tests\Mealmap.Api.BroadIntegrationTests\Mealmap.DataAccess.IntegrationTests.csproj", "{F869DD60-0C7B-428E-9C50-54A4600EF10B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Model.Tests", "tests\Mealmap.Model.Tests\Mealmap.Model.Tests.csproj", "{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}"
 EndProject
@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mealmap.DataAccess", "src\Mealmap.DataAccess\Mealmap.DataAccess.csproj", "{BBC4E933-0363-412A-BA0A-9313DE86ACFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,6 +58,10 @@ Global
 		{8A82CA7F-0833-480A-8780-3EBA1C275BD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A82CA7F-0833-480A-8780-3EBA1C275BD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A82CA7F-0833-480A-8780-3EBA1C275BD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBC4E933-0363-412A-BA0A-9313DE86ACFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBC4E933-0363-412A-BA0A-9313DE86ACFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBC4E933-0363-412A-BA0A-9313DE86ACFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBC4E933-0363-412A-BA0A-9313DE86ACFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

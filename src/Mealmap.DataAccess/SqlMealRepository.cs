@@ -1,6 +1,6 @@
 ﻿using Mealmap.Model;
 
-namespace Mealmap.Api.DataAccess
+namespace Mealmap.DataAccess
 {
     public class SqlMealRepository : IMealRepository
     {
@@ -11,7 +11,7 @@ namespace Mealmap.Api.DataAccess
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Meal> GetMultiple(DateOnly? fromDate = null, DateOnly? toDate = null)
+        public IEnumerable<Meal> GetAll(DateOnly? fromDate = null, DateOnly? toDate = null)
         {
             var meals = _dbContext.Meals.AsQueryable();
 

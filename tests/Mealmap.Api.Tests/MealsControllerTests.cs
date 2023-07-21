@@ -39,7 +39,7 @@ namespace Mealmap.Api.UnitTests
         private void fakeData()
         {
             Dish krabbyPatty = new("Krabby Patty") { Id = new Guid("00000000-0000-0000-0000-000000000001") };
-            _dishRepository.Create(krabbyPatty);
+            _dishRepository.Add(krabbyPatty);
 
             Meal yesterdaysMeal = new Meal()
             {
@@ -117,7 +117,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void PostMeal_DishDoesntExist_ReturnsBadRequest()
+        public void PostMeal_WhenDishDoesntExist_ReturnsBadRequest()
         {
             Guid nonExistingDishGuid = Guid.NewGuid();
             MealDTO mealDto = new()
@@ -129,6 +129,27 @@ namespace Mealmap.Api.UnitTests
             var result = _controller.PostMeal(mealDto);
 
             result.Result.Should().BeOfType<BadRequestObjectResult>();
+        }
+
+        [Fact]
+        public void Delete_WhenMealExists_ReturnsOkAndDish()
+        {
+            var dish = _mealRepository.GetAll().First();
+
+            var result = _controller.DeleteMeal(dish.Id);
+
+            result.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)result.Result!).Value.Should().BeOfType<MealDTO>();
+        }
+
+        [Fact]
+        public void Delete_WhenMealDoesntExist_ReturnsNotFound()
+        {
+            Guid nonExistingMealGuid = new Guid("99999999-9999-9999-9999-999999999999");
+
+            var result = _controller.DeleteMeal(nonExistingMealGuid);
+
+            result.Result.Should().BeOfType<NotFoundObjectResult>();
         }
     }
 }

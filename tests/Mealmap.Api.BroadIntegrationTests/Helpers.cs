@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Mealmap.Api.DataAccess;
+﻿using Mealmap.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Api.BroadIntegrationTests
 {
     internal class Helpers
-    {   
+    {
         public static void DetachAllEntities(MealmapDbContext dbContext)
         {
             var undetachedEntriesCopy = dbContext.ChangeTracker.Entries()

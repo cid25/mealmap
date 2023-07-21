@@ -15,7 +15,7 @@ namespace Mealmap.Api.UnitTests
         {
             Guid dishGuid = new("00000000-0000-0000-0000-000000000001");
             var _dishRepositoryMock = Mock.Of<IDishRepository>(m =>
-                m.GetById(dishGuid) == new Dish("Krabby Patty") { Id = dishGuid });
+                m.GetSingle(dishGuid) == new Dish("Krabby Patty") { Id = dishGuid });
             var mapper = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper();
 
             _mealMapper = new MealMapper(Mock.Of<ILogger<MealMapper>>(), mapper, _dishRepositoryMock);

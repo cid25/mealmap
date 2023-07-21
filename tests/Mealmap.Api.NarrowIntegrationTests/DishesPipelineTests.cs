@@ -37,7 +37,7 @@ namespace Mealmap.Api.NarrowIntegrationTests
                 services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
                 {
                     Dish dish = new("Tuna Supreme") { Id = guid };
-                    return Mock.Of<IDishRepository>(mock => mock.GetById(It.IsAny<Guid>()) == dish);
+                    return Mock.Of<IDishRepository>(mock => mock.GetSingle(It.IsAny<Guid>()) == dish);
                 }));
             });
 
@@ -56,7 +56,7 @@ namespace Mealmap.Api.NarrowIntegrationTests
                 services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
                 {
                     Dish dish = new("Tuna Supreme") { Id = guid };
-                    return Mock.Of<IDishRepository>(mock => mock.GetById(It.IsAny<Guid>()) == dish);
+                    return Mock.Of<IDishRepository>(mock => mock.GetSingle(It.IsAny<Guid>()) == dish);
                 }));
             });
 
@@ -98,7 +98,7 @@ namespace Mealmap.Api.NarrowIntegrationTests
                 services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
                 {
                     Dish dish = new("Tuna Supreme") { Id = guid, Image = new DishImage(new byte[1], contentType) };
-                    return Mock.Of<IDishRepository>(m => m.GetById(It.IsAny<Guid>()) == dish);
+                    return Mock.Of<IDishRepository>(m => m.GetSingle(It.IsAny<Guid>()) == dish);
                 }));
             });
 
@@ -117,7 +117,7 @@ namespace Mealmap.Api.NarrowIntegrationTests
                 services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
                 {
                     Dish dish = new("Tuna Supreme") { Id = guid };
-                    return Mock.Of<IDishRepository>(m => m.GetById(It.IsAny<Guid>()) == dish);
+                    return Mock.Of<IDishRepository>(m => m.GetSingle(It.IsAny<Guid>()) == dish);
                 }));
             });
 
@@ -133,7 +133,7 @@ namespace Mealmap.Api.NarrowIntegrationTests
             {
                 services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
                 {
-                    return Mock.Of<IDishRepository>(m => m.GetById(It.IsAny<Guid>()) == null);
+                    return Mock.Of<IDishRepository>(m => m.GetSingle(It.IsAny<Guid>()) == null);
                 }));
             });
 

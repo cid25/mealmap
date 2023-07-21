@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Mealmap.Api.DataAccess;
+using Mealmap.DataAccess;
 using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -41,44 +41,44 @@ namespace Mealmap.Api.BroadIntegrationTests
 
 
         [Fact]
-        public void GetMultiple_WithoutArguments_ReturnsAllMeals()
+        public void GetAll_WithoutArguments_ReturnsAllMeals()
         {
             var expectedCount = _dbContext.Meals.Count();
 
-            var result = _repository.GetMultiple();
+            var result = _repository.GetAll();
 
             result.Should().NotBeEmpty().And.HaveCount(expectedCount);
         }
 
         [Fact]
-        public void GetMultiple_WhenFilteringFromDate_ReturnsProperSet()
+        public void GetAll_WhenFilteringFromDate_ReturnsProperSet()
         {
             DateOnly fromDate = new(2020, 1, 2);
 
-            var result = _repository.GetMultiple(fromDate: fromDate);
+            var result = _repository.GetAll(fromDate: fromDate);
 
             result.Should().NotBeEmpty().And.HaveCount(3);
             result.Should().NotContain(m => m.Id == new Guid("10000000-0000-0000-0000-000000000001"));
         }
 
         [Fact]
-        public void GetMultiple_WhenFilteringToDate_ReturnsProperSet()
+        public void GetAll_WhenFilteringToDate_ReturnsProperSet()
         {
             DateOnly toDate = new(2020, 1, 3);
 
-            var result = _repository.GetMultiple(toDate: toDate);
+            var result = _repository.GetAll(toDate: toDate);
 
             result.Should().NotBeEmpty().And.HaveCount(3);
             result.Should().NotContain(m => m.Id == new Guid("10000000-0000-0000-0000-000000000004"));
         }
 
         [Fact]
-        public void GetMultiple_WhenFilteringFromAndToDate_ReturnsProperSet()
+        public void GetAll_WhenFilteringFromAndToDate_ReturnsProperSet()
         {
             DateOnly fromDate = new(2020, 1, 2);
             DateOnly toDate = new(2020, 1, 3);
 
-            var result = _repository.GetMultiple(fromDate, toDate);
+            var result = _repository.GetAll(fromDate, toDate);
 
             result.Should().NotBeEmpty().And.HaveCount(2);
             result.Should().NotContain(m => m.Id == new Guid("10000000-0000-0000-0000-000000000001"));
@@ -117,7 +117,7 @@ namespace Mealmap.Api.BroadIntegrationTests
         }
 
         [Fact]
-        public void Delete_RemovesEntry()
+        public void Remove_RemovesEntry()
         {
             var expectedCount = _dbContext.Meals.Count();
             var meal = _dbContext.Meals.First();
@@ -126,6 +126,5 @@ namespace Mealmap.Api.BroadIntegrationTests
 
             _dbContext.Meals.Count().Should().Be(expectedCount - 1);
         }
-
     }
 }

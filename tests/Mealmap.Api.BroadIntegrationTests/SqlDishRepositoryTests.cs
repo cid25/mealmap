@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Mealmap.Api.DataAccess;
+using Mealmap.DataAccess;
 using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -71,38 +71,38 @@ namespace Mealmap.Api.BroadIntegrationTests
         }
 
         [Fact]
-        public void GetById_WhenIdNonExisting_ReturnsNull()
+        public void GetSingle_WhenIdNonExisting_ReturnsNull()
         {
             const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
-            var result = _repository.GetById(new Guid(nonExistingGuid));
+            var result = _repository.GetSingle(new Guid(nonExistingGuid));
 
             result.Should().BeNull();
         }
 
         [Fact]
-        public void GetById_WhenIdExists_ReturnsDish()
+        public void GetSingle_WhenIdExists_ReturnsDish()
         {
             const string existingGuid = "00000000-0000-0000-0000-000000000001";
-            var result = _repository.GetById(new Guid(existingGuid));
+            var result = _repository.GetSingle(new Guid(existingGuid));
 
             result.Should().NotBeNull();
             result!.Name.Should().Be("Krabby Patty");
         }
 
         [Fact]
-        public void Create_WhenDishValid_CreatesEntry()
+        public void Add_WhenDishValid_CreatesEntry()
         {
             const string someDishName = "Salty Sea Dog";
             Guid someGuid = Guid.NewGuid();
             Dish dish = new(someDishName) { Id = someGuid };
 
-            _repository.Create(dish);
+            _repository.Add(dish);
 
             _dbContext.Dishes.First(x => x.Id == someGuid).Should().NotBeNull();
         }
 
         [Fact]
-        public void Create_WhenDishHasIngredients_CreatesIngredients()
+        public void Add_WhenDishHasIngredients_CreatesIngredients()
         {
             const string someDishName = "Salty Sea Dog";
             Guid someGuid = Guid.NewGuid();
@@ -111,7 +111,7 @@ namespace Mealmap.Api.BroadIntegrationTests
             dish.AddIngredient(0.5m, "Liter", "Ketchup");
             dish.AddIngredient(0.3m, "Liter", "Mustard");
 
-            _repository.Create(dish);
+            _repository.Add(dish);
 
             _dbContext.Dishes.First(x => x.Id == someGuid).Ingredients.Should().HaveCount(3);
         }
@@ -124,7 +124,7 @@ namespace Mealmap.Api.BroadIntegrationTests
             Dish initialDish = new(someDishName) { Id = guid };
             _dbContext.Dishes.Add(initialDish);
             _dbContext.SaveChanges();
-            _dbContext.Entry(initialDish).State = EntityState.Detached;
+            _dbContext.Remove(initialDish);
 
             const string anotherDishName = "Tuna Supreme";
             var newDisconnectedDish = new Dish(anotherDishName) { Id = guid };
@@ -171,6 +171,17 @@ namespace Mealmap.Api.BroadIntegrationTests
             _repository.Update(adaptedDish);
 
             _dbContext.Dishes.First(d => d.Id == originalDish.Id).Ingredients.Should().HaveCount(originalIngredientCount - 1);
+        }
+
+        [Fact]
+        public void Remove_RemovesEntry()
+        {
+            var expectedCount = _dbContext.Dishes.Count();
+            var dish = _dbContext.Dishes.First();
+
+            _repository.Remove(dish!);
+
+            _dbContext.Dishes.Count().Should().Be(expectedCount - 1);
         }
     }
 }

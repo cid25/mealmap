@@ -1,7 +1,7 @@
 ﻿using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mealmap.Api.DataAccess
+namespace Mealmap.DataAccess
 {
     public class MealmapDbContext : DbContext
     {
@@ -9,7 +9,7 @@ namespace Mealmap.Api.DataAccess
             : base(options)
         {
         }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder

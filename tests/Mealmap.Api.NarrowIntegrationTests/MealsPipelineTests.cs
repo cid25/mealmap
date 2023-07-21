@@ -17,7 +17,7 @@ namespace Mealmap.Api.NarrowIntegrationTests
                 services.Replace(ServiceDescriptor.Scoped<IMealRepository>(_ =>
                 {
                     List<Meal> meals = new() { new Meal() { Id = Guid.NewGuid(), DiningDate = new DateOnly(2020, 1, 1) } };
-                    return Mock.Of<IMealRepository>(mock => mock.GetMultiple(null, null) == meals);
+                    return Mock.Of<IMealRepository>(mock => mock.GetAll(null, null) == meals);
                 }));
             });
 
@@ -35,7 +35,7 @@ namespace Mealmap.Api.NarrowIntegrationTests
                 services.Replace(ServiceDescriptor.Scoped<IMealRepository>(_ =>
                 {
                     List<Meal> meals = new();
-                    return Mock.Of<IMealRepository>(mock => mock.GetMultiple(It.IsAny<DateOnly>(), It.IsAny<DateOnly>()) == meals);
+                    return Mock.Of<IMealRepository>(mock => mock.GetAll(It.IsAny<DateOnly>(), It.IsAny<DateOnly>()) == meals);
                 }));
             });
 

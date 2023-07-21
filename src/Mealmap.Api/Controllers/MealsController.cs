@@ -39,11 +39,11 @@ public class MealsController : ControllerBase
     /// <param name="toDate">Date until which to include meals.</param>
     [HttpGet(Name = nameof(GetMeals))]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
     public ActionResult<IEnumerable<MealDTO>> GetMeals([FromQuery] DateOnly? fromDate, [FromQuery] DateOnly? toDate)
     {
-        var meals = _mealRepository.GetMultiple(fromDate, toDate);
+        var meals = _mealRepository.GetAll(fromDate, toDate);
 
         if (!meals.Any())
             return NoContent();
@@ -61,8 +61,8 @@ public class MealsController : ControllerBase
     /// <response code="404">Meal Not Found</response>
     [HttpGet("{id}", Name = nameof(GetMeal))]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     public ActionResult<MealDTO> GetMeal([FromRoute] Guid id)
     {
         Meal? meal = _mealRepository.GetSingle(id);
@@ -84,8 +84,8 @@ public class MealsController : ControllerBase
     [HttpPost(Name = nameof(PostMeal))]
     [Consumes("application/json")]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(MealDTO), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [SwaggerRequestExample(typeof(MealDTO), typeof(MealPostRequestExample))]
     [SwaggerResponseExample(201, typeof(MealPostResponseExample))]
     public ActionResult<MealDTO> PostMeal([FromBody] MealDTO mealDTO)
@@ -109,15 +109,15 @@ public class MealsController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes a meal.
+    /// Deletes a specific meal.
     /// </summary>
     /// <param name="id">The id of the meal to delete.</param>
     /// <response code="200">Meal Deleted</response>
     /// <response code="404">Meal Not Found</response>
     [HttpDelete("{id}", Name = nameof(DeleteMeal))]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     public ActionResult<MealDTO> DeleteMeal([FromRoute] Guid id)
     {
         var meal = _mealRepository.GetSingle(id);

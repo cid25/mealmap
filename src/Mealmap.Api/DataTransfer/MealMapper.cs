@@ -30,7 +30,7 @@ namespace Mealmap.Api.DataTransfer
 
             if (dto.DishId != null && dto.DishId != Guid.Empty)
             {
-                var dish = _dishRepository.GetById((Guid)dto.DishId);
+                var dish = _dishRepository.GetSingle((Guid)dto.DishId);
 
                 if (dish == null)
                 {

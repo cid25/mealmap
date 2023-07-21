@@ -10,14 +10,14 @@ namespace Mealmap.Api.UnitTests
             return Values;
         }
 
-        public Dish? GetById(Guid id)
+        public Dish? GetSingle(Guid id)
         {
             TryGetValue(id, out var dish);
 
             return dish;
         }
 
-        public void Create(Dish dish)
+        public void Add(Dish dish)
         {
             Add((Guid)dish.Id, dish);
         }
@@ -28,6 +28,12 @@ namespace Mealmap.Api.UnitTests
                 throw new InvalidOperationException();
 
             Add(dish.Id, dish);
+        }
+
+        public void Remove(Dish dish)
+        {
+            if (!Remove(dish.Id))
+                throw new InvalidOperationException();
         }
     }
 }

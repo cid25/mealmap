@@ -2,7 +2,7 @@
 {
     public interface IMealRepository
     {
-        public IEnumerable<Meal> GetMultiple(DateOnly? fromDate = null, DateOnly? toDate = null);
+        public IEnumerable<Meal> GetAll(DateOnly? fromDate = null, DateOnly? toDate = null);
 
         public Meal? GetSingle(Guid id);
 

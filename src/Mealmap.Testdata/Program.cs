@@ -1,4 +1,4 @@
-﻿using Mealmap.Api.DataAccess;
+﻿using Mealmap.DataAccess;
 using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

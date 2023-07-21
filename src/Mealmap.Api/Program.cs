@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using Mealmap.Api;
-using Mealmap.Api.DataAccess;
 using Mealmap.Api.DataTransfer;
 using Mealmap.Api.Formatters;
 using Mealmap.Api.Swashbuckle;
+using Mealmap.DataAccess;
 using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
