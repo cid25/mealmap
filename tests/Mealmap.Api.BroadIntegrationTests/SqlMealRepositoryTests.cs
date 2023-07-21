@@ -41,44 +41,44 @@ namespace Mealmap.Api.BroadIntegrationTests
 
 
         [Fact]
-        public void GetAll_WithoutArguments_ReturnsAllMeals()
+        public void GetMultiple_WithoutArguments_ReturnsAllMeals()
         {
             var expectedCount = _dbContext.Meals.Count();
 
-            var result = _repository.GetAll();
+            var result = _repository.GetMultiple();
 
             result.Should().NotBeEmpty().And.HaveCount(expectedCount);
         }
 
         [Fact]
-        public void GetAll_WhenFilteringFromDate_ReturnsProperSet()
+        public void GetMultiple_WhenFilteringFromDate_ReturnsProperSet()
         {
             DateOnly fromDate = new(2020, 1, 2);
 
-            var result = _repository.GetAll(fromDate: fromDate);
+            var result = _repository.GetMultiple(fromDate: fromDate);
 
             result.Should().NotBeEmpty().And.HaveCount(3);
             result.Should().NotContain(m => m.Id == new Guid("10000000-0000-0000-0000-000000000001"));
         }
 
         [Fact]
-        public void GetAll_WhenFilteringToDate_ReturnsProperSet()
+        public void GetMultiple_WhenFilteringToDate_ReturnsProperSet()
         {
             DateOnly toDate = new(2020, 1, 3);
 
-            var result = _repository.GetAll(toDate: toDate);
+            var result = _repository.GetMultiple(toDate: toDate);
 
             result.Should().NotBeEmpty().And.HaveCount(3);
             result.Should().NotContain(m => m.Id == new Guid("10000000-0000-0000-0000-000000000004"));
         }
 
         [Fact]
-        public void GetAll_WhenFilteringFromAndToDate_ReturnsProperSet()
+        public void GetMultiple_WhenFilteringFromAndToDate_ReturnsProperSet()
         {
             DateOnly fromDate = new(2020, 1, 2);
             DateOnly toDate = new(2020, 1, 3);
 
-            var result = _repository.GetAll(fromDate, toDate);
+            var result = _repository.GetMultiple(fromDate, toDate);
 
             result.Should().NotBeEmpty().And.HaveCount(2);
             result.Should().NotContain(m => m.Id == new Guid("10000000-0000-0000-0000-000000000001"));
@@ -89,7 +89,7 @@ namespace Mealmap.Api.BroadIntegrationTests
         public void GetById_WhenMealWithIdNonExisting_ReturnsNull()
         {
             const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
-            var result = _repository.GetById(new Guid(nonExistingGuid));
+            var result = _repository.GetSingle(new Guid(nonExistingGuid));
 
             result.Should().BeNull();
         }
@@ -98,7 +98,7 @@ namespace Mealmap.Api.BroadIntegrationTests
         public void GetById_WhenMealWithIdExists_ReturnsMealWithDish()
         {
             const string existingGuid = "10000000-0000-0000-0000-000000000001";
-            var result = _repository.GetById(new Guid(existingGuid));
+            var result = _repository.GetSingle(new Guid(existingGuid));
 
             result.Should().NotBeNull();
             result!.Dish.Should().NotBeNull();
@@ -111,9 +111,20 @@ namespace Mealmap.Api.BroadIntegrationTests
             var guid = Guid.NewGuid();
             Meal meal = new() { Id = guid, DiningDate = new DateOnly(2020, 12, 31), Dish = dish };
 
-            _repository.Create(meal);
+            _repository.Add(meal);
 
             _dbContext.Meals.First(x => x.Id == guid).Should().NotBeNull();
+        }
+
+        [Fact]
+        public void Delete_RemovesEntry()
+        {
+            var expectedCount = _dbContext.Meals.Count();
+            var meal = _dbContext.Meals.First();
+
+            _repository.Remove(meal!);
+
+            _dbContext.Meals.Count().Should().Be(expectedCount - 1);
         }
 
     }

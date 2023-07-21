@@ -47,7 +47,7 @@ namespace Mealmap.Api.UnitTests
                 DiningDate = new DateOnly(2020, 1, 1),
                 Dish = krabbyPatty
             };
-            _mealRepository.Create(yesterdaysMeal);
+            _mealRepository.Add(yesterdaysMeal);
         }
 
         [Fact]
@@ -77,7 +77,7 @@ namespace Mealmap.Api.UnitTests
             const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
             var result = _controller.GetMeal(new Guid(nonExistingGuid));
 
-            result.Result.Should().BeOfType<NotFoundResult>();
+            result.Result.Should().BeOfType<NotFoundObjectResult>();
         }
 
         [Fact]

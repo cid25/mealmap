@@ -11,9 +11,8 @@ namespace Mealmap.Api.DataAccess
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Meal> GetAll(DateOnly? fromDate = null, DateOnly? toDate = null)
+        public IEnumerable<Meal> GetMultiple(DateOnly? fromDate = null, DateOnly? toDate = null)
         {
-            //var meals = _dbContext.Meals.ToList();
             var meals = _dbContext.Meals.AsQueryable();
 
             if (fromDate != null)
@@ -24,16 +23,22 @@ namespace Mealmap.Api.DataAccess
             return meals.ToList();
         }
 
-        public Meal? GetById(Guid id)
+        public Meal? GetSingle(Guid id)
         {
             var meal = _dbContext.Meals.FirstOrDefault(x => x.Id == id);
 
             return meal;
         }
 
-        public void Create(Meal meal)
+        public void Add(Meal meal)
         {
             _dbContext.Meals.Add(meal);
+            _dbContext.SaveChanges();
+        }
+
+        public void Remove(Meal meal)
+        {
+            _dbContext.Meals.Remove(meal);
             _dbContext.SaveChanges();
         }
     }

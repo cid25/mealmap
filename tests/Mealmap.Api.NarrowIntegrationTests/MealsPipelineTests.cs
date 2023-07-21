@@ -17,7 +17,7 @@ namespace Mealmap.Api.NarrowIntegrationTests
                 services.Replace(ServiceDescriptor.Scoped<IMealRepository>(_ =>
                 {
                     List<Meal> meals = new() { new Meal() { Id = Guid.NewGuid(), DiningDate = new DateOnly(2020, 1, 1) } };
-                    return Mock.Of<IMealRepository>(mock => mock.GetAll(null, null) == meals);
+                    return Mock.Of<IMealRepository>(mock => mock.GetMultiple(null, null) == meals);
                 }));
             });
 
@@ -35,7 +35,7 @@ namespace Mealmap.Api.NarrowIntegrationTests
                 services.Replace(ServiceDescriptor.Scoped<IMealRepository>(_ =>
                 {
                     List<Meal> meals = new();
-                    return Mock.Of<IMealRepository>(mock => mock.GetAll(It.IsAny<DateOnly>(), It.IsAny<DateOnly>()) == meals);
+                    return Mock.Of<IMealRepository>(mock => mock.GetMultiple(It.IsAny<DateOnly>(), It.IsAny<DateOnly>()) == meals);
                 }));
             });
 
@@ -52,7 +52,7 @@ namespace Mealmap.Api.NarrowIntegrationTests
                 services.Replace(ServiceDescriptor.Scoped<IMealRepository>(_ =>
                 {
                     Meal meal = new() { Id = Guid.NewGuid() };
-                    return Mock.Of<IMealRepository>(mock => mock.GetById(It.IsAny<Guid>()) == meal);
+                    return Mock.Of<IMealRepository>(mock => mock.GetSingle(It.IsAny<Guid>()) == meal);
                 }));
             });
 
@@ -60,6 +60,43 @@ namespace Mealmap.Api.NarrowIntegrationTests
 
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+        }
+
+        [Fact]
+        public async void DeleteMeal_DeletesAndReturnsJsonAndStatusOk()
+        {
+            Meal meal = new() { Id = Guid.NewGuid(), DiningDate = new DateOnly(2020, 1, 1) };
+            var repositoryMock = new Mock<IMealRepository>();
+            repositoryMock.Setup(m => m.GetSingle(It.IsAny<Guid>())).Returns(meal);
+            var factory = new MockableWebApplicationFactory(services =>
+            {
+                services.Replace(ServiceDescriptor.Scoped<IMealRepository>(_ =>
+                {
+                    return repositoryMock.Object;
+                }));
+            });
+
+            var response = await factory.CreateClient().DeleteAsync("/api/meals/" + Guid.NewGuid());
+
+            repositoryMock.Verify(r => r.Remove(meal), Times.Once());
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+        }
+
+        [Fact]
+        public async void DeleteMeal_WhenMealDoesntExist_ReturnsNotFound()
+        {
+            var factory = new MockableWebApplicationFactory(services =>
+            {
+                services.Replace(ServiceDescriptor.Scoped<IMealRepository>(_ =>
+                {
+                    return Mock.Of<IMealRepository>(mock => mock.GetSingle(It.IsAny<Guid>()) == null);
+                }));
+            });
+
+            var response = await factory.CreateClient().DeleteAsync("/api/meals/" + Guid.NewGuid());
+
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
         }
     }
 }
