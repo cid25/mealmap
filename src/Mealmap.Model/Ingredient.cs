@@ -7,6 +7,7 @@ namespace Mealmap.Model
     [Table("ingredients", Schema = "mealmap")]
     public record Ingredient
     {
+        [Precision(8, 2)]
         public decimal Quantity { get; init; }
 
         [NotMapped]
