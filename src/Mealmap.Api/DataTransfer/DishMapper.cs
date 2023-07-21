@@ -24,7 +24,7 @@ namespace Mealmap.Api.DataTransfer
         public DishDTO MapFromEntity(Dish dish)
         {
             if (_httpContext is null)
-                throw new InvalidOperationException($"Mapping from DishDTO to Dish cannot be executed with an httpContext");
+                throw new InvalidOperationException($"Mapping from DishDTO to Dish cannot be executed without an httpContext");
 
             var dto = _mapper.Map<DishDTO>(dish);
 
