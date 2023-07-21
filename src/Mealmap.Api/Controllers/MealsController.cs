@@ -37,9 +37,14 @@ public class MealsController : ControllerBase
     [HttpGet(Name = nameof(GetMeals))]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult<IEnumerable<MealDTO>> GetMeals()
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public ActionResult<IEnumerable<MealDTO>> GetMeals([FromQuery] DateOnly? fromDate, [FromQuery] DateOnly? toDate)
     {
-        var meals = _mealRepository.GetAll();
+        var meals = _mealRepository.GetAll(fromDate, toDate);
+
+        if (!meals.Any())
+            return NoContent();
+
         var mealDTOs = _mapper.MapFromEntities(meals);
 
         return mealDTOs;

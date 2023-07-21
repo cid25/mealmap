@@ -33,19 +33,56 @@ namespace Mealmap.Api.BroadIntegrationTests
         {
             var dish = new Dish("Sailors Surprise") { Id = new Guid("00000000-0000-0000-0000-000000000001") };
             _dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000001"), DiningDate = new DateOnly(2020, 1, 1), Dish = dish });
-            _dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000010"), DiningDate = new DateOnly(2020, 1, 2), Dish = dish });
+            _dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000002"), DiningDate = new DateOnly(2020, 1, 2), Dish = dish });
+            _dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000003"), DiningDate = new DateOnly(2020, 1, 3), Dish = dish });
+            _dbContext.Meals.Add(new Meal() { Id = new Guid("10000000-0000-0000-0000-000000000004"), DiningDate = new DateOnly(2020, 1, 4), Dish = dish });
             _dbContext.SaveChanges();
         }
 
 
         [Fact]
-        public void GetAll_ReturnsAllMeals()
+        public void GetAll_WithoutArguments_ReturnsAllMeals()
         {
             var expectedCount = _dbContext.Meals.Count();
 
             var result = _repository.GetAll();
 
             result.Should().NotBeEmpty().And.HaveCount(expectedCount);
+        }
+
+        [Fact]
+        public void GetAll_WhenFilteringFromDate_ReturnsProperSet()
+        {
+            DateOnly fromDate = new(2020, 1, 2);
+
+            var result = _repository.GetAll(fromDate: fromDate);
+
+            result.Should().NotBeEmpty().And.HaveCount(3);
+            result.Should().NotContain(m => m.Id == new Guid("10000000-0000-0000-0000-000000000001"));
+        }
+
+        [Fact]
+        public void GetAll_WhenFilteringToDate_ReturnsProperSet()
+        {
+            DateOnly toDate = new(2020, 1, 3);
+
+            var result = _repository.GetAll(toDate: toDate);
+
+            result.Should().NotBeEmpty().And.HaveCount(3);
+            result.Should().NotContain(m => m.Id == new Guid("10000000-0000-0000-0000-000000000004"));
+        }
+
+        [Fact]
+        public void GetAll_WhenFilteringFromAndToDate_ReturnsProperSet()
+        {
+            DateOnly fromDate = new(2020, 1, 2);
+            DateOnly toDate = new(2020, 1, 3);
+
+            var result = _repository.GetAll(fromDate, toDate);
+
+            result.Should().NotBeEmpty().And.HaveCount(2);
+            result.Should().NotContain(m => m.Id == new Guid("10000000-0000-0000-0000-000000000001"));
+            result.Should().NotContain(m => m.Id == new Guid("10000000-0000-0000-0000-000000000004"));
         }
 
         [Fact]

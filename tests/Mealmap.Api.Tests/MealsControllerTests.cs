@@ -53,7 +53,7 @@ namespace Mealmap.Api.UnitTests
         [Fact]
         public void GetMeals_ReturnsMealDTOs()
         {
-            var result = _controller.GetMeals();
+            var result = _controller.GetMeals(null, null);
 
             result.Should().BeOfType<ActionResult<IEnumerable<MealDTO>>>();
             result.Value.Should().HaveCountGreaterThan(0);

@@ -25,7 +25,7 @@ namespace Mealmap.Api.NarrowIntegrationTests
             var response = await factory.CreateClient().GetAsync("/api/dishes");
 
             response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
-            response.Should().BeSuccessful();
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         }
 
         [Fact]
@@ -37,14 +37,14 @@ namespace Mealmap.Api.NarrowIntegrationTests
                 services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
                 {
                     Dish dish = new("Tuna Supreme") { Id = guid };
-                    return Mock.Of<IDishRepository>(mock => mock.GetById(It.IsAny<Guid>()) == dish );
+                    return Mock.Of<IDishRepository>(mock => mock.GetById(It.IsAny<Guid>()) == dish);
                 }));
             });
 
             var response = await factory.CreateClient().GetAsync("/api/dishes/" + guid.ToString());
 
             response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
-            response.Should().BeSuccessful();
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace Mealmap.Api.NarrowIntegrationTests
             {
                 services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
                 {
-                    Dish dish = new("Tuna Supreme") { Id =  guid };
+                    Dish dish = new("Tuna Supreme") { Id = guid };
                     return Mock.Of<IDishRepository>(mock => mock.GetById(It.IsAny<Guid>()) == dish);
                 }));
             });
@@ -105,7 +105,7 @@ namespace Mealmap.Api.NarrowIntegrationTests
             var response = await factory.CreateClient().GetAsync("/api/dishes/" + Guid.NewGuid() + "/image");
 
             response.Content.Headers.ContentType!.MediaType.Should().Be(contentType);
-            response.Should().BeSuccessful();
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         }
 
         [Fact]
