@@ -22,13 +22,16 @@ namespace Mealmap.Api.UnitTests
             _dishRepository = new FakeDishRepository();
             _mealRepository = new FakeMealRepository();
 
+            var mapper = new MealMapper(
+                Mock.Of<ILogger<MealMapper>>(),
+                new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper(),
+                _dishRepository);
+
             _controller = new MealsController(
                 _logger,
                 _mealRepository,
                 _dishRepository,
-                new MealMapper(
-                    new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper()
-                    , _dishRepository));
+                mapper);
 
             fakeData();
         }
@@ -103,15 +106,14 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void PostMeal_WhenMealHasId_ReplacesId()
+        public void PostMeal_WhenMealHasId_ReturnsBadRequest()
         {
             Guid someGuid = Guid.NewGuid();
             MealDTO mealDto = new() { Id = someGuid };
 
             var result = _controller.PostMeal(mealDto);
 
-            var value = (MealDTO)((CreatedAtActionResult)result.Result!).Value!;
-            value.Id.Should().NotBeNull().And.NotBeEmpty().And.NotBe(someGuid);
+            result.Result.Should().BeOfType<BadRequestObjectResult>();
         }
 
         [Fact]

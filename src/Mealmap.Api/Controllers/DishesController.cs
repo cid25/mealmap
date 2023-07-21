@@ -80,17 +80,19 @@ namespace Mealmap.Api.Controllers
         [SwaggerResponseExample(201, typeof(DishPostResponseExample))]
         public ActionResult<DishDTO> PostDish([FromBody] DishDTO dishDTO)
         {
-            if (String.IsNullOrWhiteSpace(dishDTO.Name))
+            Dish dish;
+
+            try
             {
-                _logger.LogInformation("Attempt to create dish with empty name");
-                return BadRequest();
+                dish = _mapper.MapFromDTO(dishDTO);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
             }
 
-            dishDTO = dishDTO with { Id = Guid.NewGuid() };
-            var dish = _mapper.MapFromDTO(dishDTO);
-
             _repository.Create(dish);
-            _logger.LogInformation("Dish with id {Id} created", dish.Id);
+            _logger.LogInformation("Created dish with id {Id}", dish.Id);
 
             var dishCreated = _mapper.MapFromEntity(dish);
 

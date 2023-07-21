@@ -61,7 +61,7 @@ public class MealsController : ControllerBase
 
         if (meal == null)
         {
-            _logger.LogInformation("Attempt to retrieve non-existing meal");
+            _logger.LogInformation("Client attempt to retrieve non-existing meal with Id {Id]", id);
             return NotFound();
         }
 
@@ -82,20 +82,19 @@ public class MealsController : ControllerBase
     [SwaggerResponseExample(201, typeof(MealPostResponseExample))]
     public ActionResult<MealDTO> PostMeal([FromBody] MealDTO mealDTO)
     {
-        mealDTO = mealDTO with { Id = Guid.NewGuid() };
         Meal meal;
 
         try
         {
             meal = _mapper.MapFromDTO(mealDTO);
         }
-        catch (ArgumentException ex)
+        catch (InvalidOperationException ex)
         {
             return BadRequest(ex.Message);
         }
 
         _mealRepository.Create(meal);
-        _logger.LogInformation("Meal with id {Id} created", meal.Id);
+        _logger.LogInformation("Created meal with id {Id}", meal.Id);
 
         var mealCreated = _mapper.MapFromEntity(meal);
         return CreatedAtAction(nameof(GetMeal), new { id = mealCreated.Id }, mealCreated);

@@ -26,6 +26,7 @@ namespace Mealmap.Api.UnitTests
                 _logger,
                 _repository,
                 new DishMapper(
+                    Mock.Of<ILogger<DishMapper>>(),
                     new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper(),
                     Mock.Of<IHttpContextAccessor>(accessor =>
                         accessor.HttpContext == Mock.Of<HttpContext>(context =>
@@ -100,7 +101,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void PostDish_WhenDishAlreadyHasId_ReplacesId()
+        public void PostDish_WhenDishAlreadyHasId_ReturnsBadRequest()
         {
             const string someDishName = "Sailors Surprise";
             var someGuid = Guid.NewGuid();
@@ -108,8 +109,7 @@ namespace Mealmap.Api.UnitTests
 
             var result = _controller.PostDish(dish);
 
-            var value = (DishDTO)((CreatedAtActionResult)result.Result!).Value!;
-            value.Id.Should().NotBeNull().And.NotBeEmpty().And.NotBe(someGuid);
+            result.Result.Should().BeOfType<BadRequestObjectResult>();
         }
 
         [Theory]
@@ -122,7 +122,7 @@ namespace Mealmap.Api.UnitTests
 
             var result = _controller.PostDish(dish);
 
-            result.Result.Should().BeOfType<BadRequestResult>();
+            result.Result.Should().BeOfType<BadRequestObjectResult>();
         }
 
         [Theory]
