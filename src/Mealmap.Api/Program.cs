@@ -38,10 +38,7 @@ builder.Services.AddControllers(options =>
 
 // Add Swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<DishPostRequestExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<DishPostResponseExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<MealPostRequestExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<MealPostResponseExample>();
+builder.Services.AddSwaggerOperationExamples();
 builder.Services.AddSwaggerGen(options =>
     {
         options.SwaggerDoc("v1", new OpenApiInfo
