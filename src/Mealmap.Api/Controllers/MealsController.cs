@@ -15,18 +15,15 @@ public class MealsController : ControllerBase
 {
     private readonly ILogger<MealsController> _logger;
     private readonly IMealRepository _mealRepository;
-    private readonly IDishRepository _dishRepository;
     private readonly MealMapper _mapper;
 
     public MealsController(
         ILogger<MealsController> logger,
         IMealRepository mealRepository,
-        IDishRepository dishRepository,
         MealMapper mapper)
     {
         _logger = logger;
         _mealRepository = mealRepository;
-        _dishRepository = dishRepository;
         _mapper = mapper;
     }
 

@@ -30,7 +30,6 @@ namespace Mealmap.Api.UnitTests
             _controller = new MealsController(
                 _logger,
                 _mealRepository,
-                _dishRepository,
                 mapper);
 
             fakeData();
