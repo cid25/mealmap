@@ -134,13 +134,13 @@ namespace Mealmap.Api.UnitTests
             };
             var mockRepository = new Mock<IDishRepository>();
             mockRepository.Setup(m => m.GetSingle(It.IsAny<Guid>())).Returns(new Dish(someDishName) { Version = Convert.FromBase64String(eTag) });
-            mockRepository.Setup(m => m.Update(It.IsAny<Dish>())).Throws(new DbUpdateConcurrencyException());
+            mockRepository.Setup(m => m.Update(It.IsAny<Dish>(), true)).Throws(new DbUpdateConcurrencyException());
             var controller = new DishesController(_logger, mockRepository.Object,
                 Mock.Of<IDishMapper>(), Mock.Of<IRequestContext>(m => m.IfMatchHeader == eTag));
 
             var result = controller.PutDish(dish);
 
-            mockRepository.Verify(m => m.Update(It.IsAny<Dish>()), Times.Once);
+            mockRepository.Verify(m => m.Update(It.IsAny<Dish>(), true), Times.Once);
             result.Should().BeOfType<ActionResult<DishDTO>>();
         }
 
@@ -203,7 +203,7 @@ namespace Mealmap.Api.UnitTests
             };
             var mockRepository = new Mock<IDishRepository>();
             mockRepository.Setup(m => m.GetSingle(It.IsAny<Guid>())).Returns(new Dish(someDishName) { Version = Convert.FromBase64String(eTag) });
-            mockRepository.Setup(m => m.Update(It.IsAny<Dish>())).Throws(new DbUpdateConcurrencyException());
+            mockRepository.Setup(m => m.Update(It.IsAny<Dish>(), true)).Throws(new DbUpdateConcurrencyException());
             var controller = new DishesController(_logger, mockRepository.Object,
                 Mock.Of<IDishMapper>(), Mock.Of<IRequestContext>(m => m.IfMatchHeader == eTag));
 
@@ -214,7 +214,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void Delete_WhenDishExists_ReturnsOkAndDish()
+        public void DeleteDish_WhenDishExists_ReturnsOkAndDish()
         {
             var dish = _repository.GetAll().First();
 
@@ -225,7 +225,7 @@ namespace Mealmap.Api.UnitTests
         }
 
         [Fact]
-        public void Delete_WhenDishDoesntExist_ReturnsNotFound()
+        public void DeleteDish_WhenDishDoesntExist_ReturnsNotFound()
         {
             Guid nonExistingDishGuid = new Guid("99999999-9999-9999-9999-999999999999");
 
@@ -296,6 +296,36 @@ namespace Mealmap.Api.UnitTests
             var result = _controller.GetDishImage(nonExistingDishGuid);
 
             result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Fact]
+        public void DeleteDishImage_ReturnsOk()
+        {
+            Guid dishWithImage = new("00000000-0000-0000-0000-000000000002");
+
+            var result = _controller.DeleteDishImage(dishWithImage);
+
+            result.Should().BeOfType<OkResult>();
+        }
+
+        [Fact]
+        public void DeleteDishImage_WhenDishDoesntExist_ReturnsBadRequest()
+        {
+            Guid nonExistingGuid = new("99999999-9999-9999-9999-999999999999");
+
+            var result = _controller.DeleteDishImage(nonExistingGuid);
+
+            result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Fact]
+        public void DeleteDishImage_WhenNoImage_ReturnsNoContent()
+        {
+            Guid dishWithoutImage = new("00000000-0000-0000-0000-000000000001");
+
+            var result = _controller.DeleteDishImage(dishWithoutImage);
+
+            result.Should().BeOfType<NoContentResult>();
         }
     }
 }

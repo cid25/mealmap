@@ -201,6 +201,47 @@ namespace Mealmap.Api.BroadIntegrationTests
         }
 
         [Fact]
+        public void Update_WhenImageReplaced_ReplacesImage()
+        {
+            var originalDish = _dbContext.Dishes.First();
+            originalDish.Image = new DishImage(new byte[] { 0x01 }, "image/jpeg");
+            _dbContext.SaveChanges();
+            _dbContext.Entry(originalDish).State = EntityState.Detached;
+
+            var imageContent = new byte[] { 0x02 };
+            var adaptedDish = new Dish(originalDish.Name)
+            {
+                Id = originalDish.Id,
+                Image = new DishImage(imageContent, "image/jpeg")
+            };
+            _repository.Update(adaptedDish, retainImage: false);
+            _dbContext.Entry(adaptedDish).State = EntityState.Detached;
+
+            var dish = _dbContext.Dishes.Find(adaptedDish.Id);
+            dish!.Image!.Content.Should().Equal(imageContent);
+        }
+
+        [Fact]
+        public void Update_WhenImageRemoved_DeletesImage()
+        {
+            var originalDish = _dbContext.Dishes.First();
+            originalDish.Image = new DishImage(new byte[] { 0x01 }, "image/jpeg");
+            _dbContext.SaveChanges();
+            _dbContext.Entry(originalDish).State = EntityState.Detached;
+
+            var adaptedDish = new Dish(originalDish.Name)
+            {
+                Id = originalDish.Id,
+                Image = null
+            };
+            _repository.Update(adaptedDish, retainImage: false);
+            _dbContext.Entry(adaptedDish).State = EntityState.Detached;
+
+            var dish = _dbContext.Dishes.Find(adaptedDish.Id);
+            dish!.Image.Should().BeNull();
+        }
+
+        [Fact]
         public void Remove_RemovesEntry()
         {
             var expectedCount = _dbContext.Dishes.Count();

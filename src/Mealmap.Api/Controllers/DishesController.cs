@@ -150,7 +150,7 @@ namespace Mealmap.Api.Controllers
 
             try
             {
-                _repository.Update(dish);
+                _repository.Update(dish, retainImage: true);
                 _logger.LogInformation("Updated dish with id {Id}", dish.Id);
             }
             catch (DbUpdateConcurrencyException)
@@ -208,7 +208,7 @@ namespace Mealmap.Api.Controllers
                 return NotFound();
 
             dish.Image = new DishImage(content: image.Content, contentType: image.ContentType);
-            _repository.Update(dish);
+            _repository.Update(dish, retainImage: false);
 
             var actionLink = ActionLink(action: nameof(GetDishImage), values: new { id });
 
@@ -240,6 +240,33 @@ namespace Mealmap.Api.Controllers
                 return NoContent();
 
             return File(dish.Image.Content, dish.Image.ContentType);
+        }
+
+        /// <summary>
+        /// Deletes the image of a specific dish.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <response code="200">Image Deleted</response>
+        /// <response code="204">No Image</response>
+        /// <response code="404">Dish Not Found</response>
+        [HttpDelete("{id}/image")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        public ActionResult DeleteDishImage([FromRoute] Guid id)
+        {
+            var dish = _repository.GetSingle(id);
+
+            if (dish == null)
+                return NotFound();
+
+            if (dish.Image == null)
+                return NoContent();
+
+            dish.Image = null;
+            _repository.Update(dish, retainImage: false);
+
+            return Ok();
         }
 
         private string? ActionLink(string action, object? values)

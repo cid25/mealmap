@@ -22,10 +22,15 @@ namespace Mealmap.Api.UnitTests
             Add((Guid)dish.Id, dish);
         }
 
-        public void Update(Dish dish)
+        public void Update(Dish dish, bool retainImage)
         {
+            var oldDish = GetSingle(dish.Id);
+
             if (!Remove(dish.Id))
                 throw new InvalidOperationException();
+
+            if (retainImage && oldDish!.Image != null)
+                dish.Image = oldDish.Image;
 
             Add(dish.Id, dish);
         }
