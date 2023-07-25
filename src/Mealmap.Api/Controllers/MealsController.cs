@@ -1,5 +1,5 @@
 ﻿using Mealmap.Api.DataTransfer;
-using Mealmap.Api.Swashbuckle;
+using Mealmap.Api.Swagger;
 using Mealmap.Model;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
@@ -15,12 +15,12 @@ public class MealsController : ControllerBase
 {
     private readonly ILogger<MealsController> _logger;
     private readonly IMealRepository _mealRepository;
-    private readonly MealMapper _mapper;
+    private readonly IMealMapper _mapper;
 
     public MealsController(
         ILogger<MealsController> logger,
         IMealRepository mealRepository,
-        MealMapper mapper)
+        IMealMapper mapper)
     {
         _logger = logger;
         _mealRepository = mealRepository;

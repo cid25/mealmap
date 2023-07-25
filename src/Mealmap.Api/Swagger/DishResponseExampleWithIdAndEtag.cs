@@ -2,14 +2,16 @@
 using Swashbuckle.AspNetCore.Filters;
 
 
-namespace Mealmap.Api.Swashbuckle
+namespace Mealmap.Api.Swagger
 {
-    public class DishPostRequestExample : IExamplesProvider<DishDTO>
+    public class DishResponseExampleWithIdAndEtag : IExamplesProvider<DishDTO>
     {
         public DishDTO GetExamples()
         {
             return new DishDTO(name: "Pineapple Pizza")
             {
+                Id = Guid.NewGuid(),
+                ETag = "AAAAAAAAB9E=",
                 Description = "An italian-style pizza with pineapple and mozarella.",
                 Servings = 2,
                 Ingredients = new IngredientDTO[] {

@@ -2,14 +2,15 @@
 using Swashbuckle.AspNetCore.Filters;
 
 
-namespace Mealmap.Api.Swashbuckle
+namespace Mealmap.Api.Swagger
 {
-    public class MealPostRequestExample : IExamplesProvider<MealDTO>
+    public class MealPostResponseExample : IExamplesProvider<MealDTO>
     {
         public MealDTO GetExamples()
         {
             return new MealDTO()
             {
+                Id = Guid.NewGuid(),
                 DiningDate = DateOnly.FromDateTime(DateTime.Now),
                 DishId = Guid.NewGuid(),
             };

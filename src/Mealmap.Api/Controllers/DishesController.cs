@@ -1,8 +1,10 @@
 ﻿using Mealmap.Api.DataTransfer;
 using Mealmap.Api.Formatters;
-using Mealmap.Api.Swashbuckle;
+using Mealmap.Api.Swagger;
 using Mealmap.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Mealmap.Api.Controllers
@@ -13,16 +15,19 @@ namespace Mealmap.Api.Controllers
     {
         private readonly ILogger<DishesController> _logger;
         private readonly IDishRepository _repository;
-        private readonly DishMapper _mapper;
+        private readonly IDishMapper _mapper;
+        private readonly IRequestContext _requestContext;
 
         public DishesController(
             ILogger<DishesController> logger,
             IDishRepository repository,
-            DishMapper mapper)
+            IDishMapper mapper,
+            IRequestContext context)
         {
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
+            _requestContext = context;
         }
 
         /// <summary>
@@ -50,6 +55,7 @@ namespace Mealmap.Api.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(DishDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [SwaggerResponseExample(200, typeof(DishResponseExampleWithIdAndEtag))]
         public ActionResult<DishDTO> GetDish([FromRoute] Guid id)
         {
             var dish = _repository.GetSingle(id);
@@ -76,10 +82,13 @@ namespace Mealmap.Api.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(DishDTO), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
-        [SwaggerRequestExample(typeof(DishDTO), typeof(DishPostRequestExample))]
-        [SwaggerResponseExample(201, typeof(DishPostResponseExample))]
+        [SwaggerRequestExample(typeof(DishDTO), typeof(DishRequestExampleWithoutIdAndEtag))]
+        [SwaggerResponseExample(201, typeof(DishResponseExampleWithIdAndEtag))]
         public ActionResult<DishDTO> PostDish([FromBody] DishDTO dishDTO)
         {
+            if (dishDTO.Id != null && dishDTO.Id != Guid.Empty)
+                return BadRequest("Field id is not allowed.");
+
             Dish dish;
 
             try
@@ -100,13 +109,69 @@ namespace Mealmap.Api.Controllers
         }
 
         /// <summary>
+        /// Updates an existing dish.
+        /// </summary>
+        /// <param name="dishDTO"></param>
+        /// <response code="200">Dish Updated</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">Dish Not Found</response>
+        /// <response code="412">ETag Doesn't Match</response>
+        /// <response code="428">Update Requires ETag</response>
+        [HttpPut(Name = nameof(PutDish))]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(DishDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status412PreconditionFailed)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status428PreconditionRequired)]
+        [SwaggerRequestExample(typeof(DishDTO), typeof(DishRequestExampleWithIdWithoutEtag))]
+        [SwaggerResponseExample(200, typeof(DishResponseExampleWithIdAndEtag))]
+        public ActionResult<DishDTO> PutDish([FromBody] DishDTO dishDTO)
+        {
+            if (_requestContext.IfMatchHeader.IsNullOrEmpty())
+                return new StatusCodeResult(StatusCodes.Status428PreconditionRequired);
+
+            if (dishDTO.Id == null || dishDTO.Id == Guid.Empty)
+                return BadRequest("Field id is mandatory.");
+
+            if (_repository.GetSingle((Guid)dishDTO.Id) == null)
+                return NotFound($"Dish with id {dishDTO.Id} doesn't exist.");
+
+            Dish dish;
+            try
+            {
+                dish = _mapper.MapFromDTO(dishDTO);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            try
+            {
+                _repository.Update(dish);
+                _logger.LogInformation("Updated dish with id {Id}", dish.Id);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
+            }
+
+            return _mapper.MapFromEntity(dish);
+        }
+
+        /// <summary>
         /// Deletes a specific dish.
         /// </summary>
         /// <param name="id">The id of the dish to delete.</param>
+        /// <response code="202">Dish Deleted</response>
+        /// <response code="404">Dish Not Found</response> 
         [HttpDelete("{id}", Name = nameof(DeleteDish))]
         [Produces("application/json")]
         [ProducesResponseType(typeof(DishDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [SwaggerResponseExample(200, typeof(DishResponseExampleWithIdAndEtag))]
         public ActionResult<DishDTO> DeleteDish([FromRoute] Guid id)
         {
             var dish = _repository.GetSingle(id);
@@ -135,6 +200,7 @@ namespace Mealmap.Api.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(void), StatusCodes.Status415UnsupportedMediaType)]
+        [SwaggerResponseExample(201, typeof(DishResponseExampleWithIdAndEtag))]
         public ActionResult PutDishImage([FromRoute] Guid id, [FromBody] Image image)
         {
             var dish = _repository.GetSingle(id);
@@ -185,8 +251,8 @@ namespace Mealmap.Api.Controllers
                 action: action,
                 controller: null,
                 values: values,
-                protocol: HttpContext.Request.Scheme,
-                host: HttpContext.Request.Host.Value
+                protocol: _requestContext.Scheme,
+                host: _requestContext.Host
             );
         }
     }

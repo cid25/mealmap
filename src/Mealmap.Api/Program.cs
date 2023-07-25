@@ -2,7 +2,7 @@
 using Mealmap.Api;
 using Mealmap.Api.DataTransfer;
 using Mealmap.Api.Formatters;
-using Mealmap.Api.Swashbuckle;
+using Mealmap.Api.Swagger;
 using Mealmap.DataAccess;
 using Mealmap.Model;
 using Microsoft.EntityFrameworkCore;
@@ -25,9 +25,10 @@ builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
 
 // Add data transfer
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IRequestContext, RequestContext>();
 builder.Services.AddAutoMapper(typeof(MapperProfile));
-builder.Services.AddScoped<MealMapper>();
-builder.Services.AddScoped<DishMapper>();
+builder.Services.AddScoped<IMealMapper, MealMapper>();
+builder.Services.AddScoped<IDishMapper, DishMapper>();
 
 builder.Services.AddControllers(options =>
     options.InputFormatters.Insert(0, new ImageInputFormatter())
@@ -49,6 +50,7 @@ builder.Services.AddSwaggerGen(options =>
         });
 
         options.DocumentFilter<ServersDocumentFilter>();
+        options.OperationFilter<IfMatchHeaderFilter>();
         options.CustomSchemaIds(type => type.Name.Replace("DTO", string.Empty));
         options.ExampleFilters();
 

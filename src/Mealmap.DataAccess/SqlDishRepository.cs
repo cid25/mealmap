@@ -1,4 +1,5 @@
 ﻿using Mealmap.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.DataAccess
 {
@@ -39,9 +40,18 @@ namespace Mealmap.DataAccess
             _dbContext.Remove(existingDish);
 
             _dbContext.Update(dish);
+            if (existingDish.Image != null)
+                dish.Image = existingDish.Image with { };
             AddIngredientsTo(dish);
 
-            _dbContext.SaveChanges();
+            try
+            {
+                _dbContext.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw ex;
+            }
         }
 
         public void Remove(Dish dish)

@@ -13,6 +13,13 @@ namespace Mealmap.Api.DataTransfer
         public Guid? Id { get; init; }
 
         /// <summary>
+        /// The current entity tag for the dish.
+        /// </summary>
+        /// <example>AAAAAAAAB9E=</example>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ETag { get; init; }
+
+        /// <summary>
         /// The name of the dish.
         /// </summary>
         /// <example>Pineapple Pizza</example>

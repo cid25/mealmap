@@ -20,6 +20,9 @@ namespace Mealmap.Model
 
         public List<Ingredient>? Ingredients { get; set; }
 
+        [Timestamp]
+        public byte[]? Version { get; init; }
+
         public Dish(string name)
         {
             Name = name;

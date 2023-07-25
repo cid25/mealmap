@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Mealmap.Api.Swashbuckle
+namespace Mealmap.Api.Swagger
 {
     public class ServersDocumentFilter : IDocumentFilter
     {

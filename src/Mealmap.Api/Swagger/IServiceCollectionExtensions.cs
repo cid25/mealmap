@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Swashbuckle.AspNetCore.Filters;
 
-namespace Mealmap.Api.Swashbuckle
+namespace Mealmap.Api.Swagger
 {
     public static class IServiceCollectionExtensions
     {

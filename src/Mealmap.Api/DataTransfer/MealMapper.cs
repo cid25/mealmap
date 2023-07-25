@@ -3,7 +3,7 @@ using Mealmap.Model;
 
 namespace Mealmap.Api.DataTransfer
 {
-    public class MealMapper
+    public class MealMapper : IMealMapper
     {
         private readonly ILogger<MealMapper> _logger;
         private readonly IMapper _mapper;
