@@ -1,6 +1,10 @@
-﻿using Mealmap.Api.DataTransfer;
+﻿using Mealmap.Api.DataTransferObjects;
+using Mealmap.Api.Exceptions;
+using Mealmap.Api.InputMappers;
+using Mealmap.Api.OutputMappers;
 using Mealmap.Api.Swagger;
-using Mealmap.Model;
+using Mealmap.Domain.Exceptions;
+using Mealmap.Domain.MealAggregate;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -15,16 +19,19 @@ public class MealsController : ControllerBase
 {
     private readonly ILogger<MealsController> _logger;
     private readonly IMealRepository _mealRepository;
-    private readonly IMealMapper _mapper;
+    private readonly IInputMapper<Meal, MealDTO> _inputMapper;
+    private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
 
     public MealsController(
         ILogger<MealsController> logger,
         IMealRepository mealRepository,
-        IMealMapper mapper)
+        IInputMapper<Meal, MealDTO> inputMapper,
+        IOutputMapper<MealDTO, Meal> outputMapper)
     {
         _logger = logger;
         _mealRepository = mealRepository;
-        _mapper = mapper;
+        _inputMapper = inputMapper;
+        _outputMapper = outputMapper;
     }
 
     /// <summary>
@@ -45,9 +52,9 @@ public class MealsController : ControllerBase
         if (!meals.Any())
             return NoContent();
 
-        var mealDTOs = _mapper.MapFromEntities(meals);
+        var dataTransferObjects = _outputMapper.FromEntities(meals);
 
-        return mealDTOs;
+        return Ok(dataTransferObjects);
     }
 
     /// <summary>
@@ -62,7 +69,7 @@ public class MealsController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     public ActionResult<MealDTO> GetMeal([FromRoute] Guid id)
     {
-        Meal? meal = _mealRepository.GetSingle(id);
+        Meal? meal = _mealRepository.GetSingleById(id);
 
         if (meal == null)
         {
@@ -70,7 +77,7 @@ public class MealsController : ControllerBase
             return NotFound($"Meal with id {id} doesn't exist");
         }
 
-        return _mapper.MapFromEntity(meal);
+        return _outputMapper.FromEntity(meal);
     }
 
     /// <summary>
@@ -91,17 +98,19 @@ public class MealsController : ControllerBase
 
         try
         {
-            meal = _mapper.MapFromDTO(mealDTO);
+            meal = _inputMapper.FromDataTransferObject(mealDTO);
+            _mealRepository.Add(meal);
         }
-        catch (InvalidOperationException ex)
+        catch (Exception ex)
+            when (ex is ValidationException || ex is DomainValidationException)
         {
+            _logger.LogInformation(ex.Message);
             return BadRequest(ex.Message);
         }
 
-        _mealRepository.Add(meal);
         _logger.LogInformation("Created meal with id {Id}", meal.Id);
 
-        var mealCreated = _mapper.MapFromEntity(meal);
+        var mealCreated = _outputMapper.FromEntity(meal);
         return CreatedAtAction(nameof(GetMeal), new { id = mealCreated.Id }, mealCreated);
     }
 
@@ -117,14 +126,14 @@ public class MealsController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     public ActionResult<MealDTO> DeleteMeal([FromRoute] Guid id)
     {
-        var meal = _mealRepository.GetSingle(id);
+        var meal = _mealRepository.GetSingleById(id);
 
         if (meal == null)
             return NotFound($"Meal with id {id} doesn't exist");
 
         _mealRepository.Remove(meal);
 
-        var dto = _mapper.MapFromEntity(meal);
+        var dto = _outputMapper.FromEntity(meal);
         return Ok(dto);
     }
 }

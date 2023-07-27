@@ -1,10 +1,13 @@
 ﻿using System.Reflection;
 using Mealmap.Api;
-using Mealmap.Api.DataTransfer;
-using Mealmap.Api.Formatters;
+using Mealmap.Api.DataTransferObjects;
+using Mealmap.Api.InputMappers;
+using Mealmap.Api.OutputMappers;
+using Mealmap.Api.RequestFormatters;
 using Mealmap.Api.Swagger;
 using Mealmap.DataAccess;
-using Mealmap.Model;
+using Mealmap.Domain.DishAggregate;
+using Mealmap.Domain.MealAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -15,6 +18,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add configuration
 builder.Services.Configure<HostingOptions>(
     builder.Configuration.GetSection(HostingOptions.SectionName));
+
+// Add domain services
+builder.Services.AddScoped<MealService>();
 
 // Add data access
 builder.Services.AddDbContext<MealmapDbContext>(options
@@ -27,8 +33,10 @@ builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IRequestContext, RequestContext>();
 builder.Services.AddAutoMapper(typeof(MapperProfile));
-builder.Services.AddScoped<IMealMapper, MealMapper>();
-builder.Services.AddScoped<IDishMapper, DishMapper>();
+builder.Services.AddScoped<IInputMapper<Dish, DishDTO>, DishInputMapper>();
+builder.Services.AddScoped<IOutputMapper<DishDTO, Dish>, DishOutputMapper>();
+builder.Services.AddScoped<IInputMapper<Meal, MealDTO>, MealInputMapper>();
+builder.Services.AddScoped<IOutputMapper<MealDTO, Meal>, MealOutputMapper>();
 
 builder.Services.AddControllers(options =>
     options.InputFormatters.Insert(0, new ImageInputFormatter())

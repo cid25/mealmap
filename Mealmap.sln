@@ -7,13 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api", "src\Mealmap.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.UnitTests", "tests\Mealmap.Api.Tests\Mealmap.Api.UnitTests.csproj", "{8899AFCD-81D7-4D26-9A0E-C8F3FFBB07F1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Model", "src\Mealmap.Model\Mealmap.Model.csproj", "{B57D2C53-7EDF-4E4C-9797-AF62DE7471F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Domain", "src\Mealmap.Model\Mealmap.Domain.csproj", "{B57D2C53-7EDF-4E4C-9797-AF62DE7471F9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.BoundaryTests", "tests\Mealmap.Api.NarrowIntegrationTests\Mealmap.Api.BoundaryTests.csproj", "{3A44C2EE-E07A-42D0-A693-6FC65E310031}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.DataAccess.IntegrationTests", "tests\Mealmap.Api.BroadIntegrationTests\Mealmap.DataAccess.IntegrationTests.csproj", "{F869DD60-0C7B-428E-9C50-54A4600EF10B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Model.Tests", "tests\Mealmap.Model.Tests\Mealmap.Model.Tests.csproj", "{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Domain.Tests", "tests\Mealmap.Model.Tests\Mealmap.Domain.Tests.csproj", "{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Testdata", "src\Mealmap.Testdata\Mealmap.Testdata.csproj", "{8A82CA7F-0833-480A-8780-3EBA1C275BD3}"
 EndProject
@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mealmap.DataAccess", "src\Mealmap.DataAccess\Mealmap.DataAccess.csproj", "{BBC4E933-0363-412A-BA0A-9313DE86ACFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.DataAccess", "src\Mealmap.DataAccess\Mealmap.DataAccess.csproj", "{BBC4E933-0363-412A-BA0A-9313DE86ACFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

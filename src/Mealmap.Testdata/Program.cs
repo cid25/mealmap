@@ -1,5 +1,6 @@
 ﻿using Mealmap.DataAccess;
-using Mealmap.Model;
+using Mealmap.Domain.DishAggregate;
+using Mealmap.Domain.MealAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -16,17 +17,27 @@ dbContext.Database.EnsureCreated();
 InjectTestData(dbContext);
 
 
-void InjectTestData(MealmapDbContext dbContext)
+static void InjectTestData(MealmapDbContext dbContext)
 {
-    InjectDishes(dbContext);
-    InjectMeals(dbContext);
+    var dishes = GenerateDishes();
+    dbContext.Dishes.AddRange(dishes);
+
+    var meals = GenerateMeals(
+        new MealService(
+            new SqlDishRepository(dbContext)),
+        dishes);
+    dbContext.Meals.AddRange(meals);
+
+    dbContext.SaveChanges();
 }
 
-void InjectDishes(MealmapDbContext dbContext)
+static Dish[] GenerateDishes()
 {
-    dbContext.Dishes.Add(new Dish("Krabby Patty")
+    Dish[] result = new Dish[2];
+
+    result[0] = new Dish("Krabby Patty")
     {
-        Id = new Guid("00000000-0000-0000-0000-000000000001"),
+        Id = Guid.NewGuid(),
         Description = "The fishiest burger in town.",
         Servings = 2,
         Ingredients = new(){
@@ -34,10 +45,10 @@ void InjectDishes(MealmapDbContext dbContext)
             new Ingredient(2, new UnitOfMeasurement(UnitOfMeasurementCodes.Piece), "Unidentifiable meat"),
             new Ingredient(20, new UnitOfMeasurement(UnitOfMeasurementCodes.Mililiter), "Fishy sauce"),
         }
-    });
-    dbContext.Dishes.Add(new Dish("Sailors Surprise")
+    };
+    result[1] = (new Dish("Sailors Surprise")
     {
-        Id = new Guid("00000000-0000-0000-0000-000000000002"),
+        Id = Guid.NewGuid(),
         Description = "The darkest, wettest dream of every boatsman.",
         Servings = 4,
         Ingredients = new(){
@@ -48,22 +59,23 @@ void InjectDishes(MealmapDbContext dbContext)
         }
     });
 
-    dbContext.SaveChanges();
+    return result;
 }
 
-void InjectMeals(MealmapDbContext dbContext)
+static Meal[] GenerateMeals(MealService service, Dish[] dishes)
 {
+    Meal[] result = new Meal[35];
+
     var today = DateTime.Today;
     DateOnly startOfWeek = DateOnly.FromDateTime(today).AddDays(-1 * (int)today.DayOfWeek + 1);
 
     for (int i = 0; i < 35; i++)
     {
-        dbContext.Meals.Add(new Meal()
-        {
-            DiningDate = startOfWeek.AddDays(-14).AddDays(i),
-            Dish = dbContext.Dishes.Find(Guid.Parse("00000000-0000-0000-0000-00000000000" + (i % 2 + 1).ToString())),
-        });
+        Meal meal = service.CreateMeal(startOfWeek.AddDays(-14).AddDays(i));
+        service.AddCourseToMeal(meal, index: 1, mainCourse: true, dishId: dishes[0].Id);
+        service.AddCourseToMeal(meal, index: 2, mainCourse: false, dishId: dishes[1].Id);
+        result[i] = meal;
     }
 
-    dbContext.SaveChanges();
+    return result;
 }

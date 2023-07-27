@@ -1,26 +1,24 @@
-﻿using Mealmap.Api.DataTransfer;
+﻿using Mealmap.Api.DataTransferObjects;
 using Swashbuckle.AspNetCore.Filters;
 
+namespace Mealmap.Api.Swagger;
 
-namespace Mealmap.Api.Swagger
+public class DishRequestExampleWithoutIdAndEtag : IExamplesProvider<DishDTO>
 {
-    public class DishRequestExampleWithoutIdAndEtag : IExamplesProvider<DishDTO>
+    public DishDTO GetExamples()
     {
-        public DishDTO GetExamples()
+        return new DishDTO(name: "Pineapple Pizza")
         {
-            return new DishDTO(name: "Pineapple Pizza")
-            {
-                Description = "An italian-style pizza with pineapple and mozarella.",
-                Servings = 2,
-                Ingredients = new IngredientDTO[] {
-                    new IngredientDTO(150, "Gram", "Flour"),
-                    new IngredientDTO(260, "Gram", "Sugar"),
-                    new IngredientDTO(100, "Gram", "Butter"),
-                    new IngredientDTO(600, "Mililiter", "Milk"),
-                    new IngredientDTO(2, "Piece", "Eggs"),
-                    new IngredientDTO(200, "Mililiter", "Oil"),
-                }
-            };
-        }
+            Description = "An italian-style pizza with pineapple and mozarella.",
+            Servings = 2,
+            Ingredients = new IngredientDTO[] {
+                new IngredientDTO(150, "Gram", "Flour"),
+                new IngredientDTO(260, "Gram", "Sugar"),
+                new IngredientDTO(100, "Gram", "Butter"),
+                new IngredientDTO(600, "Mililiter", "Milk"),
+                new IngredientDTO(2, "Piece", "Eggs"),
+                new IngredientDTO(200, "Mililiter", "Oil"),
+            }
+        };
     }
 }

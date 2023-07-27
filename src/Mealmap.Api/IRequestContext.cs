@@ -1,13 +1,10 @@
-﻿namespace Mealmap.Api
+﻿namespace Mealmap.Api;
+
+public interface IRequestContext
 {
-    public interface IRequestContext
-    {
-        string Scheme { get; }
-        string Host { get; }
-        int Port { get; }
-        string Method { get; }
-        string? IfMatchHeader { get; }
-
-
-    }
+    string Scheme { get; }
+    string Host { get; }
+    int Port { get; }
+    string Method { get; }
+    string? IfMatchHeader { get; }
 }

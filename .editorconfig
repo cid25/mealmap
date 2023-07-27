@@ -25,6 +25,7 @@ charset = utf-8-bom
 [*.{cs,vb}]
 dotnet_diagnostic.CA1824.severity = none
 dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA2254.severity = none
 ###############################
 # .NET Coding Conventions     #
 ###############################

@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mealmap.Model\Mealmap.Model.csproj" />
+    <ProjectReference Include="..\Mealmap.Model\Mealmap.Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,9 +1,8 @@
-﻿namespace Mealmap.Api
-{
-    public class HostingOptions
-    {
-        public const string SectionName = "Hosting";
+﻿namespace Mealmap.Api;
 
-        public string[] Hosts { get; set; } = { String.Empty };
-    }
+public class HostingOptions
+{
+    public const string SectionName = "Hosting";
+
+    public string[] Hosts { get; set; } = { String.Empty };
 }

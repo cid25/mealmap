@@ -1,31 +1,31 @@
 ﻿using FluentAssertions;
+using Mealmap.Domain.DishAggregate;
 
-namespace Mealmap.Model.Tests
+namespace Mealmap.Domain.Tests;
+
+public class UnitOfMeasurementTests
 {
-    public class UnitOfMeasurementTests
+    [Fact]
+    public void From_WhenValidName_ReturnsUnitOfMeasurement()
     {
-        [Fact]
-        public void From_WhenValidName_ReturnsUnitOfMeasurement()
+        const string validUnitName = "Kilogram";
+
+        var result = new UnitOfMeasurement(validUnitName);
+
+        result.Should().NotBeNull();
+        result.Should().BeOfType<UnitOfMeasurement>();
+    }
+
+    [Fact]
+    public void From_WhenInvalidName_ThrowsArgumentException()
+    {
+        const string invalidUnitName = "Kawabunga";
+
+        Action action = () =>
         {
-            const string validUnitName = "Kilogram";
+            var unitOfMeasurement = new UnitOfMeasurement(invalidUnitName);
+        };
 
-            var result = new UnitOfMeasurement(validUnitName);
-
-            result.Should().NotBeNull();
-            result.Should().BeOfType<UnitOfMeasurement>();
-        }
-
-        [Fact]
-        public void From_WhenInvalidName_ThrowsArgumentException()
-        {
-            const string invalidUnitName = "Kawabunga";
-
-            Action action = () =>
-            {
-                var unitOfMeasurement = new UnitOfMeasurement(invalidUnitName);
-            };
-
-            action.Should().Throw<ArgumentException>();
-        }
+        action.Should().Throw<ArgumentException>();
     }
 }

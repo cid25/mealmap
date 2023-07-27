@@ -4,44 +4,43 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Mealmap.Api.Swagger
+namespace Mealmap.Api.Swagger;
+
+public class ServersDocumentFilter : IDocumentFilter
 {
-    public class ServersDocumentFilter : IDocumentFilter
+    private readonly HostingOptions _options;
+    private readonly IServer _server;
+
+    public ServersDocumentFilter(IOptions<HostingOptions> options, IServer server)
+      => (_options, _server) = (options.Value, server);
+
+    public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
     {
-        private readonly HostingOptions _options;
-        private readonly IServer _server;
+        var addressFeature = _server.Features.Get<IServerAddressesFeature>();
 
-        public ServersDocumentFilter(IOptions<HostingOptions> options, IServer server)
-          => (_options, _server) = (options.Value, server);
-
-        public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
+        if (addressFeature != null)
         {
-            var addressFeature = _server.Features.Get<IServerAddressesFeature>();
-
-            if (addressFeature != null)
+            foreach (var address in addressFeature.Addresses)
             {
-                foreach (var address in addressFeature.Addresses)
-                {
-                    var scheme = address.Split("://")[0];
-                    var maybePort = address.Split(":")[^1];
-                    if (!int.TryParse(maybePort, out var port)
-                        || scheme == "http" && port == 80
-                        || scheme == "https" && port == 443
-                    )
-                        port = -1;
+                var scheme = address.Split("://")[0];
+                var maybePort = address.Split(":")[^1];
+                if (!int.TryParse(maybePort, out var port)
+                    || scheme == "http" && port == 80
+                    || scheme == "https" && port == 443
+                )
+                    port = -1;
 
-                    foreach (var host in _options.Hosts)
+                foreach (var host in _options.Hosts)
+                {
+                    if (host != string.Empty)
                     {
-                        if (host != string.Empty)
+                        var addressBuilder = new UriBuilder()
                         {
-                            var addressBuilder = new UriBuilder()
-                            {
-                                Scheme = scheme,
-                                Host = host,
-                                Port = port
-                            };
-                            swaggerDoc.Servers.Add(new OpenApiServer() { Url = addressBuilder.Uri.ToString().TrimEnd('/') });
-                        }
+                            Scheme = scheme,
+                            Host = host,
+                            Port = port
+                        };
+                        swaggerDoc.Servers.Add(new OpenApiServer() { Url = addressBuilder.Uri.ToString().TrimEnd('/') });
                     }
                 }
             }

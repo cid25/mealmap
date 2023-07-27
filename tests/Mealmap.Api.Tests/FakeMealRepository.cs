@@ -1,33 +1,30 @@
-﻿using Mealmap.Model;
+﻿namespace Mealmap.Api.UnitTests;
+using Mealmap.Domain.MealAggregate;
 
-
-namespace Mealmap.Api.UnitTests
+internal class FakeMealRepository : Dictionary<Guid, Meal>, IMealRepository
 {
-    internal class FakeMealRepository : Dictionary<Guid, Meal>, IMealRepository
+    public IEnumerable<Meal> GetAll(DateOnly? fromDate = null, DateOnly? toDate = null)
     {
-        public IEnumerable<Meal> GetAll(DateOnly? fromDate = null, DateOnly? toDate = null)
-        {
-            return Values
-                .Where(v => v.DiningDate >= (fromDate ?? new DateOnly(1990, 1, 1))
-                    && v.DiningDate <= (toDate ?? new DateOnly(2999, 12, 31)));
-        }
+        return Values
+            .Where(v => v.DiningDate >= (fromDate ?? new DateOnly(1990, 1, 1))
+                && v.DiningDate <= (toDate ?? new DateOnly(2999, 12, 31)));
+    }
 
-        public Meal? GetSingle(Guid id)
-        {
-            TryGetValue(id, out var meal);
+    public Meal? GetSingleById(Guid id)
+    {
+        TryGetValue(id, out var meal);
 
-            return meal;
-        }
+        return meal;
+    }
 
-        public void Add(Meal meal)
-        {
-            Add((Guid)meal.Id, meal);
-        }
+    public void Add(Meal meal)
+    {
+        Add((Guid)meal.Id, meal);
+    }
 
-        public void Remove(Meal meal)
-        {
-            if (!Remove(meal.Id))
-                throw new InvalidOperationException();
-        }
+    public void Remove(Meal meal)
+    {
+        if (!Remove(meal.Id))
+            throw new InvalidOperationException();
     }
 }
