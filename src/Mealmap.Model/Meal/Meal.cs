@@ -24,6 +24,7 @@ public class Meal
         Courses = new List<Course>();
     }
 
+    /// <exception cref="DomainValidationException"></exception>
     internal void AddCourse(int index, bool mainCourse, Guid dishId)
     {
         if (mainCourse)
