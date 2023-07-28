@@ -32,6 +32,9 @@ public class SqlMealRepository : IMealRepository
         return meal;
     }
 
+    /// <exception cref="DomainValidationException"></exception>
+    /// <exception cref="DbUpdateException"></exception>
+    /// <exception cref="DbUpdateConcurrencyException"></exception>
     public void Add(Meal meal)
     {
 
@@ -49,6 +52,8 @@ public class SqlMealRepository : IMealRepository
         }
     }
 
+    /// <exception cref="DbUpdateException"></exception>
+    /// <exception cref="DbUpdateConcurrencyException"></exception>
     public void Remove(Meal meal)
     {
         var removable = _dbContext.Meals.Find(meal.Id);

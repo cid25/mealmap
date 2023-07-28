@@ -17,15 +17,15 @@ public class DishesController : ControllerBase
 {
     private readonly ILogger<DishesController> _logger;
     private readonly IDishRepository _repository;
-    private readonly IInputMapper<Dish, DishDTO> _inputMapper;
-    private readonly IOutputMapper<DishDTO, Dish> _outputMapper;
+    private readonly DishInputMapper _inputMapper;
+    private readonly DishOutputMapper _outputMapper;
     private readonly IRequestContext _requestContext;
 
     public DishesController(
         ILogger<DishesController> logger,
         IDishRepository repository,
-        IInputMapper<Dish, DishDTO> inputMapper,
-        IOutputMapper<DishDTO, Dish> outputMapper,
+        DishInputMapper inputMapper,
+        DishOutputMapper outputMapper,
         IRequestContext context)
     {
         _logger = logger;

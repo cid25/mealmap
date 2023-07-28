@@ -24,6 +24,7 @@ public class MealService
     }
 #pragma warning restore CA1822
 
+    /// <exception cref="DomainValidationException"></exception>
     public void AddCourseToMeal(Meal meal, int index, bool mainCourse, Guid dishId)
     {
         if (_dishRepository.GetSingleById(dishId) == null)

@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Mealmap.Api;
-using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.InputMappers;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.RequestFormatters;
@@ -33,10 +32,10 @@ builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IRequestContext, RequestContext>();
 builder.Services.AddAutoMapper(typeof(MapperProfile));
-builder.Services.AddScoped<IInputMapper<Dish, DishDTO>, DishInputMapper>();
-builder.Services.AddScoped<IOutputMapper<DishDTO, Dish>, DishOutputMapper>();
-builder.Services.AddScoped<IInputMapper<Meal, MealDTO>, MealInputMapper>();
-builder.Services.AddScoped<IOutputMapper<MealDTO, Meal>, MealOutputMapper>();
+builder.Services.AddScoped<DishInputMapper>();
+builder.Services.AddScoped<DishOutputMapper>();
+builder.Services.AddScoped<MealInputMapper>();
+builder.Services.AddScoped<MealOutputMapper>();
 
 builder.Services.AddControllers(options =>
     options.InputFormatters.Insert(0, new ImageInputFormatter())

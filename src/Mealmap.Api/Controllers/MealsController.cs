@@ -19,14 +19,14 @@ public class MealsController : ControllerBase
 {
     private readonly ILogger<MealsController> _logger;
     private readonly IMealRepository _mealRepository;
-    private readonly IInputMapper<Meal, MealDTO> _inputMapper;
-    private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
+    private readonly MealInputMapper _inputMapper;
+    private readonly MealOutputMapper _outputMapper;
 
     public MealsController(
         ILogger<MealsController> logger,
         IMealRepository mealRepository,
-        IInputMapper<Meal, MealDTO> inputMapper,
-        IOutputMapper<MealDTO, Meal> outputMapper)
+        MealInputMapper inputMapper,
+        MealOutputMapper outputMapper)
     {
         _logger = logger;
         _mealRepository = mealRepository;
