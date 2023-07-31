@@ -8,18 +8,18 @@ using Moq;
 
 namespace Mealmap.Api.UnitTests;
 
-public class MealInputMapperTests
+public class MealInputHandlerTests
 {
-    private readonly MealInputMapper _mapper;
+    private readonly MealInputHandler _mapper;
     private readonly Dish _dish;
 
-    public MealInputMapperTests()
+    public MealInputHandlerTests()
     {
-        _dish = new Dish("Krabby Patty") { Id = Guid.NewGuid() };
+        _dish = new Dish("Krabby Patty");
         var _dishRepositoryMock = Mock.Of<IDishRepository>(m =>
             m.GetSingleById(_dish.Id) == _dish);
 
-        _mapper = new MealInputMapper(
+        _mapper = new MealInputHandler(
             new MealService(
                 Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == _dish)));
     }

@@ -5,11 +5,11 @@ using Mealmap.Domain.MealAggregate;
 
 namespace Mealmap.Api.InputMappers;
 
-public class MealInputMapper : IInputMapper<Meal, MealDTO>
+public class MealInputHandler : IInputHandler<Meal, MealDTO>
 {
     private readonly MealService _mealService;
 
-    public MealInputMapper(MealService mealService)
+    public MealInputHandler(MealService mealService)
     {
         _mealService = mealService;
     }

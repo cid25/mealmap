@@ -2,7 +2,7 @@
 using Mealmap.Domain.MealAggregate;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mealmap.DataAccess;
+namespace Mealmap.Infrastructure;
 
 internal static class ModelBuilderExtensions
 {
@@ -14,10 +14,27 @@ internal static class ModelBuilderExtensions
 
         dish.ToTable("dish", Schema);
 
+        dish.Property(d => d.Id);
+        dish.HasKey(d => d.Id);
+
+        dish.Property(d => d.Version).IsRowVersion();
+
+        dish.Property(d => d.Name);
+        dish.Property(d => d.Description);
+        dish.Property(d => d.Servings);
+
+        dish.OwnsOne<DishImage>(dish => dish.Image, image =>
+        {
+            image.Property(i => i.Content);
+            image.Property(i => i.ContentType);
+        });
+
         dish.OwnsMany(d => d.Ingredients, i =>
             {
-                i.Property("_unitOfMeasurementCode").HasColumnName("UnitOfMeasurementCode");
                 i.ToTable("ingredient", Schema);
+                i.Property("Id");
+                i.HasKey("Id");
+                i.Property("_unitOfMeasurementCode").HasColumnName("UnitOfMeasurementCode");
             });
     }
 
@@ -39,7 +56,7 @@ internal static class ModelBuilderExtensions
         meal.OwnsMany(meal => meal.Courses,
                 course =>
                 {
-                    course.HasOne<Dish>().WithMany().HasForeignKey(course => course.DishId);
+                    course.HasOne<Dish>().WithMany().HasForeignKey(c => c.DishId);
                     course.ToTable("course", Schema);
                 });
     }

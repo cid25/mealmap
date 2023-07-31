@@ -1,7 +1,6 @@
-﻿using Mealmap.DataAccess;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace Mealmap.Api.BroadIntegrationTests;
+namespace Mealmap.Infrastructure.IntegrationTests;
 
 internal class Helpers
 {

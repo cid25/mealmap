@@ -1,10 +1,10 @@
-﻿using FluentAssertions;
-using Mealmap.DataAccess;
+﻿using System.Diagnostics;
+using FluentAssertions;
 using Mealmap.Domain.DishAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace Mealmap.Api.BroadIntegrationTests;
+namespace Mealmap.Infrastructure.IntegrationTests;
 
 [Collection("InSequence")]
 [Trait("Target", "Database")]
@@ -12,17 +12,22 @@ public class SqlDishRepositoryTests
 {
     private readonly MealmapDbContext _dbContext;
     private readonly SqlDishRepository _repository;
+    private readonly Dish[] _dishes;
 
     public SqlDishRepositoryTests()
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
         var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
             .UseSqlServer(configuration.GetConnectionString("MealmapDb"))
+            .LogTo(msg => Debug.WriteLine(msg))
+            .EnableSensitiveDataLogging()
             .Options;
         _dbContext = new MealmapDbContext(dbOptions);
 
         _dbContext.Database.EnsureDeleted();
         _dbContext.Database.EnsureCreated();
+
+        _dishes = new Dish[2];
         seedData();
         Helpers.DetachAllEntities(_dbContext);
 
@@ -31,31 +36,29 @@ public class SqlDishRepositoryTests
 
     private void seedData()
     {
-        _dbContext.Dishes.Add(new Dish("Krabby Patty")
+        var dishWithoutImage = new Dish("Krabby Patty")
         {
-            Id = new Guid("00000000-0000-0000-0000-000000000001"),
             Description = "The fishiest burger in town.",
             Servings = 2,
-            Ingredients = new()
-            {
-                new Ingredient(4, new UnitOfMeasurement(UnitOfMeasurementCodes.Slice), "Old bread"),
-                new Ingredient(2, new UnitOfMeasurement(UnitOfMeasurementCodes.Piece), "Unidentifiable meat"),
-                new Ingredient(20, new UnitOfMeasurement(UnitOfMeasurementCodes.Mililiter), "Fishy sauce"),
-            }
-        });
-        _dbContext.Dishes.Add(new Dish("Sailors Surprise")
+        };
+        dishWithoutImage.AddIngredient(4, "Slice", "Old bread");
+        dishWithoutImage.AddIngredient(2, "Piece", "Unidentifiable meat");
+        dishWithoutImage.AddIngredient(20, "Mililiter", "Fishy sauce");
+        _dishes[0] = dishWithoutImage;
+
+        var dishWithImage = new Dish("Sailors Surprise")
         {
-            Id = new Guid("00000000-0000-0000-0000-000000000010"),
             Description = "The darkest, wettest dream of every boatsman.",
             Servings = 4,
-            Ingredients = new()
-            {
-                new Ingredient(800, new UnitOfMeasurement(UnitOfMeasurementCodes.Mililiter), "Seawater"),
-                new Ingredient(6, new UnitOfMeasurement(UnitOfMeasurementCodes.Piece), "Sea cucumber"),
-                new Ingredient(8, new UnitOfMeasurement(UnitOfMeasurementCodes.Piece), "Crab meat"),
-                new Ingredient(1, new UnitOfMeasurement(UnitOfMeasurementCodes.Pinch), "Salt"),
-            }
-        });
+            Image = new DishImage(new byte[] { 0x01 }, "image/jpeg")
+        };
+        dishWithImage.AddIngredient(800, "Mililiter", "Seawater");
+        dishWithImage.AddIngredient(6, "Piece", "Sea cucumber");
+        dishWithImage.AddIngredient(8, "Piece", "Crab meat");
+        dishWithImage.AddIngredient(1, "Pinch", "Salt");
+        _dishes[1] = dishWithImage;
+
+        _dbContext.AddRange(_dishes);
         _dbContext.SaveChanges();
     }
 
@@ -82,163 +85,149 @@ public class SqlDishRepositoryTests
     [Fact]
     public void GetSingleById_WhenIdExists_ReturnsDish()
     {
-        const string existingGuid = "00000000-0000-0000-0000-000000000001";
-        var result = _repository.GetSingleById(new Guid(existingGuid));
+        var existingId = _dishes[0].Id;
+        var result = _repository.GetSingleById(existingId);
 
         result.Should().NotBeNull();
-        result!.Name.Should().Be("Krabby Patty");
+        result!.Name.Should().Be(_dishes[0].Name);
     }
 
     [Fact]
     public void Add_WhenDishValid_CreatesEntry()
     {
-        const string someDishName = "Salty Sea Dog";
         Guid someGuid = Guid.NewGuid();
-        Dish dish = new(someDishName) { Id = someGuid };
+        Dish dish = new(someGuid, "Salty Sea Dog");
 
         _repository.Add(dish);
 
-        _dbContext.Dishes.First(x => x.Id == someGuid).Should().NotBeNull();
+        _dbContext.ChangeTracker.Clear();
+        _dbContext.Dishes.Find(someGuid).Should().NotBeNull();
     }
 
     [Fact]
     public void Add_WhenDishHasIngredients_CreatesIngredients()
     {
-        const string someDishName = "Salty Sea Dog";
         Guid someGuid = Guid.NewGuid();
-        Dish dish = new(someDishName) { Id = someGuid };
+        Dish dish = new(someGuid, "Salty Sea Dog");
         dish.AddIngredient(1, "Kilogram", "Sausages");
         dish.AddIngredient(0.5m, "Liter", "Ketchup");
         dish.AddIngredient(0.3m, "Liter", "Mustard");
 
         _repository.Add(dish);
 
-        _dbContext.Dishes.First(x => x.Id == someGuid).Ingredients.Should().HaveCount(3);
+        _dbContext.ChangeTracker.Clear();
+        _dbContext.Dishes.Find(someGuid)!.Ingredients.Should().HaveCount(3);
     }
 
     [Fact]
-    public void Update_WhenGivenDisconnectedDish_UpdatesEntryAndUpsDishVersion()
+    public void Update_WhenGivenDisconnectedDish_ThrowsInvalidOperationException()
     {
-        const string someDishName = "Salty Sea Dog";
-        Guid guid = Guid.NewGuid();
-        Dish initialDish = new(someDishName) { Id = guid };
-        _dbContext.Dishes.Add(initialDish);
-        _dbContext.SaveChanges();
-        _dbContext.Remove(initialDish);
+        var initialDish = _dbContext.Dishes.Find(_dishes[0].Id);
+        var anotherDishName = "Tuna Supreme";
+        var disconnectedDish = new Dish(initialDish!.Id, anotherDishName) { Version = initialDish!.Version };
 
-        const string anotherDishName = "Tuna Supreme";
-        var newDisconnectedDish = new Dish(anotherDishName) { Id = guid };
-        _repository.Update(newDisconnectedDish);
+        Action act = () => _repository.Update(disconnectedDish);
 
-        var dish = _dbContext.Dishes.First(d => d.Id == initialDish.Id);
-        dish!.Name.Should().Be(anotherDishName);
-        dish!.Version.Should().NotEqual(initialDish.Version);
+        act.Should().Throw<InvalidOperationException>();
     }
 
     [Fact]
     public void Update_WhenImageExists_RetainsImage()
     {
-        const string someDishName = "Salty Sea Dog";
-        Guid guid = Guid.NewGuid();
-        var someImage = new DishImage(new byte[] { 0x01 }, "image/jpeg");
-        Dish initialDish = new(someDishName) { Id = guid, Image = someImage };
-        _dbContext.Dishes.Add(initialDish);
-        _dbContext.SaveChanges();
-        _dbContext.Remove(initialDish);
+        var dishWithImage = _dbContext.Dishes.Find(_dishes[1].Id);
 
-        const string anotherDishName = "Tuna Supreme";
-        var newDisconnectedDish = new Dish(anotherDishName) { Id = guid };
-        _repository.Update(newDisconnectedDish);
+        var anotherDishName = "Tuna Supreme";
+        dishWithImage!.Name = anotherDishName;
+        _repository.Update(dishWithImage);
 
-        var dish = _dbContext.Dishes.First(d => d.Id == initialDish.Id);
+        _dbContext.ChangeTracker.Clear();
+        var dish = _dbContext.Dishes.Find(_dishes[1].Id);
         dish!.Image.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Update_WhenConcurrentUpdate_ThrowsConcurrentUpdateException()
+    {
+        var dish = _dbContext.Dishes.Find(_dishes[1].Id);
+        dish!.Name = "Tuna Supreme";
+
+        _dbContext.Database.ExecuteSqlRaw("UPDATE [mealmap].[dish] SET [Name] = 'Golden Seahorse' WHERE [Id] = '" + _dishes[1].Id + "';");
+        Action act = () => _repository.Update(dish);
+
+        act.Should().Throw<ConcurrentUpdateException>();
+    }
+
+    [Fact]
+    public void Update_WhenVersionNotMatchingDatabase_ThrowsConcurrentUpdateException()
+    {
+        var dish = _dbContext.Dishes.Find(_dishes[1].Id);
+
+        var nonMatchingVersion = new byte[8] { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0xD4 };
+        dish!.Version = nonMatchingVersion;
+        dish.Name = "Tuna Supreme";
+
+        Action act = () => _repository.Update(dish);
+
+        act.Should().Throw<ConcurrentUpdateException>();
     }
 
     [Fact]
     public void Update_WhenIngredientAdded_AddsIngredientAndUpsDishVersion()
     {
-        var originalDish = _dbContext.Dishes.First();
-        var originalIngredientCount = originalDish.Ingredients!.Count;
-        var originalDishVersion = originalDish.Version;
-        _dbContext.Entry(originalDish).State = EntityState.Detached;
-        var adaptedDish = new Dish(originalDish.Name)
-        {
-            Id = originalDish.Id,
-            Description = originalDish.Description,
-            Servings = originalDish.Servings,
-            Ingredients = originalDish.Ingredients!.ToArray<Ingredient>().ToList<Ingredient>()
-        };
+        var dish = _dbContext.Dishes.Find(_dishes[0].Id);
+        var originalCount = dish!.Ingredients.Count();
+        var originalVersion = dish.Version;
 
-        adaptedDish.Ingredients!.Add(new Ingredient(1, UnitOfMeasurementCodes.Pinch, "Pepper"));
-        _repository.Update(adaptedDish);
+        dish!.AddIngredient(1, "Pinch", "Pepper");
+        _repository.Update(dish);
 
-        var dish = _dbContext.Dishes.First(d => d.Id == originalDish.Id);
-        dish.Ingredients.Should().HaveCount(originalIngredientCount + 1);
-        dish.Version.Should().NotEqual(originalDishVersion);
+        _dbContext.ChangeTracker.Clear();
+        var result = _dbContext.Dishes.Find(dish.Id);
+        result!.Ingredients.Should().HaveCount(originalCount + 1);
+        result.Version.Should().NotEqual(originalVersion);
     }
 
     [Fact]
     public void Update_WhenIngredientRemoved_RemovesIngredientAndUpsDishVersion()
     {
-        var originalDish = _dbContext.Dishes.First(d => d.Ingredients != null && d.Ingredients.Count > 2);
-        var originalIngredientCount = originalDish.Ingredients!.Count;
-        var originalDishVersion = originalDish.Version;
-        _dbContext.Entry(originalDish).State = EntityState.Detached;
-        var adaptedDish = new Dish(originalDish.Name)
-        {
-            Id = originalDish.Id,
-            Description = originalDish.Description,
-            Servings = originalDish.Servings,
-            Ingredients = originalDish.Ingredients!.ToArray<Ingredient>().ToList<Ingredient>()
-        };
+        var dish = _dbContext.Dishes.Find(_dishes[0].Id);
+        var originalCount = dish!.Ingredients.Count();
+        var originalVersion = dish.Version;
 
-        adaptedDish.Ingredients.RemoveAt(0);
-        _repository.Update(adaptedDish);
+        dish!.RemoveIngredient(dish.Ingredients.First());
+        _repository.Update(dish);
 
-        var dish = _dbContext.Dishes.First(d => d.Id == originalDish.Id);
-        dish.Ingredients.Should().HaveCount(originalIngredientCount - 1);
-        dish.Version.Should().NotEqual(originalDishVersion);
+        _dbContext.ChangeTracker.Clear();
+        var result = _dbContext.Dishes.Find(dish.Id);
+        result!.Ingredients.Should().HaveCount(originalCount - 1);
+        result.Version.Should().NotEqual(originalVersion);
     }
 
     [Fact]
     public void Update_WhenImageReplaced_ReplacesImage()
     {
-        var originalDish = _dbContext.Dishes.First();
-        originalDish.Image = new DishImage(new byte[] { 0x01 }, "image/jpeg");
-        _dbContext.SaveChanges();
-        _dbContext.Entry(originalDish).State = EntityState.Detached;
+        var dish = _dbContext.Dishes.Find(_dishes[0].Id);
 
         var imageContent = new byte[] { 0x02 };
-        var adaptedDish = new Dish(originalDish.Name)
-        {
-            Id = originalDish.Id,
-            Image = new DishImage(imageContent, "image/jpeg")
-        };
-        _repository.Update(adaptedDish, retainImage: false);
-        _dbContext.Entry(adaptedDish).State = EntityState.Detached;
+        dish!.Image = new DishImage(imageContent, "image/jpeg");
+        _repository.Update(dish);
 
-        var dish = _dbContext.Dishes.Find(adaptedDish.Id);
-        dish!.Image!.Content.Should().Equal(imageContent);
+        _dbContext.ChangeTracker.Clear();
+        var result = _dbContext.Dishes.Find(dish.Id);
+        result!.Image!.Content.Should().Equal(imageContent);
     }
 
     [Fact]
     public void Update_WhenImageRemoved_DeletesImage()
     {
-        var originalDish = _dbContext.Dishes.First();
-        originalDish.Image = new DishImage(new byte[] { 0x01 }, "image/jpeg");
-        _dbContext.SaveChanges();
-        _dbContext.Entry(originalDish).State = EntityState.Detached;
+        var dish = _dbContext.Dishes.Find(_dishes[0].Id);
+        dish!.Image = null;
 
-        var adaptedDish = new Dish(originalDish.Name)
-        {
-            Id = originalDish.Id,
-            Image = null
-        };
-        _repository.Update(adaptedDish, retainImage: false);
-        _dbContext.Entry(adaptedDish).State = EntityState.Detached;
+        _repository.Update(dish);
 
-        var dish = _dbContext.Dishes.Find(adaptedDish.Id);
-        dish!.Image.Should().BeNull();
+        _dbContext.ChangeTracker.Clear();
+        var result = _dbContext.Dishes.Find(dish.Id);
+        result!.Image.Should().BeNull();
     }
 
     [Fact]

@@ -1,6 +1,6 @@
-﻿using Mealmap.DataAccess;
-using Mealmap.Domain.DishAggregate;
+﻿using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
+using Mealmap.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -19,7 +19,7 @@ InjectTestData(dbContext);
 
 static void InjectTestData(MealmapDbContext dbContext)
 {
-    var dishes = GenerateDishes();
+    var dishes = GenerateDishes(new DishService());
     dbContext.Dishes.AddRange(dishes);
 
     var meals = GenerateMeals(
@@ -31,40 +31,27 @@ static void InjectTestData(MealmapDbContext dbContext)
     dbContext.SaveChanges();
 }
 
-static Dish[] GenerateDishes()
+static Dish[] GenerateDishes(DishService service)
 {
-    Dish[] result = new Dish[2];
+    Dish[] dishes = new Dish[2];
 
-    result[0] = new Dish("Krabby Patty")
-    {
-        Id = Guid.NewGuid(),
-        Description = "The fishiest burger in town.",
-        Servings = 2,
-        Ingredients = new(){
-            new Ingredient(4, new UnitOfMeasurement(UnitOfMeasurementCodes.Slice), "Old bread"),
-            new Ingredient(2, new UnitOfMeasurement(UnitOfMeasurementCodes.Piece), "Unidentifiable meat"),
-            new Ingredient(20, new UnitOfMeasurement(UnitOfMeasurementCodes.Mililiter), "Fishy sauce"),
-        }
-    };
-    result[1] = (new Dish("Sailors Surprise")
-    {
-        Id = Guid.NewGuid(),
-        Description = "The darkest, wettest dream of every boatsman.",
-        Servings = 4,
-        Ingredients = new(){
-            new Ingredient(800, new UnitOfMeasurement(UnitOfMeasurementCodes.Mililiter), "Seawater"),
-            new Ingredient(6, new UnitOfMeasurement(UnitOfMeasurementCodes.Piece), "Sea cucumber"),
-            new Ingredient(8, new UnitOfMeasurement(UnitOfMeasurementCodes.Piece), "Crab meat"),
-            new Ingredient(1, new UnitOfMeasurement(UnitOfMeasurementCodes.Pinch), "Salt"),
-        }
-    });
+    dishes[0] = service.Create("Krabby Patty", "The fishiest burger in town.", 2);
+    service.AddIngredient(dishes[0], 4, "Slice", "Old bread");
+    service.AddIngredient(dishes[0], 2, "Piece", "Unidentifiable meat");
+    service.AddIngredient(dishes[0], 20, "Mililiter", "Fishy sauce");
 
-    return result;
+    dishes[1] = service.Create("KSailors Surprise", "The darkest, wettest dream of every boatsman.", 4);
+    service.AddIngredient(dishes[1], 800, "Mililiter", "Seawater");
+    service.AddIngredient(dishes[1], 6, "Piece", "Sea cucumber");
+    service.AddIngredient(dishes[1], 8, "Piece", "Crab meat");
+    service.AddIngredient(dishes[1], 1, "Pinch", "Salt");
+
+    return dishes;
 }
 
 static Meal[] GenerateMeals(MealService service, Dish[] dishes)
 {
-    Meal[] result = new Meal[35];
+    Meal[] meals = new Meal[35];
 
     var today = DateTime.Today;
     DateOnly startOfWeek = DateOnly.FromDateTime(today).AddDays(-1 * (int)today.DayOfWeek + 1);
@@ -74,8 +61,8 @@ static Meal[] GenerateMeals(MealService service, Dish[] dishes)
         Meal meal = service.CreateMeal(startOfWeek.AddDays(-14).AddDays(i));
         service.AddCourseToMeal(meal, index: 1, mainCourse: true, dishId: dishes[0].Id);
         service.AddCourseToMeal(meal, index: 2, mainCourse: false, dishId: dishes[1].Id);
-        result[i] = meal;
+        meals[i] = meal;
     }
 
-    return result;
+    return meals;
 }

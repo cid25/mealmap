@@ -12,12 +12,11 @@ public class DishesPipelineTests
     [Fact]
     public async void GetDishes_ReturnsJsonAndStatusOk()
     {
-        Guid guid = Guid.NewGuid();
         var factory = new MockableWebApplicationFactory(services =>
         {
             services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
             {
-                Dish dish = new("Tuna Supreme") { Id = guid };
+                Dish dish = new("Tuna Supreme");
                 return Mock.Of<IDishRepository>(mock => mock.GetAll() == new List<Dish> { dish });
             }));
         });
@@ -36,7 +35,7 @@ public class DishesPipelineTests
         {
             services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
             {
-                Dish dish = new("Tuna Supreme") { Id = guid };
+                Dish dish = new(guid, "Tuna Supreme");
                 return Mock.Of<IDishRepository>(mock => mock.GetSingleById(It.IsAny<Guid>()) == dish);
             }));
         });
@@ -55,7 +54,7 @@ public class DishesPipelineTests
         {
             services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
             {
-                Dish dish = new("Tuna Supreme") { Id = guid };
+                Dish dish = new(guid, "Tuna Supreme");
                 return Mock.Of<IDishRepository>(mock => mock.GetSingleById(It.IsAny<Guid>()) == dish);
             }));
         });
@@ -76,7 +75,7 @@ public class DishesPipelineTests
         {
             services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
             {
-                Dish dish = new("Tuna Supreme") { Id = guid };
+                Dish dish = new(guid, "Tuna Supreme");
                 return Mock.Of<IDishRepository>();
             }));
         });
@@ -97,7 +96,7 @@ public class DishesPipelineTests
         {
             services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
             {
-                Dish dish = new("Tuna Supreme") { Id = guid, Image = new DishImage(new byte[1], contentType) };
+                Dish dish = new("Tuna Supreme") { Image = new DishImage(new byte[1], contentType) };
                 return Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == dish);
             }));
         });
@@ -116,12 +115,12 @@ public class DishesPipelineTests
         {
             services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
             {
-                Dish dish = new("Tuna Supreme") { Id = guid };
+                Dish dish = new(guid, "Tuna Supreme");
                 return Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == dish);
             }));
         });
 
-        var response = await factory.CreateClient().GetAsync("/api/dishes/" + Guid.NewGuid() + "/image");
+        var response = await factory.CreateClient().GetAsync("/api/dishes/" + guid + "/image");
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.NoContent);
     }

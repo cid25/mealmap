@@ -16,7 +16,7 @@ public class MealsPipelineTests
         {
             services.Replace(ServiceDescriptor.Scoped<IMealRepository>(_ =>
             {
-                List<Meal> meals = new() { new Meal(Guid.NewGuid(), new DateOnly(2020, 1, 1)) };
+                List<Meal> meals = new() { new Meal(new DateOnly(2020, 1, 1)) };
                 return Mock.Of<IMealRepository>(mock => mock.GetAll(null, null) == meals);
             }));
         });

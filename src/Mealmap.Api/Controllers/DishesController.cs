@@ -1,5 +1,5 @@
 ﻿using Mealmap.Api.DataTransferObjects;
-using Mealmap.Api.InputMappers;
+using Mealmap.Api.Exceptions;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.RequestFormatters;
 using Mealmap.Api.Swagger;
@@ -17,22 +17,22 @@ public class DishesController : ControllerBase
 {
     private readonly ILogger<DishesController> _logger;
     private readonly IDishRepository _repository;
-    private readonly DishInputMapper _inputMapper;
-    private readonly DishOutputMapper _outputMapper;
-    private readonly IRequestContext _requestContext;
+    private readonly DishService _service;
+    private readonly IOutputMapper<DishDTO, Dish> _outputMapper;
+    private readonly IRequestContext _context;
 
     public DishesController(
         ILogger<DishesController> logger,
         IDishRepository repository,
-        DishInputMapper inputMapper,
-        DishOutputMapper outputMapper,
+        DishService service,
+        IOutputMapper<DishDTO, Dish> outputMapper,
         IRequestContext context)
     {
         _logger = logger;
         _repository = repository;
-        _inputMapper = inputMapper;
+        _service = service;
         _outputMapper = outputMapper;
-        _requestContext = context;
+        _context = context;
     }
 
     /// <summary>
@@ -72,14 +72,13 @@ public class DishesController : ControllerBase
         }
 
         var dto = _outputMapper.FromEntity(dish);
-
         return dto;
     }
 
     /// <summary>
     /// Creates a dish.
     /// </summary>
-    /// <param name="dishDTO"></param>
+    /// <param name="dto"></param>
     /// <response code="201">Dish Created</response>
     /// <response code="400">Bad Request</response>
     [HttpPost(Name = nameof(PostDish))]
@@ -89,34 +88,25 @@ public class DishesController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [SwaggerRequestExample(typeof(DishDTO), typeof(DishRequestExampleWithoutIdAndEtag))]
     [SwaggerResponseExample(201, typeof(DishResponseExampleWithIdAndEtag))]
-    public ActionResult<DishDTO> PostDish([FromBody] DishDTO dishDTO)
+    public ActionResult<DishDTO> PostDish([FromBody] DishDTO dto)
     {
-        if (dishDTO.Id != null && dishDTO.Id != Guid.Empty)
+        if (dto.Id != null && dto.Id != Guid.Empty)
             return BadRequest("Field id is not allowed.");
 
-        Dish dish;
-
-        try
-        {
-            dish = _inputMapper.FromDataTransferObject(dishDTO);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var dish = _service.Create(dto.Name, dto.Description, dto.Servings);
+        SetIngredientsFromDataTransferObject(dish, dto);
 
         _repository.Add(dish);
         _logger.LogInformation("Created dish with id {Id}", dish.Id);
 
         var dishCreated = _outputMapper.FromEntity(dish);
-
         return CreatedAtAction(nameof(GetDish), new { id = dishCreated.Id }, dishCreated);
     }
 
     /// <summary>
     /// Updates an existing dish.
     /// </summary>
-    /// <param name="dishDTO"></param>
+    /// <param name="dto"></param>
     /// <response code="200">Dish Updated</response>
     /// <response code="400">Bad Request</response>
     /// <response code="404">Dish Not Found</response>
@@ -132,30 +122,27 @@ public class DishesController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status428PreconditionRequired)]
     [SwaggerRequestExample(typeof(DishDTO), typeof(DishRequestExampleWithIdWithoutEtag))]
     [SwaggerResponseExample(200, typeof(DishResponseExampleWithIdAndEtag))]
-    public ActionResult<DishDTO> PutDish([FromBody] DishDTO dishDTO)
+    public ActionResult<DishDTO> PutDish([FromBody] DishDTO dto)
     {
-        if (_requestContext.IfMatchHeader.IsNullOrEmpty())
+        if (_context.IfMatchHeader.IsNullOrEmpty())
             return new StatusCodeResult(StatusCodes.Status428PreconditionRequired);
 
-        if (dishDTO.Id == null || dishDTO.Id == Guid.Empty)
+        if (dto.Id == null)
             return BadRequest("Field id is mandatory.");
 
-        if (_repository.GetSingleById((Guid)dishDTO.Id) == null)
-            return NotFound($"Dish with id {dishDTO.Id} doesn't exist.");
+        if (dto.Id == Guid.Empty)
+            return BadRequest("Field id cannot be empty.");
 
-        Dish dish;
-        try
-        {
-            dish = _inputMapper.FromDataTransferObject(dishDTO);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var dish = _repository.GetSingleById((Guid)dto.Id);
+
+        if (dish == null)
+            return NotFound($"Dish with id does not exist.");
+
+        UpdateDishFromDataTransferObject(dish, dto);
 
         try
         {
-            _repository.Update(dish, retainImage: true);
+            _repository.Update(dish);
             _logger.LogInformation("Updated dish with id {Id}", dish.Id);
         }
         catch (DbUpdateConcurrencyException)
@@ -182,7 +169,7 @@ public class DishesController : ControllerBase
         var dish = _repository.GetSingleById(id);
 
         if (dish == null)
-            return NotFound($"Dish with id {id} doesn't exist.");
+            return NotFound($"Dish with id does not exist.");
 
         _repository.Remove(dish);
 
@@ -212,11 +199,10 @@ public class DishesController : ControllerBase
         if (dish == null)
             return NotFound();
 
-        dish.Image = new DishImage(content: image.Content, contentType: image.ContentType);
-        _repository.Update(dish, retainImage: false);
+        _service.SetImage(dish, image.Content, image.ContentType);
+        _repository.Update(dish);
 
         var actionLink = ActionLink(action: nameof(GetDishImage), values: new { id });
-
         if (actionLink != null)
             HttpContext.Response.Headers.Location = actionLink;
 
@@ -268,10 +254,32 @@ public class DishesController : ControllerBase
         if (dish.Image == null)
             return NoContent();
 
-        dish.Image = null;
-        _repository.Update(dish, retainImage: false);
+        _service.RemoveImage(dish);
+        _repository.Update(dish);
 
         return Ok();
+    }
+
+    private void SetIngredientsFromDataTransferObject(Dish dish, DishDTO dto)
+    {
+        if (dto.Ingredients != null)
+            foreach (var ing in dto.Ingredients)
+                _service.AddIngredient(dish, ing.Quantity, ing.UnitOfMeasurement, ing.Description);
+    }
+
+    private void UpdateDishFromDataTransferObject(Dish dish, DishDTO dto)
+    {
+        if (_context.IfMatchHeader == null || _context.IfMatchHeader == String.Empty)
+            throw new ValidationException("The If-Match header must be set.");
+
+        _service.SetVersion(dish, Convert.FromBase64String(_context.IfMatchHeader));
+
+        _service.ChangeName(dish, dto.Name);
+        _service.SetDescription(dish, dto.Description);
+        _service.SetServings(dish, dto.Servings);
+
+        _service.RemoveAllIngredients(dish);
+        SetIngredientsFromDataTransferObject(dish, dto);
     }
 
     private string? ActionLink(string action, object? values)
@@ -283,8 +291,8 @@ public class DishesController : ControllerBase
             action: action,
             controller: null,
             values: values,
-            protocol: _requestContext.Scheme,
-            host: _requestContext.Host
+            protocol: _context.Scheme,
+            host: _context.Host
         );
     }
 }

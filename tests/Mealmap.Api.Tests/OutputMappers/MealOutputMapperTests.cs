@@ -10,7 +10,7 @@ public class MealOutputMapperTests
 
     public MealOutputMapperTests()
     {
-        var mapper = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper();
+        var mapper = new MapperConfiguration(cfg => cfg.AddProfile<AutomapperProfile>()).CreateMapper();
 
         _mealMapper = new MealOutputMapper(mapper);
     }

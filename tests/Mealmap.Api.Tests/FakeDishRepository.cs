@@ -21,15 +21,10 @@ internal class FakeDishRepository : Dictionary<Guid, Dish>, IDishRepository
         Add((Guid)dish.Id, dish);
     }
 
-    public void Update(Dish dish, bool retainImage)
+    public void Update(Dish dish)
     {
-        var oldDish = GetSingleById(dish.Id);
-
         if (!Remove(dish.Id))
             throw new InvalidOperationException();
-
-        if (retainImage && oldDish!.Image != null)
-            dish.Image = oldDish.Image;
 
         Add(dish.Id, dish);
     }

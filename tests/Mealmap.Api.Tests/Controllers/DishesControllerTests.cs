@@ -2,7 +2,6 @@
 using FluentAssertions;
 using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransferObjects;
-using Mealmap.Api.InputMappers;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.RequestFormatters;
 using Mealmap.Domain.DishAggregate;
@@ -18,6 +17,7 @@ public class DishesControllerTests
     private readonly ILogger<DishesController> _loggerMock;
     private readonly FakeDishRepository _repositoryFake;
     private readonly DishesController _controller;
+    private readonly Dish[] _dishes;
 
     public DishesControllerTests()
     {
@@ -25,25 +25,30 @@ public class DishesControllerTests
         _repositoryFake = new FakeDishRepository();
 
         var contextMock = Mock.Of<IRequestContext>(m => m.Scheme == "https" && m.Host == "test.com" && m.Port == 443);
-        var baseMapper = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper();
+        var baseMapper = new MapperConfiguration(cfg => cfg.AddProfile<AutomapperProfile>()).CreateMapper();
         _controller = new DishesController(
             _loggerMock,
             _repositoryFake,
-            new DishInputMapper(Mock.Of<ILogger<DishInputMapper>>(), baseMapper, contextMock),
+            new DishService(),
             new DishOutputMapper(baseMapper, contextMock),
             contextMock
         );
 
-        const string someGuid = "00000000-0000-0000-0000-000000000001";
-        var dishWithoutImage = new Dish("Krabby Patty") { Id = new Guid(someGuid) };
+        _dishes = new Dish[2];
+        seedData();
+    }
+
+    private void seedData()
+    {
+        var dishWithoutImage = new Dish("Krabby Patty");
+        _dishes[0] = dishWithoutImage;
         _repositoryFake.Add(dishWithoutImage);
 
-        const string anotherGuid = "00000000-0000-0000-0000-000000000002";
         var dishWithImage = new Dish("Tuna Supreme")
         {
-            Id = new Guid(anotherGuid),
             Image = new DishImage(content: new byte[1], contentType: "image/jpeg")
         };
+        _dishes[1] = dishWithImage;
         _repositoryFake.Add(dishWithImage);
     }
 
@@ -83,9 +88,8 @@ public class DishesControllerTests
         DishDTO dish = new(someDishName);
 
         var context = Mock.Of<IRequestContext>(m => m.Method == "POST");
-        var inputMapper = Mock.Of<IInputMapper<Dish, DishDTO>>(m => m.FromDataTransferObject(It.IsAny<DishDTO>()) == new Dish(someDishName));
         var outputMapper = Mock.Of<IOutputMapper<DishDTO, Dish>>(m => m.FromEntity(It.IsAny<Dish>()) == dish);
-        var controller = new DishesController(_loggerMock, _repositoryFake, inputMapper, outputMapper, context);
+        var controller = new DishesController(_loggerMock, _repositoryFake, new DishService(), outputMapper, context);
 
         var result = controller.PostDish(dish);
 
@@ -105,28 +109,6 @@ public class DishesControllerTests
     }
 
     [Fact]
-    public void PostDish_WhenInputMapperThrowsException_ReturnsBadRequest()
-    {
-        var inputMapper = new Mock<IInputMapper<Dish, DishDTO>>();
-        inputMapper.Setup(m => m.FromDataTransferObject(It.IsAny<DishDTO>())).Throws(new InvalidOperationException());
-        var controller = new DishesController(
-            _loggerMock,
-            _repositoryFake,
-            inputMapper.Object,
-            Mock.Of<IOutputMapper<DishDTO, Dish>>(),
-            Mock.Of<IRequestContext>()
-        );
-
-        const string someDishName = "Sailors Surprise";
-        var someGuid = Guid.NewGuid();
-        DishDTO dish = new(someDishName) { Id = someGuid };
-
-        var result = controller.PostDish(dish);
-
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
-    }
-
-    [Fact]
     public void PutDish_SavesUpdateAndReturnsDTO()
     {
         const string someDishName = "Sailors Surprise";
@@ -139,18 +121,18 @@ public class DishesControllerTests
         };
         var mockRepository = new Mock<IDishRepository>();
         mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(new Dish(someDishName) { Version = Convert.FromBase64String(eTag) });
-        mockRepository.Setup(m => m.Update(It.IsAny<Dish>(), true)).Throws(new DbUpdateConcurrencyException());
+        mockRepository.Setup(m => m.Update(It.IsAny<Dish>())).Throws(new DbUpdateConcurrencyException());
         var controller = new DishesController(
             _loggerMock,
             mockRepository.Object,
-            Mock.Of<IInputMapper<Dish, DishDTO>>(),
+            new DishService(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == eTag)
         );
 
         var result = controller.PutDish(dish);
 
-        mockRepository.Verify(m => m.Update(It.IsAny<Dish>(), true), Times.Once);
+        mockRepository.Verify(m => m.Update(It.IsAny<Dish>()), Times.Once);
         result.Should().BeOfType<ActionResult<DishDTO>>();
     }
 
@@ -162,7 +144,7 @@ public class DishesControllerTests
         var controller = new DishesController(
             _loggerMock,
             _repositoryFake,
-            Mock.Of<IInputMapper<Dish, DishDTO>>(),
+            new DishService(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == header)
         );
@@ -184,7 +166,7 @@ public class DishesControllerTests
         var controller = new DishesController(
             _loggerMock,
             _repositoryFake,
-            Mock.Of<IInputMapper<Dish, DishDTO>>(),
+            new DishService(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == someHeader)
         );
@@ -204,7 +186,7 @@ public class DishesControllerTests
         var controller = new DishesController(
             _loggerMock,
             _repositoryFake,
-            Mock.Of<IInputMapper<Dish, DishDTO>>(),
+            new DishService(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == someETag)
         );
@@ -231,11 +213,11 @@ public class DishesControllerTests
         };
         var mockRepository = new Mock<IDishRepository>();
         mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(new Dish(someDishName) { Version = Convert.FromBase64String(eTag) });
-        mockRepository.Setup(m => m.Update(It.IsAny<Dish>(), true)).Throws(new DbUpdateConcurrencyException());
+        mockRepository.Setup(m => m.Update(It.IsAny<Dish>())).Throws(new DbUpdateConcurrencyException());
         var controller = new DishesController(
             _loggerMock,
             mockRepository.Object,
-            Mock.Of<IInputMapper<Dish, DishDTO>>(),
+            new DishService(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == eTag)
         );
@@ -304,9 +286,9 @@ public class DishesControllerTests
     [Fact]
     public void GetDishImage_WhenImageExists_ReturnsFileContentResult()
     {
-        var guidOfDishWithImage = new Guid("00000000-0000-0000-0000-000000000002");
+        Guid dishWithImage = _dishes[1].Id;
 
-        var result = _controller.GetDishImage(guidOfDishWithImage);
+        var result = _controller.GetDishImage(dishWithImage);
 
         result.Should().BeOfType<FileContentResult>();
     }
@@ -314,9 +296,9 @@ public class DishesControllerTests
     [Fact]
     public void GetDishImage_WhenImageDoesntExist_ReturnsNoContent()
     {
-        var guidOfDishWithoutImage = new Guid("00000000-0000-0000-0000-000000000001");
+        Guid dishWithoutImage = _dishes[0].Id;
 
-        var result = _controller.GetDishImage(guidOfDishWithoutImage);
+        var result = _controller.GetDishImage(dishWithoutImage);
 
         result.Should().BeOfType<NoContentResult>();
     }
@@ -334,7 +316,7 @@ public class DishesControllerTests
     [Fact]
     public void DeleteDishImage_ReturnsOk()
     {
-        Guid dishWithImage = new("00000000-0000-0000-0000-000000000002");
+        Guid dishWithImage = _dishes[1].Id;
 
         var result = _controller.DeleteDishImage(dishWithImage);
 
@@ -354,7 +336,7 @@ public class DishesControllerTests
     [Fact]
     public void DeleteDishImage_WhenNoImage_ReturnsNoContent()
     {
-        Guid dishWithoutImage = new("00000000-0000-0000-0000-000000000001");
+        Guid dishWithoutImage = _dishes[0].Id;
 
         var result = _controller.DeleteDishImage(dishWithoutImage);
 

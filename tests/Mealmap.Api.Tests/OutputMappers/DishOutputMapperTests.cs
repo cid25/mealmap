@@ -12,7 +12,7 @@ public class DishOutputMapperTests
 
     public DishOutputMapperTests()
     {
-        _baseMapper = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper();
+        _baseMapper = new MapperConfiguration(cfg => cfg.AddProfile<AutomapperProfile>()).CreateMapper();
     }
 
     [Fact]
@@ -25,9 +25,8 @@ public class DishOutputMapperTests
 
         const string SomeName = "Sailors Suprise";
         var someGuid = Guid.NewGuid();
-        var dish = new Dish(SomeName)
+        var dish = new Dish(someGuid, SomeName)
         {
-            Id = someGuid,
             Image = new DishImage(content: new byte[1], contentType: "image/jpeg"),
             Version = new byte[] { 0x01 }
         };

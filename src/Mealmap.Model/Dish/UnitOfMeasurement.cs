@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Mealmap.Domain.Exceptions;
 
 namespace Mealmap.Domain.DishAggregate;
 
@@ -7,11 +8,11 @@ public record UnitOfMeasurement
 {
     private static readonly IEnumerable<UnitOfMeasurement> _units;
 
-    public UnitOfMeasurementCodes UnitOfMeasurementCode { get; init; }
+    public UnitOfMeasurementCodes UnitOfMeasurementCode { get; }
 
-    public string Symbol { get; init; }
+    public string Symbol { get; }
 
-    public string? Measure { get; init; }
+    public string? Measure { get; }
 
     static UnitOfMeasurement()
     {
@@ -32,13 +33,14 @@ public record UnitOfMeasurement
     private UnitOfMeasurement(UnitOfMeasurementCodes unitOfMeasurementCode, string symbol, string? measure = null)
         => (UnitOfMeasurementCode, Symbol, Measure) = (unitOfMeasurementCode, symbol, measure);
 
-    public UnitOfMeasurement(UnitOfMeasurementCodes unitOfMeasurementCode)
+    internal UnitOfMeasurement(UnitOfMeasurementCodes unitOfMeasurementCode)
     {
         var unit = _units.First(u => u.UnitOfMeasurementCode == unitOfMeasurementCode);
         (UnitOfMeasurementCode, Symbol, Measure) = (unitOfMeasurementCode, unit.Symbol, unit.Measure);
     }
 
-    public UnitOfMeasurement(string unitOfMeasurement)
+    /// <exception cref="DomainValidationException"></exception>
+    internal UnitOfMeasurement(string unitOfMeasurement)
     {
         try
         {
@@ -50,11 +52,10 @@ public record UnitOfMeasurement
             Measure = unit.Measure;
 
         }
-        catch (ArgumentException)
+        catch (ArgumentException ex)
         {
-            throw new ArgumentException($"UnitOfMeasurement must match an existing unit of measurement, but is {0}.", unitOfMeasurement);
+            throw new DomainValidationException("Unit of measurement is not known.", ex);
         }
-
     }
 
     public string Stringify()

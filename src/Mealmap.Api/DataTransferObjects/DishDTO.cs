@@ -44,8 +44,8 @@ public record DishDTO
     /// The number of servings produced with the stated ingredients.
     /// </summary>
     /// <example>2</example>
-    [Range(1, 20)]
-    public byte Servings { get; set; }
+    [Range(1, int.MaxValue)]
+    public int Servings { get; set; }
 
     /// <summary>
     /// The ingredients required to prepare the dish.

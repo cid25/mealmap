@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Mealmap.Domain.DishAggregate;
+using Mealmap.Domain.Exceptions;
 
 namespace Mealmap.Domain.Tests;
 
@@ -17,7 +18,7 @@ public class UnitOfMeasurementTests
     }
 
     [Fact]
-    public void From_WhenInvalidName_ThrowsArgumentException()
+    public void From_WhenInvalidName_ThrowsDomainValidationException()
     {
         const string invalidUnitName = "Kawabunga";
 
@@ -26,6 +27,6 @@ public class UnitOfMeasurementTests
             var unitOfMeasurement = new UnitOfMeasurement(invalidUnitName);
         };
 
-        action.Should().Throw<ArgumentException>();
+        action.Should().Throw<DomainValidationException>();
     }
 }

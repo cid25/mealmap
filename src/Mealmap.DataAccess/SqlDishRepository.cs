@@ -1,7 +1,7 @@
 ﻿using Mealmap.Domain.DishAggregate;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mealmap.DataAccess;
+namespace Mealmap.Infrastructure;
 
 public class SqlDishRepository : IDishRepository
 {
@@ -30,34 +30,24 @@ public class SqlDishRepository : IDishRepository
         _dbContext.SaveChanges();
     }
 
-    public void Update(Dish dish, bool retainImage = true)
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="ConcurrentUpdateException"></exception>
+    public void Update(Dish dish)
     {
         var existingDish = _dbContext.Dishes.Find(dish.Id);
-        if (existingDish == null)
-            return;
-
-        UnregisterIngredients(existingDish);
-        _dbContext.Remove(existingDish);
-
-        _dbContext.Update(dish);
-        RegisterIngredients(dish);
-        ResolveImage(dish, existingDish, retainImage);
-
-        if (dish.Image != existingDish.Image)
-        {
-            if (existingDish.Image != null && retainImage)
-                dish.Image = existingDish.Image with { };
-            if (dish.Image != null && !retainImage)
-                dish.Image = dish.Image with { };
-        }
+        if (existingDish == null || existingDish != dish)
+            throw new InvalidOperationException();
 
         try
         {
+            MarkIngredientsForReplacement();
+            MarkDishForVersionUpdate(dish);
+            EnsureVersionFromClientUsed(dish);
             _dbContext.SaveChanges();
         }
         catch (DbUpdateConcurrencyException ex)
         {
-            throw ex;
+            throw new ConcurrentUpdateException("Saving dish failed due to version mismatch.", ex);
         }
     }
 
@@ -67,28 +57,20 @@ public class SqlDishRepository : IDishRepository
         _dbContext.SaveChanges();
     }
 
-    private void UnregisterIngredients(Dish dish)
+    private void MarkIngredientsForReplacement()
     {
-        if (dish.Ingredients != null)
-            _dbContext.RemoveRange(dish.Ingredients);
+        foreach (var ingredient in _dbContext.ChangeTracker.Entries().
+           Where(e => e.Entity is Ingredient && e.State == EntityState.Modified))
+            ingredient.State = EntityState.Added;
     }
 
-    private void RegisterIngredients(Dish dish)
+    private void MarkDishForVersionUpdate(Dish dish)
     {
-        if (dish.Ingredients != null)
-            _dbContext.AddRange(dish.Ingredients);
+        _dbContext.Entry<Dish>(dish).Property(d => d.Name).IsModified = true;
     }
 
-    private static void ResolveImage(Dish newDish, Dish oldDish, bool retainImage)
+    private void EnsureVersionFromClientUsed(Dish dish)
     {
-        if (retainImage && oldDish.Image != null)
-            newDish.Image = oldDish.Image with { };
-        else if (!retainImage && newDish.Image != oldDish.Image)
-        {
-            if (newDish.Image != null)
-                newDish.Image = newDish.Image with { };
-            else
-                newDish.Image = null;
-        }
+        _dbContext.Entry<Dish>(dish).OriginalValues[nameof(Dish.Version)] = dish.Version;
     }
 }

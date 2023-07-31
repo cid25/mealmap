@@ -10,23 +10,20 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace Mealmap.Api.Controllers;
 
-/// <summary>
-/// 
-/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class MealsController : ControllerBase
 {
     private readonly ILogger<MealsController> _logger;
     private readonly IMealRepository _mealRepository;
-    private readonly MealInputMapper _inputMapper;
-    private readonly MealOutputMapper _outputMapper;
+    private readonly IInputHandler<Meal, MealDTO> _inputMapper;
+    private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
 
     public MealsController(
         ILogger<MealsController> logger,
         IMealRepository mealRepository,
-        MealInputMapper inputMapper,
-        MealOutputMapper outputMapper)
+        IInputHandler<Meal, MealDTO> inputMapper,
+        IOutputMapper<MealDTO, Meal> outputMapper)
     {
         _logger = logger;
         _mealRepository = mealRepository;
@@ -74,7 +71,7 @@ public class MealsController : ControllerBase
         if (meal == null)
         {
             _logger.LogInformation("Client attempt to retrieve non-existing meal with Id {Id]", id);
-            return NotFound($"Meal with id {id} doesn't exist");
+            return NotFound($"Meal with id does not exist.");
         }
 
         return _outputMapper.FromEntity(meal);
@@ -129,7 +126,7 @@ public class MealsController : ControllerBase
         var meal = _mealRepository.GetSingleById(id);
 
         if (meal == null)
-            return NotFound($"Meal with id {id} doesn't exist");
+            return NotFound($"Meal with id does not exist");
 
         _mealRepository.Remove(meal);
 

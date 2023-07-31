@@ -27,13 +27,13 @@ public class MealsControllerTests
         _dishRepository = new FakeDishRepository();
         _mealRepository = new FakeMealRepository();
 
-        var _outputMapper = new MealOutputMapper(
-            new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>()).CreateMapper());
+        _outputMapper = new MealOutputMapper(
+            new MapperConfiguration(cfg => cfg.AddProfile<AutomapperProfile>()).CreateMapper());
 
         _controller = new MealsController(
             _logger,
             _mealRepository,
-            Mock.Of<IInputMapper<Meal, MealDTO>>(m => m.FromDataTransferObject(It.IsAny<MealDTO>()) == new Meal(DateOnly.FromDateTime(DateTime.Now))),
+            new MealInputHandler(new MealService(_dishRepository)),
             _outputMapper);
 
         fakeData();
@@ -41,7 +41,7 @@ public class MealsControllerTests
 
     private void fakeData()
     {
-        Dish krabbyPatty = new("Krabby Patty") { Id = Guid.NewGuid() };
+        Dish krabbyPatty = new("Krabby Patty");
         _dishRepository.Add(krabbyPatty);
 
         var meal = new Meal(
@@ -105,9 +105,9 @@ public class MealsControllerTests
     }
 
     [Fact]
-    public void PostMeal_WhenMapperThrowsDomainValidationException_ReturnsBadRequest()
+    public void PostMeal_WhenHandlerThrowsDomainValidationException_ReturnsBadRequest()
     {
-        var inputMapper = new Mock<IInputMapper<Meal, MealDTO>>();
+        var inputMapper = new Mock<IInputHandler<Meal, MealDTO>>();
         inputMapper.Setup(m => m.FromDataTransferObject(It.IsAny<MealDTO>())).Throws(new DomainValidationException(""));
         var controller = new MealsController(
             _logger,

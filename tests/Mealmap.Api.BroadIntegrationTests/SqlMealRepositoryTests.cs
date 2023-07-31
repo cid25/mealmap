@@ -1,11 +1,10 @@
 ﻿using FluentAssertions;
-using Mealmap.DataAccess;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace Mealmap.Api.BroadIntegrationTests;
+namespace Mealmap.Infrastructure.IntegrationTests;
 
 [Collection("InSequence")]
 [Trait("Target", "Database")]
@@ -33,7 +32,7 @@ public class SqlMealRepositoryTests
     private void seedData()
     {
         _dishes = new Dish[1];
-        _dishes[0] = new Dish("Sailors Surprise") { Id = Guid.NewGuid() };
+        _dishes[0] = new Dish("Sailors Surprise");
         _dbContext.Add(_dishes[0]);
 
         _meals = new Meal[4];

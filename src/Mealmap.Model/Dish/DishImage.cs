@@ -5,11 +5,11 @@ namespace Mealmap.Domain.DishAggregate;
 [Owned]
 public record DishImage
 {
-    public byte[] Content { get; init; }
+    public byte[] Content { get; }
 
-    public string ContentType { get; init; }
+    public string ContentType { get; }
 
-    public DishImage(byte[] content, string contentType)
+    internal DishImage(byte[] content, string contentType)
     {
         (Content, ContentType) = (content, contentType);
     }

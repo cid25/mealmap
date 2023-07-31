@@ -8,7 +8,8 @@ public interface IDishRepository
 
     public void Add(Dish dish);
 
-    public void Update(Dish dish, bool retainImage);
+    //public void Update(Dish dish, bool retainImage);
+    public void Update(Dish dish);
 
     public void Remove(Dish dish);
 }
