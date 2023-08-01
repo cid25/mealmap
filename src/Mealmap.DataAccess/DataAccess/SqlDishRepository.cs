@@ -42,7 +42,7 @@ public class SqlDishRepository : IDishRepository
         {
             MarkIngredientsForReplacement();
             MarkDishForVersionUpdate(dish);
-            EnsureVersionFromClientUsed(dish);
+            AdoptVersionFromClient(dish);
             _dbContext.SaveChanges();
         }
         catch (DbUpdateConcurrencyException ex)
@@ -69,7 +69,7 @@ public class SqlDishRepository : IDishRepository
         _dbContext.Entry(dish).Property(d => d.Name).IsModified = true;
     }
 
-    private void EnsureVersionFromClientUsed(Dish dish)
+    private void AdoptVersionFromClient(Dish dish)
     {
         _dbContext.Entry(dish).OriginalValues[nameof(Dish.Version)] = dish.Version;
     }

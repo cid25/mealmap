@@ -17,8 +17,6 @@ internal static class ModelBuilderExtensions
         dish.Property(d => d.Id);
         dish.HasKey(d => d.Id);
 
-        dish.Property(d => d.Version).IsRowVersion();
-
         dish.Property(d => d.Name);
         dish.Property(d => d.Description);
         dish.Property(d => d.Servings);
@@ -56,6 +54,8 @@ internal static class ModelBuilderExtensions
         meal.OwnsMany(meal => meal.Courses,
                 course =>
                 {
+                    course.Property("Id");
+                    course.HasKey("Id");
                     course.HasOne<Dish>().WithMany().HasForeignKey(c => c.DishId);
                     course.ToTable("course", Schema);
                 });

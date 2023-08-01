@@ -33,4 +33,19 @@ public class MealTests
         meal.Courses.Where(x => x.Index == 3).Count().Should().Be(1);
         meal.Courses.Where(x => x.Index == 4).Count().Should().Be(1);
     }
+
+    [Fact]
+    public void RemoveAllCourses_PurgesCourses()
+    {
+        var someDate = DateOnly.FromDateTime(DateTime.Now);
+        var someDishId = Guid.NewGuid();
+        var meal = new Meal(someDate);
+        meal.AddCourse(1, false, someDishId);
+        meal.AddCourse(2, true, someDishId);
+        meal.AddCourse(4, false, someDishId);
+
+        meal.RemoveAllCourses();
+
+        meal.Courses.Should().HaveCount(0);
+    }
 }

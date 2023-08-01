@@ -49,6 +49,25 @@ public class SqlMealRepository : IMealRepository
         }
     }
 
+    public void Update(Meal meal)
+    {
+        var existingMeal = _dbContext.Meals.Find(meal.Id);
+        if (existingMeal == null || existingMeal != meal)
+            throw new InvalidOperationException();
+
+        try
+        {
+            MarkCoursesForReplacement();
+            MarkMealForVersionUpdate(meal);
+            AdoptVersionFromClient(meal);
+            _dbContext.SaveChanges();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new ConcurrentUpdateException("Saving meal failed due to version mismatch.", ex);
+        }
+    }
+
     public void Remove(Meal meal)
     {
         var removable = _dbContext.Meals.Find(meal.Id);
@@ -58,5 +77,22 @@ public class SqlMealRepository : IMealRepository
             _dbContext.Meals.Remove(removable);
             _dbContext.SaveChanges();
         }
+    }
+
+    private void MarkCoursesForReplacement()
+    {
+        foreach (var course in _dbContext.ChangeTracker.Entries().
+           Where(e => e.Entity is Course && e.State == EntityState.Modified))
+            course.State = EntityState.Added;
+    }
+
+    private void MarkMealForVersionUpdate(Meal meal)
+    {
+        _dbContext.Entry(meal).Property(d => d.DiningDate).IsModified = true;
+    }
+
+    private void AdoptVersionFromClient(Meal meal)
+    {
+        _dbContext.Entry(meal).OriginalValues[nameof(Meal.Version)] = meal.Version;
     }
 }

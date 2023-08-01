@@ -8,5 +8,7 @@ public interface IMealRepository
 
     public void Add(Meal meal);
 
+    public void Update(Meal meal);
+
     public void Remove(Meal meal);
 }

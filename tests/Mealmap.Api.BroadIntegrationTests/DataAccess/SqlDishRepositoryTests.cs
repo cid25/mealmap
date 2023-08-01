@@ -121,11 +121,10 @@ public class SqlDishRepositoryTests
     }
 
     [Fact]
-    public void Update_WhenGivenDisconnectedDish_ThrowsInvalidOperationException()
+    public void Update_WhenDishDisconnected_ThrowsInvalidOperationException()
     {
         var initialDish = _dbContext.Dishes.Find(_dishes[0].Id);
-        var anotherDishName = "Tuna Supreme";
-        var disconnectedDish = new Dish(initialDish!.Id, anotherDishName) { Version = initialDish!.Version };
+        var disconnectedDish = new Dish(initialDish!.Id, initialDish.Name);
 
         Action act = () => _repository.Update(disconnectedDish);
 
@@ -152,14 +151,14 @@ public class SqlDishRepositoryTests
         var dish = _dbContext.Dishes.Find(_dishes[1].Id);
         dish!.Name = "Tuna Supreme";
 
-        _dbContext.Database.ExecuteSqlRaw("UPDATE [mealmap].[dish] SET [Name] = 'Golden Seahorse' WHERE [Id] = '" + _dishes[1].Id + "';");
+        _dbContext.Database.ExecuteSqlRaw("UPDATE [mealmap].[dish] SET [Name] = 'Golden Seahorse' WHERE [Id] = '" + dish.Id + "';");
         Action act = () => _repository.Update(dish);
 
         act.Should().Throw<ConcurrentUpdateException>();
     }
 
     [Fact]
-    public void Update_WhenVersionNotMatchingDatabase_ThrowsConcurrentUpdateException()
+    public void Update_WhenExplicitVersionNotMatchingDatabase_ThrowsConcurrentUpdateException()
     {
         var dish = _dbContext.Dishes.Find(_dishes[1].Id);
 

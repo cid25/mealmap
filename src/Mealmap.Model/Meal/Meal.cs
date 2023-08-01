@@ -6,18 +6,23 @@ public class Meal : EntityBase
 {
     public DateOnly DiningDate { get; }
 
-    public ICollection<Course> Courses { get; }
+    private List<Course> _courses;
+
+    public IEnumerable<Course> Courses
+    {
+        get => _courses;
+    }
 
     internal Meal(DateOnly diningDate) : base()
     {
         DiningDate = diningDate;
-        Courses = new List<Course>();
+        _courses = new List<Course>();
     }
 
     internal Meal(Guid id, DateOnly diningDate) : base(id)
     {
         DiningDate = diningDate;
-        Courses = new List<Course>();
+        _courses = new List<Course>();
     }
 
     /// <exception cref="DomainValidationException"></exception>
@@ -32,7 +37,7 @@ public class Meal : EntityBase
 
     private void ValidateNoMainCourse()
     {
-        if (Courses.Where(c => c.MainCourse).Any())
+        if (_courses.Where(c => c.MainCourse).Any())
             throw new DomainValidationException("There may only be one main course.");
     }
 
@@ -42,7 +47,7 @@ public class Meal : EntityBase
         if (courseAtSameIndex != null)
             ShiftIndexFor(courseAtSameIndex);
 
-        Courses.Add(course);
+        _courses.Add(course);
     }
 
     private Course? CourseAtSameIndex(int index)
@@ -56,7 +61,12 @@ public class Meal : EntityBase
 
     private void ShiftIndexFor(Course course)
     {
-        Courses.Remove(course);
+        _courses.Remove(course);
         AddCourse(course with { Index = course.Index + 1 });
+    }
+
+    internal void RemoveAllCourses()
+    {
+        _courses = new List<Course>();
     }
 }

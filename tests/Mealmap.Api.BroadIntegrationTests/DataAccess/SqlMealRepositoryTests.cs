@@ -125,6 +125,73 @@ public class SqlMealRepositoryTests
     }
 
     [Fact]
+    public void Update_WhenMealDisconnected_ThrowsInvalidOperationException()
+    {
+        var initialMeal = _dbContext.Meals.Find(_meals![0].Id);
+        var disconnectedMeal = new Meal(initialMeal!.Id, initialMeal.DiningDate);
+
+        Action act = () => _repository.Update(disconnectedMeal);
+
+        act.Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Update_WhenConcurrentUpdate_ThrowsConcurrentUpdateException()
+    {
+        Meal meal = _dbContext.Meals.Find(_meals![1].Id)!;
+        _dbContext.Entry(meal).Property(m => m.DiningDate).IsModified = true;
+
+        _dbContext.Database.ExecuteSqlRaw("UPDATE [mealmap].[meal] SET [DiningDate] = '2020-01-31' WHERE [Id] = '" + meal.Id + "';");
+        Action act = () => _repository.Update(meal);
+
+        act.Should().Throw<ConcurrentUpdateException>();
+    }
+
+    [Fact]
+    public void Update_WhenExplicitVersionNotMatchingDatabase_ThrowsConcurrentUpdateException()
+    {
+        Meal meal = _dbContext.Meals.Find(_meals![1].Id)!;
+        _dbContext.Entry(meal).Property(m => m.DiningDate).IsModified = true;
+        var nonMatchingVersion = new byte[8] { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0xD4 };
+        meal!.Version = nonMatchingVersion;
+
+        Action act = () => _repository.Update(meal);
+
+        act.Should().Throw<ConcurrentUpdateException>();
+    }
+
+    [Fact]
+    public void Update_WhenCourseAdded_AddsCourseAndUpsMealVersion()
+    {
+        Meal meal = _dbContext.Meals.Find(_meals![0].Id)!;
+        var originalCount = meal!.Courses.Count();
+        var originalVersion = meal.Version;
+
+        meal!.AddCourse(2, false, _dishes![0].Id);
+        _repository.Update(meal);
+
+        _dbContext.ChangeTracker.Clear();
+        var result = _dbContext.Meals.Find(meal.Id);
+        result!.Courses.Should().HaveCount(originalCount + 1);
+        result.Version.Should().NotEqual(originalVersion);
+    }
+
+    [Fact]
+    public void Update_WhenIngredientsRemoved_RemovesIngredientAndUpsDishVersion()
+    {
+        Meal meal = _dbContext.Meals.Find(_meals![0].Id)!;
+        var originalVersion = meal.Version;
+
+        meal!.RemoveAllCourses();
+        _repository.Update(meal);
+
+        _dbContext.ChangeTracker.Clear();
+        var result = _dbContext.Meals.Find(meal.Id);
+        result!.Courses.Should().HaveCount(0);
+        result.Version.Should().NotEqual(originalVersion);
+    }
+
+    [Fact]
     public void Remove_WhenGivenUntrackedEntity_RemovesEntry()
     {
         var expectedCount = _meals!.Length;

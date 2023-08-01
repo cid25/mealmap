@@ -1,4 +1,5 @@
 ﻿namespace Mealmap.Api.UnitTests;
+
 using Mealmap.Domain.MealAggregate;
 
 internal class FakeMealRepository : Dictionary<Guid, Meal>, IMealRepository
@@ -20,6 +21,14 @@ internal class FakeMealRepository : Dictionary<Guid, Meal>, IMealRepository
     public void Add(Meal meal)
     {
         Add((Guid)meal.Id, meal);
+    }
+
+    public void Update(Meal meal)
+    {
+        if (!Remove(meal.Id))
+            throw new InvalidOperationException();
+
+        Add(meal.Id, meal);
     }
 
     public void Remove(Meal meal)
