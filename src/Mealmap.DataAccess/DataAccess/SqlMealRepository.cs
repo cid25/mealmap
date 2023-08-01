@@ -1,8 +1,7 @@
-﻿using Mealmap.Domain.Exceptions;
-using Mealmap.Domain.MealAggregate;
+﻿using Mealmap.Domain.MealAggregate;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mealmap.Infrastructure;
+namespace Mealmap.Infrastructure.DataAccess;
 
 public class SqlMealRepository : IMealRepository
 {
@@ -32,9 +31,7 @@ public class SqlMealRepository : IMealRepository
         return meal;
     }
 
-    /// <exception cref="DomainValidationException"></exception>
-    /// <exception cref="DbUpdateException"></exception>
-    /// <exception cref="DbUpdateConcurrencyException"></exception>
+    /// <exception cref="ConcurrentUpdateException"></exception>
     public void Add(Meal meal)
     {
 
@@ -46,14 +43,12 @@ public class SqlMealRepository : IMealRepository
         catch (DbUpdateException ex)
         {
             if (ex.InnerException != null && ex.InnerException.Message.Contains("DishId"))
-                throw new DomainValidationException("A given dish does not exist.");
+                throw new ConcurrentUpdateException("A given dish does not exist.", ex);
             else
                 throw;
         }
     }
 
-    /// <exception cref="DbUpdateException"></exception>
-    /// <exception cref="DbUpdateConcurrencyException"></exception>
     public void Remove(Meal meal)
     {
         var removable = _dbContext.Meals.Find(meal.Id);

@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics;
 using FluentAssertions;
 using Mealmap.Domain.DishAggregate;
+using Mealmap.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace Mealmap.Infrastructure.IntegrationTests;
+namespace Mealmap.Infrastructure.IntegrationTests.DataAccess;
 
 [Collection("InSequence")]
 [Trait("Target", "Database")]
@@ -29,7 +30,7 @@ public class SqlDishRepositoryTests
 
         _dishes = new Dish[2];
         seedData();
-        Helpers.DetachAllEntities(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         _repository = new SqlDishRepository(_dbContext);
     }
@@ -95,7 +96,7 @@ public class SqlDishRepositoryTests
     [Fact]
     public void Add_WhenDishValid_CreatesEntry()
     {
-        Guid someGuid = Guid.NewGuid();
+        var someGuid = Guid.NewGuid();
         Dish dish = new(someGuid, "Salty Sea Dog");
 
         _repository.Add(dish);
@@ -107,7 +108,7 @@ public class SqlDishRepositoryTests
     [Fact]
     public void Add_WhenDishHasIngredients_CreatesIngredients()
     {
-        Guid someGuid = Guid.NewGuid();
+        var someGuid = Guid.NewGuid();
         Dish dish = new(someGuid, "Salty Sea Dog");
         dish.AddIngredient(1, "Kilogram", "Sausages");
         dish.AddIngredient(0.5m, "Liter", "Ketchup");

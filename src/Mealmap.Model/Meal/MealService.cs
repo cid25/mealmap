@@ -3,7 +3,7 @@ using Mealmap.Domain.Exceptions;
 
 namespace Mealmap.Domain.MealAggregate;
 
-public class MealService
+public class MealService : IMealService
 {
     private readonly IDishRepository _dishRepository;
 

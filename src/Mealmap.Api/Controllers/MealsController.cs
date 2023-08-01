@@ -1,10 +1,10 @@
 ﻿using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.Exceptions;
-using Mealmap.Api.InputMappers;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.Swagger;
 using Mealmap.Domain.Exceptions;
 using Mealmap.Domain.MealAggregate;
+using Mealmap.Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -16,18 +16,18 @@ public class MealsController : ControllerBase
 {
     private readonly ILogger<MealsController> _logger;
     private readonly IMealRepository _mealRepository;
-    private readonly IInputHandler<Meal, MealDTO> _inputMapper;
+    private readonly IMealService _mealService;
     private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
 
     public MealsController(
         ILogger<MealsController> logger,
         IMealRepository mealRepository,
-        IInputHandler<Meal, MealDTO> inputMapper,
+        IMealService mealService,
         IOutputMapper<MealDTO, Meal> outputMapper)
     {
         _logger = logger;
         _mealRepository = mealRepository;
-        _inputMapper = inputMapper;
+        _mealService = mealService;
         _outputMapper = outputMapper;
     }
 
@@ -89,23 +89,26 @@ public class MealsController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [SwaggerRequestExample(typeof(MealDTO), typeof(MealPostRequestExample))]
     [SwaggerResponseExample(201, typeof(MealPostResponseExample))]
-    public ActionResult<MealDTO> PostMeal([FromBody] MealDTO mealDTO)
+    public ActionResult<MealDTO> PostMeal([FromBody] MealDTO dto)
     {
-        Meal meal;
+        if (dto.Id != Guid.Empty && dto.Id != null)
+        {
+            throw new ValidationException("Id not allowed as part of request.");
+        }
+
+        var meal = _mealService.CreateMeal(dto.DiningDate);
 
         try
         {
-            meal = _inputMapper.FromDataTransferObject(mealDTO);
+            SetCoursesFromDataTransferObject(meal, dto);
             _mealRepository.Add(meal);
         }
         catch (Exception ex)
-            when (ex is ValidationException || ex is DomainValidationException)
+            when (ex is ConcurrentUpdateException || ex is DomainValidationException)
         {
             _logger.LogInformation(ex.Message);
             return BadRequest(ex.Message);
         }
-
-        _logger.LogInformation("Created meal with id {Id}", meal.Id);
 
         var mealCreated = _outputMapper.FromEntity(meal);
         return CreatedAtAction(nameof(GetMeal), new { id = mealCreated.Id }, mealCreated);
@@ -132,5 +135,17 @@ public class MealsController : ControllerBase
 
         var dto = _outputMapper.FromEntity(meal);
         return Ok(dto);
+    }
+
+    /// <exception cref="DomainValidationException"/>
+    private void SetCoursesFromDataTransferObject(Meal meal, MealDTO dto)
+    {
+        if (dto.Courses != null)
+        {
+            foreach (var course in dto.Courses)
+            {
+                _mealService.AddCourseToMeal(meal, course.Index, course.MainCourse, course.DishId);
+            }
+        }
     }
 }

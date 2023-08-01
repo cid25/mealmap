@@ -1,4 +1,4 @@
-﻿namespace Mealmap.Infrastructure;
+﻿namespace Mealmap.Infrastructure.DataAccess;
 
 public class ConcurrentUpdateException : Exception
 {

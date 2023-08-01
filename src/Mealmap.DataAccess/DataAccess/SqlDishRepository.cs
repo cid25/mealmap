@@ -1,7 +1,7 @@
 ﻿using Mealmap.Domain.DishAggregate;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mealmap.Infrastructure;
+namespace Mealmap.Infrastructure.DataAccess;
 
 public class SqlDishRepository : IDishRepository
 {
@@ -66,11 +66,11 @@ public class SqlDishRepository : IDishRepository
 
     private void MarkDishForVersionUpdate(Dish dish)
     {
-        _dbContext.Entry<Dish>(dish).Property(d => d.Name).IsModified = true;
+        _dbContext.Entry(dish).Property(d => d.Name).IsModified = true;
     }
 
     private void EnsureVersionFromClientUsed(Dish dish)
     {
-        _dbContext.Entry<Dish>(dish).OriginalValues[nameof(Dish.Version)] = dish.Version;
+        _dbContext.Entry(dish).OriginalValues[nameof(Dish.Version)] = dish.Version;
     }
 }

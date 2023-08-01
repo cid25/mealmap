@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using SystemHeaders = System.Net.Http.Headers;
 
-namespace Mealmap.Api.NarrowIntegrationTests;
+namespace Mealmap.Api.BoundaryTests;
 
 public class DishesPipelineTests
 {

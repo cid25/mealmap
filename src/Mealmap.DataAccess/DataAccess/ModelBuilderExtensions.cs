@@ -2,7 +2,7 @@
 using Mealmap.Domain.MealAggregate;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mealmap.Infrastructure;
+namespace Mealmap.Infrastructure.DataAccess;
 
 internal static class ModelBuilderExtensions
 {
@@ -23,7 +23,7 @@ internal static class ModelBuilderExtensions
         dish.Property(d => d.Description);
         dish.Property(d => d.Servings);
 
-        dish.OwnsOne<DishImage>(dish => dish.Image, image =>
+        dish.OwnsOne(dish => dish.Image, image =>
         {
             image.Property(i => i.Content);
             image.Property(i => i.ContentType);

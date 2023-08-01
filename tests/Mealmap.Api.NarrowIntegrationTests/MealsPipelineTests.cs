@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 
-namespace Mealmap.Api.NarrowIntegrationTests;
+namespace Mealmap.Api.BoundaryTests;
 
 [Trait("Target", "Pipeline")]
 public class MealsPipelineTests

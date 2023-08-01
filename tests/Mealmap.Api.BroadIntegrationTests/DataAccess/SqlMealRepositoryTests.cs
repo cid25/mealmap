@@ -1,10 +1,11 @@
 ﻿using FluentAssertions;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
+using Mealmap.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace Mealmap.Infrastructure.IntegrationTests;
+namespace Mealmap.Infrastructure.IntegrationTests.DataAccess;
 
 [Collection("InSequence")]
 [Trait("Target", "Database")]
@@ -27,6 +28,7 @@ public class SqlMealRepositoryTests
         _dbContext.Database.EnsureDeleted();
         _dbContext.Database.EnsureCreated();
         seedData();
+        _dbContext.ChangeTracker.Clear();
     }
 
     private void seedData()
@@ -36,7 +38,7 @@ public class SqlMealRepositoryTests
         _dbContext.Add(_dishes[0]);
 
         _meals = new Meal[4];
-        for (int day = 1; day <= 4; day++)
+        for (var day = 1; day <= 4; day++)
         {
             _meals[day - 1] = new Meal(id: Guid.NewGuid(), diningDate: new DateOnly(2020, 1, day));
             _meals[day - 1].AddCourse(1, true, _dishes[0].Id);
@@ -44,7 +46,6 @@ public class SqlMealRepositoryTests
         _dbContext.Meals.AddRange(_meals);
 
         _dbContext.SaveChanges();
-        Helpers.DetachAllEntities(_dbContext);
     }
 
 
@@ -123,23 +124,6 @@ public class SqlMealRepositoryTests
         _dbContext.Meals.First(x => x.Id == SomeGuid).Should().NotBeNull();
     }
 
-    //[Fact]
-    //public void Add_WhenCourseReferencesNonExistingDish_ThrowsException()
-    //{
-    //    var nonExistingDishGuid = Guid.NewGuid();
-    //    var meal = new Meal(id: Guid.NewGuid(), diningDate: DateOnly.FromDateTime(DateTime.Now));
-    //    meal.AddCourse
-
-
-    //    meal.SetOrderOfCourses(new List<Course>() {
-    //        new Course(1, true, nonExistingDishGuid)
-    //    });
-
-    //    Action act = () => _repository.Add(meal);
-
-    //    act.Should().Throw<DomainValidationException>();
-    //}
-
     [Fact]
     public void Remove_WhenGivenUntrackedEntity_RemovesEntry()
     {
@@ -162,3 +146,4 @@ public class SqlMealRepositoryTests
         _dbContext.Meals.Count().Should().Be(expectedCount - 1);
     }
 }
+

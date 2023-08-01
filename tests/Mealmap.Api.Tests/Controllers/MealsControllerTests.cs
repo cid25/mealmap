@@ -2,11 +2,11 @@
 using FluentAssertions;
 using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransferObjects;
-using Mealmap.Api.InputMappers;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.Exceptions;
 using Mealmap.Domain.MealAggregate;
+using Mealmap.Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -33,7 +33,7 @@ public class MealsControllerTests
         _controller = new MealsController(
             _logger,
             _mealRepository,
-            new MealInputHandler(new MealService(_dishRepository)),
+            new MealService(_dishRepository),
             _outputMapper);
 
         fakeData();
@@ -44,10 +44,7 @@ public class MealsControllerTests
         Dish krabbyPatty = new("Krabby Patty");
         _dishRepository.Add(krabbyPatty);
 
-        var meal = new Meal(
-            id: new Guid("11111111-1111-1111-1111-111111111111"),
-            diningDate: new DateOnly(2020, 1, 1)
-        );
+        var meal = new Meal(DateOnly.FromDateTime(DateTime.Now));
         meal.AddCourse(index: 1, mainCourse: true, dishId: krabbyPatty.Id);
         _mealRepository.Add(meal);
     }
@@ -105,14 +102,41 @@ public class MealsControllerTests
     }
 
     [Fact]
-    public void PostMeal_WhenHandlerThrowsDomainValidationException_ReturnsBadRequest()
+    public void PostMeal_WhenServiceThrowsDomainValidationException_ReturnsBadRequest()
     {
-        var inputMapper = new Mock<IInputHandler<Meal, MealDTO>>();
-        inputMapper.Setup(m => m.FromDataTransferObject(It.IsAny<MealDTO>())).Throws(new DomainValidationException(""));
+        Meal dummy = new Meal(DateOnly.FromDateTime(DateTime.Now));
+        var serviceMock = new Mock<IMealService>();
+        serviceMock.Setup(m => m.CreateMeal(It.IsAny<DateOnly>()))
+            .Returns(dummy);
+        serviceMock.Setup(m => m.AddCourseToMeal(It.IsAny<Meal>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>()))
+            .Throws(new DomainValidationException(""));
         var controller = new MealsController(
             _logger,
             _mealRepository,
-            inputMapper.Object,
+            serviceMock.Object,
+            _outputMapper
+        );
+        MealDTO mealDto = new()
+        {
+            Courses = new CourseDTO[1] { new CourseDTO() { Index = 1, DishId = Guid.NewGuid(), MainCourse = true } }
+        };
+
+        var result = controller.PostMeal(mealDto);
+
+        result.Result.Should().BeOfType<BadRequestObjectResult>();
+    }
+
+    [Fact]
+    public void PostMeal_WhenRepositoryThrowsDbUpdateException_ReturnsBadRequest()
+    {
+        var serviceMock = new Mock<IMealService>();
+        serviceMock.Setup(m => m.CreateMeal(It.IsAny<DateOnly>())).Returns(new Meal(DateOnly.FromDateTime(DateTime.Now)));
+        var repositoryMock = new Mock<IMealRepository>();
+        repositoryMock.Setup(m => m.Add(It.IsAny<Meal>())).Throws(new ConcurrentUpdateException(""));
+        var controller = new MealsController(
+            _logger,
+            repositoryMock.Object,
+            serviceMock.Object,
             _outputMapper
         );
 

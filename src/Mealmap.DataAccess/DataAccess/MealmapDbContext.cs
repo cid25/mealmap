@@ -2,7 +2,7 @@
 using Mealmap.Domain.MealAggregate;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mealmap.Infrastructure;
+namespace Mealmap.Infrastructure.DataAccess;
 
 public class MealmapDbContext : DbContext
 {

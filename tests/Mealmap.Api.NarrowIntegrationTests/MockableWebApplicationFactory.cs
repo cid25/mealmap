@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mealmap.Api.NarrowIntegrationTests;
+namespace Mealmap.Api.BoundaryTests;
 
 public class MockableWebApplicationFactory : WebApplicationFactory<Program>
 {
