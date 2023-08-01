@@ -20,6 +20,7 @@ public class AutomapperProfile : Profile
             .ForMember(dto => dto.ETag, opt => { opt.MapFrom(dish => dish.Version); });
 
         CreateMap<Course, CourseDTO>();
-        CreateMap<Meal, MealDTO>();
+        CreateMap<Meal, MealDTO>()
+            .ForMember(dto => dto.ETag, opt => { opt.MapFrom(meal => meal.Version); });
     }
 }

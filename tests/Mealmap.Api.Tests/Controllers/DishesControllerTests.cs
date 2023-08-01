@@ -130,7 +130,7 @@ public class DishesControllerTests
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == eTag)
         );
 
-        var result = controller.PutDish(dish);
+        var result = controller.PutDish(nonExistingGuid, dish);
 
         mockRepository.Verify(m => m.Update(It.IsAny<Dish>()), Times.Once);
         result.Should().BeOfType<ActionResult<DishDTO>>();
@@ -153,7 +153,7 @@ public class DishesControllerTests
         var someGuid = Guid.NewGuid();
         DishDTO dish = new(someDishName) { Id = someGuid };
 
-        var result = controller.PutDish(dish);
+        var result = controller.PutDish(someGuid, dish);
 
         result.Result.Should().BeOfType<StatusCodeResult>();
         ((StatusCodeResult)result.Result!).StatusCode.Should().Be(428);
@@ -174,7 +174,7 @@ public class DishesControllerTests
         const string someDishName = "Sailors Surprise";
         DishDTO dish = new(someDishName);
 
-        var result = controller.PutDish(dish);
+        var result = controller.PutDish(Guid.NewGuid(), dish);
 
         result.Result.Should().BeOfType<BadRequestObjectResult>();
     }
@@ -195,7 +195,7 @@ public class DishesControllerTests
         var nonExistingGuid = Guid.NewGuid();
         DishDTO dish = new(someDishName) { Id = nonExistingGuid };
 
-        var result = controller.PutDish(dish);
+        var result = controller.PutDish(nonExistingGuid, dish);
 
         result.Result.Should().BeOfType<NotFoundObjectResult>();
     }
@@ -222,7 +222,7 @@ public class DishesControllerTests
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == eTag)
         );
 
-        var result = controller.PutDish(dish);
+        var result = controller.PutDish(nonExistingGuid, dish);
 
         result.Result.Should().BeOfType<StatusCodeResult>();
         ((StatusCodeResult)result.Result!).StatusCode.Should().Be(412);

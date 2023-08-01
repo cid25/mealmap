@@ -6,7 +6,6 @@ using Mealmap.Api.Swagger;
 using Mealmap.Domain.DishAggregate;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Mealmap.Api.Controllers;
@@ -107,12 +106,13 @@ public class DishesController : ControllerBase
     /// Updates an existing dish.
     /// </summary>
     /// <param name="dto"></param>
+    /// <param name="id"></param>
     /// <response code="200">Dish Updated</response>
     /// <response code="400">Bad Request</response>
     /// <response code="404">Dish Not Found</response>
     /// <response code="412">ETag Doesn't Match</response>
     /// <response code="428">Update Requires ETag</response>
-    [HttpPut(Name = nameof(PutDish))]
+    [HttpPut("{id}", Name = nameof(PutDish))]
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(DishDTO), StatusCodes.Status200OK)]
@@ -122,18 +122,18 @@ public class DishesController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status428PreconditionRequired)]
     [SwaggerRequestExample(typeof(DishDTO), typeof(DishRequestExampleWithIdWithoutEtag))]
     [SwaggerResponseExample(200, typeof(DishResponseExampleWithIdAndEtag))]
-    public ActionResult<DishDTO> PutDish([FromBody] DishDTO dto)
+    public ActionResult<DishDTO> PutDish([FromRoute] Guid id, [FromBody] DishDTO dto)
     {
-        if (_context.IfMatchHeader.IsNullOrEmpty())
+        if (String.IsNullOrEmpty(_context.IfMatchHeader))
             return new StatusCodeResult(StatusCodes.Status428PreconditionRequired);
 
-        if (dto.Id == null)
-            return BadRequest("Field id is mandatory.");
+        if (dto.Id == null || id != dto.Id)
+            return BadRequest("Field id is mandatory and resource must match route.");
 
         if (dto.Id == Guid.Empty)
             return BadRequest("Field id cannot be empty.");
 
-        var dish = _repository.GetSingleById((Guid)dto.Id);
+        var dish = _repository.GetSingleById(id);
 
         if (dish == null)
             return NotFound($"Dish with id does not exist.");

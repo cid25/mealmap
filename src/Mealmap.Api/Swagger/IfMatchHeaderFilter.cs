@@ -10,6 +10,7 @@ public class IfMatchHeaderFilter : IOperationFilter
         List<string> applicableMethods = new()
         {
             nameof(Controllers.DishesController.PutDish),
+            nameof(Controllers.MealsController.PutMeal),
         };
 
         if (applicableMethods.Contains(operation.OperationId))

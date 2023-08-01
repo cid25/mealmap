@@ -34,7 +34,8 @@ public class MealsControllerTests
             _logger,
             _mealRepository,
             new MealService(_dishRepository),
-            _outputMapper);
+            _outputMapper,
+            Mock.Of<IRequestContext>());
 
         fakeData();
     }
@@ -114,7 +115,8 @@ public class MealsControllerTests
             _logger,
             _mealRepository,
             serviceMock.Object,
-            _outputMapper
+            _outputMapper,
+            Mock.Of<IRequestContext>()
         );
         MealDTO mealDto = new()
         {
@@ -137,7 +139,8 @@ public class MealsControllerTests
             _logger,
             repositoryMock.Object,
             serviceMock.Object,
-            _outputMapper
+            _outputMapper,
+            Mock.Of<IRequestContext>()
         );
 
         MealDTO mealDto = new();
