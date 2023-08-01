@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
+using Mealmap.Domain.Common;
 using Mealmap.Domain.DishAggregate;
-using Mealmap.Domain.Exceptions;
 
 namespace Mealmap.Domain.Tests;
 

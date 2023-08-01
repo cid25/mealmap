@@ -1,25 +1,21 @@
-﻿using Mealmap.Domain.Exceptions;
+﻿using Mealmap.Domain.Common;
 
 namespace Mealmap.Domain.MealAggregate;
 
-public class Meal
+public class Meal : EntityBase
 {
-    public Guid Id { get; }
-
     public DateOnly DiningDate { get; }
 
     public ICollection<Course> Courses { get; }
 
-    internal Meal(DateOnly diningDate)
+    internal Meal(DateOnly diningDate) : base()
     {
-        Id = Guid.NewGuid();
         DiningDate = diningDate;
         Courses = new List<Course>();
     }
 
-    internal Meal(Guid id, DateOnly diningDate)
+    internal Meal(Guid id, DateOnly diningDate) : base(id)
     {
-        Id = id;
         DiningDate = diningDate;
         Courses = new List<Course>();
     }

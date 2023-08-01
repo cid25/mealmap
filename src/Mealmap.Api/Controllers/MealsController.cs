@@ -2,7 +2,7 @@
 using Mealmap.Api.Exceptions;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.Swagger;
-using Mealmap.Domain.Exceptions;
+using Mealmap.Domain.Common;
 using Mealmap.Domain.MealAggregate;
 using Mealmap.Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Mvc;

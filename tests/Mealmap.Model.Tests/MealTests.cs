@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Mealmap.Domain.Exceptions;
+using Mealmap.Domain.Common;
 using Mealmap.Domain.MealAggregate;
 
 namespace Mealmap.Domain.Tests;

@@ -1,4 +1,4 @@
-﻿namespace Mealmap.Domain.Exceptions;
+﻿namespace Mealmap.Domain.Common;
 
 public class DomainValidationException : Exception
 {

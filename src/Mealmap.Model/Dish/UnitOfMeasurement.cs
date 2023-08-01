@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Mealmap.Domain.Exceptions;
+using Mealmap.Domain.Common;
 
 namespace Mealmap.Domain.DishAggregate;
 

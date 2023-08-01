@@ -1,5 +1,5 @@
-﻿using Mealmap.Domain.DishAggregate;
-using Mealmap.Domain.Exceptions;
+﻿using Mealmap.Domain.Common;
+using Mealmap.Domain.DishAggregate;
 
 namespace Mealmap.Domain.MealAggregate;
 

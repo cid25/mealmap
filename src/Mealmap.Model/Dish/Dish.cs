@@ -1,13 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Mealmap.Domain.Common;
 
 namespace Mealmap.Domain.DishAggregate;
 
-public class Dish
+public class Dish : EntityBase
 {
-    public Guid Id { get; }
-
-    public byte[]? Version { get; internal set; }
-
     [MaxLength(100)]
     public string Name { get; internal set; }
 
@@ -24,17 +21,14 @@ public class Dish
     {
         get => _ingredients;
     }
-
-    internal Dish(Guid id, string name)
+    internal Dish(string name) : base()
     {
-        Id = id;
         Name = name;
         _ingredients = new List<Ingredient>();
     }
 
-    internal Dish(string name)
+    internal Dish(Guid id, string name) : base(id)
     {
-        Id = Guid.NewGuid();
         Name = name;
         _ingredients = new List<Ingredient>();
     }
