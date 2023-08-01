@@ -6,7 +6,6 @@ public class Dish
 {
     public Guid Id { get; }
 
-    //[Timestamp]
     public byte[]? Version { get; internal set; }
 
     [MaxLength(100)]
