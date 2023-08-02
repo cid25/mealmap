@@ -9,6 +9,14 @@ namespace Mealmap.Api.BoundaryTests;
 [Trait("Target", "Pipeline")]
 public class MealsPipelineTests
 {
+    private readonly Meal _dummyMeal;
+
+    public MealsPipelineTests()
+    {
+        MealFactory factory = new();
+        _dummyMeal = factory.CreateMealWith(DateOnly.FromDateTime(DateTime.Now));
+    }
+
     [Fact]
     public async void GetMeals_WhenMealsFound_ReturnsJsonAndStatusOk()
     {
@@ -16,7 +24,7 @@ public class MealsPipelineTests
         {
             services.Replace(ServiceDescriptor.Scoped<IMealRepository>(_ =>
             {
-                List<Meal> meals = new() { new Meal(new DateOnly(2020, 1, 1)) };
+                List<Meal> meals = new() { _dummyMeal };
                 return Mock.Of<IMealRepository>(mock => mock.GetAll(null, null) == meals);
             }));
         });
@@ -51,12 +59,11 @@ public class MealsPipelineTests
         {
             services.Replace(ServiceDescriptor.Scoped<IMealRepository>(_ =>
             {
-                Meal meal = new(Guid.NewGuid(), DateOnly.FromDateTime(DateTime.Now));
-                return Mock.Of<IMealRepository>(mock => mock.GetSingleById(It.IsAny<Guid>()) == meal);
+                return Mock.Of<IMealRepository>(mock => mock.GetSingleById(It.IsAny<Guid>()) == _dummyMeal);
             }));
         });
 
-        var response = await factory.CreateClient().GetAsync("/api/meals/" + Guid.NewGuid());
+        var response = await factory.CreateClient().GetAsync("/api/meals/" + _dummyMeal.Id.ToString());
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
@@ -65,9 +72,8 @@ public class MealsPipelineTests
     [Fact]
     public async void DeleteMeal_DeletesAndReturnsJsonAndStatusOk()
     {
-        Meal meal = new(Guid.NewGuid(), DateOnly.FromDateTime(DateTime.Now));
         var repositoryMock = new Mock<IMealRepository>();
-        repositoryMock.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(meal);
+        repositoryMock.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(_dummyMeal);
         var factory = new MockableWebApplicationFactory(services =>
         {
             services.Replace(ServiceDescriptor.Scoped<IMealRepository>(_ =>
@@ -78,7 +84,7 @@ public class MealsPipelineTests
 
         var response = await factory.CreateClient().DeleteAsync("/api/meals/" + Guid.NewGuid());
 
-        repositoryMock.Verify(r => r.Remove(meal), Times.Once());
+        repositoryMock.Verify(r => r.Remove(_dummyMeal), Times.Once());
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
     }

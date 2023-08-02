@@ -9,6 +9,15 @@ namespace Mealmap.Api.BoundaryTests;
 
 public class DishesPipelineTests
 {
+    private readonly Dish _dummyDish;
+
+    public DishesPipelineTests()
+    {
+        DishFactory factory = new();
+        _dummyDish = factory.CreateDishWith(name: "Tuna Supreme", description: null, servings: 2);
+    }
+
+
     [Fact]
     public async void GetDishes_ReturnsJsonAndStatusOk()
     {
@@ -16,8 +25,7 @@ public class DishesPipelineTests
         {
             services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
             {
-                Dish dish = new("Tuna Supreme");
-                return Mock.Of<IDishRepository>(mock => mock.GetAll() == new List<Dish> { dish });
+                return Mock.Of<IDishRepository>(mock => mock.GetAll() == new List<Dish> { _dummyDish });
             }));
         });
 
@@ -30,17 +38,15 @@ public class DishesPipelineTests
     [Fact]
     public async void GetDish_ReturnsJsonAndStatusOk()
     {
-        Guid guid = Guid.NewGuid();
         var factory = new MockableWebApplicationFactory(services =>
         {
             services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
             {
-                Dish dish = new(guid, "Tuna Supreme");
-                return Mock.Of<IDishRepository>(mock => mock.GetSingleById(It.IsAny<Guid>()) == dish);
+                return Mock.Of<IDishRepository>(mock => mock.GetSingleById(It.IsAny<Guid>()) == _dummyDish);
             }));
         });
 
-        var response = await factory.CreateClient().GetAsync("/api/dishes/" + guid.ToString());
+        var response = await factory.CreateClient().GetAsync("/api/dishes/" + _dummyDish.Id.ToString());
 
         response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -49,19 +55,17 @@ public class DishesPipelineTests
     [Fact]
     public async void PutDishImage_WhenImageUploaded_ReturnsNoBodyAndContentType()
     {
-        Guid guid = Guid.NewGuid();
         var factory = new MockableWebApplicationFactory(services =>
         {
             services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
             {
-                Dish dish = new(guid, "Tuna Supreme");
-                return Mock.Of<IDishRepository>(mock => mock.GetSingleById(It.IsAny<Guid>()) == dish);
+                return Mock.Of<IDishRepository>(mock => mock.GetSingleById(It.IsAny<Guid>()) == _dummyDish);
             }));
         });
 
         var content = new ByteArrayContent(new byte[1]);
         content.Headers.ContentType = SystemHeaders.MediaTypeHeaderValue.Parse("image/jpeg");
-        var response = await factory.CreateClient().PutAsync("/api/dishes/" + guid.ToString() + "/image", content);
+        var response = await factory.CreateClient().PutAsync("/api/dishes/" + _dummyDish.Id.ToString() + "/image", content);
 
         response.Content.Headers.ContentLength.Should().Be(0);
         response.Content.Headers.ContentType.Should().BeNull();
@@ -70,19 +74,17 @@ public class DishesPipelineTests
     [Fact]
     public async void PutDishImage_WhenFileNotSupportedImageType_ReturnsUnsupportedMediaType()
     {
-        Guid guid = Guid.NewGuid();
         var factory = new MockableWebApplicationFactory(services =>
         {
             services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
             {
-                Dish dish = new(guid, "Tuna Supreme");
                 return Mock.Of<IDishRepository>();
             }));
         });
 
         var content = new ByteArrayContent(new byte[1]);
         content.Headers.ContentType = SystemHeaders.MediaTypeHeaderValue.Parse("application/json");
-        var response = await factory.CreateClient().PutAsync("/api/dishes/" + guid.ToString() + "/image", content);
+        var response = await factory.CreateClient().PutAsync("/api/dishes/" + _dummyDish.Id.ToString() + "/image", content);
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.UnsupportedMediaType);
     }
@@ -91,18 +93,16 @@ public class DishesPipelineTests
     public async void GetDishImage_ReturnsCorrectContentTypeAndStatusOk()
     {
         const string contentType = "image/jpeg";
-        Guid guid = Guid.NewGuid();
         var factory = new MockableWebApplicationFactory(services =>
         {
             services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
             {
-                Dish dish = new("Tuna Supreme");
-                dish.SetImage(new byte[1], contentType);
-                return Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == dish);
+                _dummyDish.SetImage(new byte[1], contentType);
+                return Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == _dummyDish);
             }));
         });
 
-        var response = await factory.CreateClient().GetAsync("/api/dishes/" + Guid.NewGuid() + "/image");
+        var response = await factory.CreateClient().GetAsync("/api/dishes/" + _dummyDish.Id.ToString() + "/image");
 
         response.Content.Headers.ContentType!.MediaType.Should().Be(contentType);
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -111,17 +111,15 @@ public class DishesPipelineTests
     [Fact]
     public async void GetDishImage_WhenDishHasNoImage_ReturnsNoContent()
     {
-        Guid guid = Guid.NewGuid();
         var factory = new MockableWebApplicationFactory(services =>
         {
             services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
             {
-                Dish dish = new(guid, "Tuna Supreme");
-                return Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == dish);
+                return Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == _dummyDish);
             }));
         });
 
-        var response = await factory.CreateClient().GetAsync("/api/dishes/" + guid + "/image");
+        var response = await factory.CreateClient().GetAsync("/api/dishes/" + _dummyDish.Id.ToString() + "/image");
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.NoContent);
     }
