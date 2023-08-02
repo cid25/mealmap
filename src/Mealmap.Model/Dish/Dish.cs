@@ -33,11 +33,6 @@ public class Dish : EntityBase
         _ingredients = new List<Ingredient>();
     }
 
-    public void SetVersion(byte[] version)
-    {
-        Version = version;
-    }
-
     public void SetImage(byte[] content, string mediaType)
     {
         Image = new DishImage(content, mediaType);

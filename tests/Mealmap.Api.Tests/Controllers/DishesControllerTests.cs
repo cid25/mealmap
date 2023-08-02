@@ -4,6 +4,7 @@ using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.RequestFormatters;
+using Mealmap.Domain.Common;
 using Mealmap.Domain.DishAggregate;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -118,7 +119,7 @@ public class DishesControllerTests
             ETag = eTag
         };
         var mockRepository = new Mock<IDishRepository>();
-        mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(new Dish(someDishName) { Version = Convert.FromBase64String(eTag) });
+        mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(new Dish(someDishName) { Version = new EntityVersion(eTag) });
         mockRepository.Setup(m => m.Update(It.IsAny<Dish>())).Throws(new DbUpdateConcurrencyException());
         var controller = new DishesController(
             _loggerMock,
@@ -210,7 +211,7 @@ public class DishesControllerTests
             ETag = eTag
         };
         var mockRepository = new Mock<IDishRepository>();
-        mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(new Dish(someDishName) { Version = Convert.FromBase64String(eTag) });
+        mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(new Dish(someDishName) { Version = new EntityVersion(eTag) });
         mockRepository.Setup(m => m.Update(It.IsAny<Dish>())).Throws(new DbUpdateConcurrencyException());
         var controller = new DishesController(
             _loggerMock,

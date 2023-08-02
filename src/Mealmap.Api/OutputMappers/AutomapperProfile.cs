@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Mealmap.Api.DataTransferObjects;
+using Mealmap.Domain.Common;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
 
@@ -9,7 +10,7 @@ public class AutomapperProfile : Profile
 {
     public AutomapperProfile()
     {
-        CreateMap<byte[]?, string?>().ConvertUsing(b => b == null ? string.Empty : Convert.ToBase64String(b));
+        CreateMap<EntityVersion, string?>().ConvertUsing(ev => ev.AsString());
 
         CreateMap<UnitOfMeasurement, string>()
             .ConvertUsing(unit => unit.Stringify());

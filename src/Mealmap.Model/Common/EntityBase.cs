@@ -1,17 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Mealmap.Domain.Common;
+﻿namespace Mealmap.Domain.Common;
 
 public abstract class EntityBase
 {
     public Guid Id { get; }
 
-    [Timestamp]
-    public byte[]? Version { get; set; }
+    public EntityVersion Version { get; set; }
 
     public EntityBase()
-        => Id = Guid.NewGuid();
+    {
+        Id = Guid.NewGuid();
+        Version = new EntityVersion(String.Empty);
+    }
 
     public EntityBase(Guid id)
-        => Id = id;
+    {
+        Id = id;
+        Version = new EntityVersion(String.Empty);
+    }
 }

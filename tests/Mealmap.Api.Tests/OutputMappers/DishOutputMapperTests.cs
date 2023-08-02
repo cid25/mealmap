@@ -27,7 +27,7 @@ public class DishOutputMapperTests
         var someGuid = Guid.NewGuid();
         var dish = new Dish(someGuid, SomeName);
         dish.SetImage(new byte[1], "image/jpeg");
-        dish.SetVersion(new byte[] { 0x01 });
+        dish.Version.Set(new byte[] { 0x01 });
 
         var dto = mapper.FromEntity(dish);
 

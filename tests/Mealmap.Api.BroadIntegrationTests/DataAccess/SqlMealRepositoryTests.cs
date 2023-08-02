@@ -67,7 +67,7 @@ public class SqlMealRepositoryTests
         var result = _repository.GetAll(fromDate: fromDate);
 
         result.Should().NotBeEmpty().And.HaveCount(3);
-        result.Should().NotContain(m => m.Id == new Guid("10000000-0000-0000-0000-000000000001"));
+        result.Should().NotContain(m => m.Id == _meals![0].Id);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class SqlMealRepositoryTests
         var result = _repository.GetAll(toDate: toDate);
 
         result.Should().NotBeEmpty().And.HaveCount(3);
-        result.Should().NotContain(m => m.Id == new Guid("10000000-0000-0000-0000-000000000004"));
+        result.Should().NotContain(m => m.Id == _meals![3].Id);
     }
 
     [Fact]
@@ -152,8 +152,8 @@ public class SqlMealRepositoryTests
     {
         Meal meal = _dbContext.Meals.Find(_meals![1].Id)!;
         _dbContext.Entry(meal).Property(m => m.DiningDate).IsModified = true;
-        var nonMatchingVersion = new byte[8] { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0xD4 };
-        meal!.Version = nonMatchingVersion;
+        var nonMatchingVersion = "AAAA";
+        meal!.Version.Set(nonMatchingVersion);
 
         Action act = () => _repository.Update(meal);
 
@@ -173,7 +173,7 @@ public class SqlMealRepositoryTests
         _dbContext.ChangeTracker.Clear();
         var result = _dbContext.Meals.Find(meal.Id);
         result!.Courses.Should().HaveCount(originalCount + 1);
-        result.Version.Should().NotEqual(originalVersion);
+        result.Version.AsBytes().Should().NotEqual(originalVersion.AsBytes());
     }
 
     [Fact]
@@ -188,7 +188,7 @@ public class SqlMealRepositoryTests
         _dbContext.ChangeTracker.Clear();
         var result = _dbContext.Meals.Find(meal.Id);
         result!.Courses.Should().HaveCount(0);
-        result.Version.Should().NotEqual(originalVersion);
+        result.Version.AsBytes().Should().NotEqual(originalVersion.AsBytes());
     }
 
     [Fact]

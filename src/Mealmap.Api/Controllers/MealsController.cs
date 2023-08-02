@@ -217,7 +217,7 @@ public class MealsController : ControllerBase
         if (_context.IfMatchHeader == null || _context.IfMatchHeader == String.Empty)
             throw new ValidationException("The If-Match header must be set.");
 
-        meal.SetVersion(Convert.FromBase64String(_context.IfMatchHeader));
+        meal.Version.Set(_context.IfMatchHeader);
 
         meal.DiningDate = dto.DiningDate;
 

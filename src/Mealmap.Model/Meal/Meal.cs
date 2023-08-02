@@ -25,12 +25,6 @@ public class Meal : EntityBase
         _courses = new List<Course>();
     }
 
-    public void SetVersion(byte[] version)
-    {
-        Version = version;
-    }
-
-
     public void RemoveAllCourses()
     {
         _courses = new List<Course>();

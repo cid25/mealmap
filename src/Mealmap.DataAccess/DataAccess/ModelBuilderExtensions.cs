@@ -1,6 +1,7 @@
 ﻿using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Mealmap.Infrastructure.DataAccess;
 
@@ -8,7 +9,7 @@ internal static class ModelBuilderExtensions
 {
     private const string Schema = "mealmap";
 
-    internal static void ConfigureDish(this ModelBuilder modelBuilder)
+    internal static void ConfigureDish(this ModelBuilder modelBuilder, Dictionary<string, ValueConverter> converters)
     {
         var dish = modelBuilder.Entity<Dish>();
 
@@ -16,6 +17,10 @@ internal static class ModelBuilderExtensions
 
         dish.Property(d => d.Id);
         dish.HasKey(d => d.Id);
+
+        dish.Property(d => d.Version)
+            .HasConversion(converters["VersionConverter"])
+            .IsRowVersion();
 
         dish.Property(d => d.Name);
         dish.Property(d => d.Description);
@@ -36,7 +41,7 @@ internal static class ModelBuilderExtensions
             });
     }
 
-    internal static void ConfigureMeal(this ModelBuilder modelBuilder)
+    internal static void ConfigureMeal(this ModelBuilder modelBuilder, Dictionary<string, ValueConverter> converters)
     {
         var meal = modelBuilder.Entity<Meal>();
 
@@ -44,6 +49,10 @@ internal static class ModelBuilderExtensions
 
         meal.Property(m => m.Id);
         meal.HasKey(m => m.Id);
+
+        meal.Property(d => d.Version)
+            .HasConversion(converters["VersionConverter"])
+            .IsRowVersion();
 
         meal.Property(m => m.DiningDate)
             .HasColumnType("date")

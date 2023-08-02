@@ -274,7 +274,7 @@ public class DishesController : ControllerBase
         if (_context.IfMatchHeader == null || _context.IfMatchHeader == String.Empty)
             throw new ValidationException("The If-Match header must be set.");
 
-        dish.SetVersion(Convert.FromBase64String(_context.IfMatchHeader));
+        dish.Version.Set(_context.IfMatchHeader);
 
         dish.Name = dto.Name;
         dish.Description = dto.Description;

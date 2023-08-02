@@ -165,7 +165,7 @@ public class SqlDishRepositoryTests
         var dish = _dbContext.Dishes.Find(_dishes[1].Id);
 
         var nonMatchingVersion = new byte[8] { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0xD4 };
-        dish!.Version = nonMatchingVersion;
+        dish!.Version.Set(nonMatchingVersion);
         dish.Name = "Tuna Supreme";
 
         Action act = () => _repository.Update(dish);
@@ -186,7 +186,7 @@ public class SqlDishRepositoryTests
         _dbContext.ChangeTracker.Clear();
         var result = _dbContext.Dishes.Find(dish.Id);
         result!.Ingredients.Should().HaveCount(originalCount + 1);
-        result.Version.Should().NotEqual(originalVersion);
+        result.Version.AsBytes().Should().NotEqual(originalVersion.AsBytes());
     }
 
     [Fact]
@@ -202,7 +202,7 @@ public class SqlDishRepositoryTests
         _dbContext.ChangeTracker.Clear();
         var result = _dbContext.Dishes.Find(dish.Id);
         result!.Ingredients.Should().HaveCount(originalCount - 1);
-        result.Version.Should().NotEqual(originalVersion);
+        result.Version.AsBytes().Should().NotEqual(originalVersion.AsBytes());
     }
 
     [Fact]
