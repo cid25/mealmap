@@ -6,7 +6,7 @@ public class Meal : EntityBase
 {
     public DateOnly DiningDate { get; set; }
 
-    private List<Course> _courses;
+    private List<Course> _courses = new();
 
     public IEnumerable<Course> Courses
     {
@@ -16,13 +16,11 @@ public class Meal : EntityBase
     internal Meal(DateOnly diningDate) : base()
     {
         DiningDate = diningDate;
-        _courses = new List<Course>();
     }
 
     internal Meal(Guid id, DateOnly diningDate) : base(id)
     {
         DiningDate = diningDate;
-        _courses = new List<Course>();
     }
 
     public void RemoveAllCourses()

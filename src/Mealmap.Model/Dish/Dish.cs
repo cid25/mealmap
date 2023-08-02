@@ -15,7 +15,7 @@ public class Dish : EntityBase
 
     public DishImage? Image { get; private set; }
 
-    private List<Ingredient> _ingredients;
+    private List<Ingredient> _ingredients = new();
 
     public IEnumerable<Ingredient> Ingredients
     {
@@ -24,13 +24,11 @@ public class Dish : EntityBase
     internal Dish(string name) : base()
     {
         Name = name;
-        _ingredients = new List<Ingredient>();
     }
 
     internal Dish(Guid id, string name) : base(id)
     {
         Name = name;
-        _ingredients = new List<Ingredient>();
     }
 
     public void SetImage(byte[] content, string mediaType)
