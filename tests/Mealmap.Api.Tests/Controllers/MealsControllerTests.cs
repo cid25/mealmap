@@ -15,26 +15,26 @@ namespace Mealmap.Api.UnitTests.Controllers;
 
 public class MealsControllerTests
 {
-    private readonly ILogger<MealsController> _logger;
-    private readonly FakeMealRepository _mealRepository;
-    private readonly FakeDishRepository _dishRepository;
+    private readonly ILogger<MealsController> _logger = new Mock<ILogger<MealsController>>().Object;
+    private readonly FakeMealRepository _mealRepository = new();
+    private readonly FakeDishRepository _dishRepository = new();
+    private readonly MealFactory _factory = new();
+    private readonly MealService _service;
     private readonly MealsController _controller;
     private readonly MealOutputMapper _outputMapper;
 
     public MealsControllerTests()
     {
-        _logger = new Mock<ILogger<MealsController>>().Object;
-        _dishRepository = new FakeDishRepository();
-        _mealRepository = new FakeMealRepository();
+        _service = new MealService(_dishRepository);
 
         _outputMapper = new MealOutputMapper(
-            new MapperConfiguration(cfg => cfg.AddProfile<AutomapperProfile>()).CreateMapper());
+          new MapperConfiguration(cfg => cfg.AddProfile<AutomapperProfile>()).CreateMapper());
 
         _controller = new MealsController(
             _logger,
-            new MealFactory(),
+            _factory,
             _mealRepository,
-            new MealService(_dishRepository),
+            _service,
             _outputMapper,
             Mock.Of<IRequestContext>());
 
@@ -43,11 +43,12 @@ public class MealsControllerTests
 
     private void fakeData()
     {
-        Dish krabbyPatty = new("Krabby Patty");
+        DishFactory factory = new();
+        var krabbyPatty = factory.CreateDishWith(name: "Krabby Patty", description: null, servings: 2);
         _dishRepository.Add(krabbyPatty);
 
-        var meal = new Meal(DateOnly.FromDateTime(DateTime.Now));
-        meal.AddCourse(index: 1, mainCourse: true, dishId: krabbyPatty.Id);
+        var meal = _factory.CreateMealWith(diningDate: DateOnly.FromDateTime(DateTime.Now));
+        _service.AddCourseToMeal(meal, index: 1, mainCourse: true, dishId: krabbyPatty.Id);
         _mealRepository.Add(meal);
     }
 
@@ -111,7 +112,7 @@ public class MealsControllerTests
             .Throws(new DomainValidationException(""));
         var controller = new MealsController(
             _logger,
-            new MealFactory(),
+            _factory,
             _mealRepository,
             serviceMock.Object,
             _outputMapper,
@@ -136,7 +137,7 @@ public class MealsControllerTests
         repositoryMock.Setup(m => m.Add(It.IsAny<Meal>())).Throws(new ConcurrentUpdateException(""));
         var controller = new MealsController(
             _logger,
-            new MealFactory(),
+            _factory,
             repositoryMock.Object,
             serviceMock.Object,
             _outputMapper,

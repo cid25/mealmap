@@ -4,7 +4,6 @@ using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.RequestFormatters;
-using Mealmap.Domain.Common;
 using Mealmap.Domain.DishAggregate;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,16 +14,13 @@ namespace Mealmap.Api.UnitTests.Controllers;
 
 public class DishesControllerTests
 {
-    private readonly ILogger<DishesController> _loggerMock;
-    private readonly FakeDishRepository _repositoryFake;
+    private readonly ILogger<DishesController> _loggerMock = new Mock<ILogger<DishesController>>().Object;
+    private readonly FakeDishRepository _repositoryFake = new();
     private readonly DishesController _controller;
     private readonly Dish[] _dishes;
 
     public DishesControllerTests()
     {
-        _loggerMock = new Mock<ILogger<DishesController>>().Object;
-        _repositoryFake = new FakeDishRepository();
-
         var contextMock = Mock.Of<IRequestContext>(m => m.Scheme == "https" && m.Host == "test.com" && m.Port == 443);
         var baseMapper = new MapperConfiguration(cfg => cfg.AddProfile<AutomapperProfile>()).CreateMapper();
         _controller = new DishesController(
@@ -41,11 +37,13 @@ public class DishesControllerTests
 
     private void seedData()
     {
-        var dishWithoutImage = new Dish("Krabby Patty");
+        DishFactory factory = new();
+
+        var dishWithoutImage = factory.CreateDishWith(name: "Krabby Patty", description: null, servings: 2);
         _dishes[0] = dishWithoutImage;
         _repositoryFake.Add(dishWithoutImage);
 
-        var dishWithImage = new Dish("Tuna Supreme");
+        var dishWithImage = factory.CreateDishWith(name: "Tuna Supreme", description: null, servings: 2);
         dishWithImage.SetImage(new byte[1], "image/jpeg");
         _dishes[1] = dishWithImage;
         _repositoryFake.Add(dishWithImage);
@@ -110,16 +108,22 @@ public class DishesControllerTests
     [Fact]
     public void PutDish_SavesUpdateAndReturnsDTO()
     {
+        // Arrange
         const string someDishName = "Sailors Surprise";
-        var nonExistingGuid = Guid.NewGuid();
-        var eTag = "AAAA";
+        const string eTag = "AAAA";
+        var aGuid = Guid.NewGuid();
         DishDTO dish = new(someDishName)
         {
-            Id = nonExistingGuid,
+            Id = aGuid,
             ETag = eTag
         };
+
+        DishFactory dishFactory = new DishFactory();
+        var dummyDish = dishFactory.CreateDishWith(id: aGuid, name: someDishName, description: null, servings: 2);
+        dummyDish.Version.Set(eTag);
+
         var mockRepository = new Mock<IDishRepository>();
-        mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(new Dish(someDishName) { Version = new EntityVersion(eTag) });
+        mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(dummyDish);
         mockRepository.Setup(m => m.Update(It.IsAny<Dish>())).Throws(new DbUpdateConcurrencyException());
         var controller = new DishesController(
             _loggerMock,
@@ -129,8 +133,10 @@ public class DishesControllerTests
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == eTag)
         );
 
-        var result = controller.PutDish(nonExistingGuid, dish);
+        // Act
+        var result = controller.PutDish(aGuid, dish);
 
+        // Assert
         mockRepository.Verify(m => m.Update(It.IsAny<Dish>()), Times.Once);
         result.Should().BeOfType<ActionResult<DishDTO>>();
     }
@@ -202,16 +208,22 @@ public class DishesControllerTests
     [Fact]
     public void PutDish_WhenSavingThrowsConcurrencyException_ReturnsPreconditionFailed()
     {
+        // Arrange
         const string someDishName = "Sailors Surprise";
-        var nonExistingGuid = Guid.NewGuid();
+        var aGuid = Guid.NewGuid();
         var eTag = "AAAA";
         DishDTO dish = new(someDishName)
         {
-            Id = nonExistingGuid,
+            Id = aGuid,
             ETag = eTag
         };
+
+        DishFactory dishFactory = new DishFactory();
+        var dummyDish = dishFactory.CreateDishWith(id: aGuid, name: someDishName, description: null, servings: 2);
+        dummyDish.Version.Set(eTag);
+
         var mockRepository = new Mock<IDishRepository>();
-        mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(new Dish(someDishName) { Version = new EntityVersion(eTag) });
+        mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(dummyDish);
         mockRepository.Setup(m => m.Update(It.IsAny<Dish>())).Throws(new DbUpdateConcurrencyException());
         var controller = new DishesController(
             _loggerMock,
@@ -221,8 +233,10 @@ public class DishesControllerTests
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == eTag)
         );
 
-        var result = controller.PutDish(nonExistingGuid, dish);
+        // Act
+        var result = controller.PutDish(aGuid, dish);
 
+        // Assert
         result.Result.Should().BeOfType<StatusCodeResult>();
         ((StatusCodeResult)result.Result!).StatusCode.Should().Be(412);
     }

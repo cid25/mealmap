@@ -24,16 +24,17 @@ public class DishOutputMapperTests
         );
 
         const string SomeName = "Sailors Suprise";
-        var someGuid = Guid.NewGuid();
-        var dish = new Dish(someGuid, SomeName);
+        var aGuid = Guid.NewGuid();
+        DishFactory factory = new();
+        var dish = factory.CreateDishWith(id: aGuid, name: SomeName, description: null, servings: 2);
         dish.SetImage(new byte[1], "image/jpeg");
         dish.Version.Set(new byte[] { 0x01 });
 
         var dto = mapper.FromEntity(dish);
 
-        dto.Id.Should().Be(someGuid);
+        dto.Id.Should().Be(aGuid);
         dto.Name.Should().Be(SomeName);
-        dto.ImageUrl!.ToString().Should().EndWith(someGuid.ToString() + "/image");
+        dto.ImageUrl!.ToString().Should().EndWith(aGuid.ToString() + "/image");
         dto.ETag.Should().NotBeNullOrEmpty();
     }
 }
