@@ -40,11 +40,10 @@ public class SqlDishRepositoryTests
 
     private void seedData()
     {
-        var dishWithoutImage = new Dish("Krabby Patty")
-        {
-            Description = "The fishiest burger in town.",
-            Servings = 2,
-        };
+        var dishWithoutImage = _factory.CreateDishWith(
+            name: "Krabby Patty",
+            description: "The fishiest burger in town.",
+            servings: 2);
         dishWithoutImage.AddIngredient(4, "Slice", "Old bread");
         dishWithoutImage.AddIngredient(2, "Piece", "Unidentifiable meat");
         dishWithoutImage.AddIngredient(20, "Mililiter", "Fishy sauce");
@@ -98,37 +97,49 @@ public class SqlDishRepositoryTests
     [Fact]
     public void Add_WhenDishValid_CreatesEntry()
     {
-        var someGuid = Guid.NewGuid();
-        Dish dish = new(someGuid, "Salty Sea Dog");
+        Guid aGuid = Guid.NewGuid();
+        Dish aValidDish = _factory.CreateDishWith(
+            id: aGuid,
+            name: "Salty Sea Dog",
+            description: null,
+            servings: 1);
 
-        _repository.Add(dish);
+        _repository.Add(aValidDish);
 
         _dbContext.ChangeTracker.Clear();
-        _dbContext.Dishes.Find(someGuid).Should().NotBeNull();
+        _dbContext.Dishes.Find(aGuid).Should().NotBeNull();
     }
 
     [Fact]
     public void Add_WhenDishHasIngredients_CreatesIngredients()
     {
-        var someGuid = Guid.NewGuid();
-        Dish dish = new(someGuid, "Salty Sea Dog");
-        dish.AddIngredient(1, "Kilogram", "Sausages");
-        dish.AddIngredient(0.5m, "Liter", "Ketchup");
-        dish.AddIngredient(0.3m, "Liter", "Mustard");
+        var aGuid = Guid.NewGuid();
+        Dish aDish = _factory.CreateDishWith(
+            id: aGuid,
+            name: "Salty Sea Dog",
+            description: null,
+            servings: 1);
+        aDish.AddIngredient(1, "Kilogram", "Sausages");
+        aDish.AddIngredient(0.5m, "Liter", "Ketchup");
+        aDish.AddIngredient(0.3m, "Liter", "Mustard");
 
-        _repository.Add(dish);
+        _repository.Add(aDish);
 
         _dbContext.ChangeTracker.Clear();
-        _dbContext.Dishes.Find(someGuid)!.Ingredients.Should().HaveCount(3);
+        _dbContext.Dishes.Find(aGuid)!.Ingredients.Should().HaveCount(3);
     }
 
     [Fact]
     public void Update_WhenDishDisconnected_ThrowsInvalidOperationException()
     {
         var initialDish = _dbContext.Dishes.Find(_dishes[0].Id);
-        var disconnectedDish = new Dish(initialDish!.Id, initialDish.Name);
+        var aDisconnectedDish = _factory.CreateDishWith(
+            id: initialDish!.Id,
+            name: initialDish.Name,
+            description: initialDish.Description,
+            servings: initialDish.Servings);
 
-        Action act = () => _repository.Update(disconnectedDish);
+        Action act = () => _repository.Update(aDisconnectedDish);
 
         act.Should().Throw<InvalidOperationException>();
     }
