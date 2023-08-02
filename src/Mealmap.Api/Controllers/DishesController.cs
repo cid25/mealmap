@@ -10,8 +10,8 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace Mealmap.Api.Controllers;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/[controller]")]
 public class DishesController : ControllerBase
 {
     private readonly ILogger<DishesController> _logger;
@@ -103,7 +103,7 @@ public class DishesController : ControllerBase
     }
 
     /// <summary>
-    /// Updates an existing dish.
+    /// Updates a specific dish.
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="id"></param>
@@ -178,7 +178,7 @@ public class DishesController : ControllerBase
     }
 
     /// <summary>
-    /// Sets the image of a dish.
+    /// Sets the image of a specific dish.
     /// </summary>
     /// <param name="id">The id of the dish to attach the image to.</param>
     /// <param name="image">The image to attach.</param>
@@ -210,7 +210,7 @@ public class DishesController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves the image of a dish.
+    /// Retrieves the image of a specific dish.
     /// </summary>
     /// <param name="id">The id of the dish to retrieve the image from.</param>
     /// <response code="201">Image Set</response>

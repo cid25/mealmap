@@ -71,6 +71,7 @@ public class MealsController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [SwaggerResponseExample(200, typeof(MealResponseExampleWithIdAndEtag))]
     public ActionResult<MealDTO> GetMeal([FromRoute] Guid id)
     {
         Meal? meal = _repository.GetSingleById(id);
@@ -94,8 +95,8 @@ public class MealsController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
-    [SwaggerRequestExample(typeof(MealDTO), typeof(MealPostRequestExample))]
-    [SwaggerResponseExample(201, typeof(MealPostResponseExample))]
+    [SwaggerRequestExample(typeof(MealDTO), typeof(MealRequestExampleWithoutIdAndEtag))]
+    [SwaggerResponseExample(201, typeof(MealResponseExampleWithIdAndEtag))]
     public ActionResult<MealDTO> PostMeal([FromBody] MealDTO dto)
     {
         if (dto.Id != Guid.Empty && dto.Id != null)
@@ -122,7 +123,7 @@ public class MealsController : ControllerBase
     }
 
     /// <summary>
-    /// Updates an existing meal.
+    /// Updates a specific meal.
     /// </summary>
     /// <param name="id"></param>
     /// <param name="dto"></param>
@@ -139,6 +140,8 @@ public class MealsController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(void), StatusCodes.Status412PreconditionFailed)]
     [ProducesResponseType(typeof(void), StatusCodes.Status428PreconditionRequired)]
+    [SwaggerRequestExample(typeof(MealDTO), typeof(MealRequestExampleWithIdWithoutEtag))]
+    [SwaggerResponseExample(200, typeof(MealResponseExampleWithIdAndEtag))]
     public ActionResult<MealDTO> PutMeal([FromRoute] Guid id, [FromBody] MealDTO dto)
     {
         if (String.IsNullOrEmpty(_context.IfMatchHeader))
@@ -187,6 +190,7 @@ public class MealsController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [SwaggerResponseExample(200, typeof(MealResponseExampleWithIdAndEtag))]
     public ActionResult<MealDTO> DeleteMeal([FromRoute] Guid id)
     {
         var meal = _repository.GetSingleById(id);
