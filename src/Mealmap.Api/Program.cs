@@ -19,7 +19,8 @@ builder.Services.Configure<HostingOptions>(
     builder.Configuration.GetSection(HostingOptions.SectionName));
 
 // Add domain services
-builder.Services.AddScoped<DishService>();
+builder.Services.AddScoped<DishFactory>();
+builder.Services.AddScoped<MealFactory>();
 builder.Services.AddScoped<IMealService, MealService>();
 
 // Add data access

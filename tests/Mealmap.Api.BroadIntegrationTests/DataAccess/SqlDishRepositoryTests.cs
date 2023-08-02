@@ -12,11 +12,14 @@ namespace Mealmap.Infrastructure.IntegrationTests.DataAccess;
 public class SqlDishRepositoryTests
 {
     private readonly MealmapDbContext _dbContext;
+    private readonly DishFactory _factory;
     private readonly SqlDishRepository _repository;
     private readonly Dish[] _dishes;
 
     public SqlDishRepositoryTests()
     {
+        _factory = new DishFactory();
+
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
         var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
             .UseSqlServer(configuration.GetConnectionString("MealmapDb"))
@@ -47,12 +50,11 @@ public class SqlDishRepositoryTests
         dishWithoutImage.AddIngredient(20, "Mililiter", "Fishy sauce");
         _dishes[0] = dishWithoutImage;
 
-        var dishWithImage = new Dish("Sailors Surprise")
-        {
-            Description = "The darkest, wettest dream of every boatsman.",
-            Servings = 4,
-            Image = new DishImage(new byte[] { 0x01 }, "image/jpeg")
-        };
+        var dishWithImage = _factory.CreateDishWith(
+            name: "Sailors Surprise",
+            description: "The darkest, wettest dream of every boatsman.",
+            servings: 4);
+        dishWithImage.SetImage(new byte[] { 0x01 }, "image/jpeg");
         dishWithImage.AddIngredient(800, "Mililiter", "Seawater");
         dishWithImage.AddIngredient(6, "Piece", "Sea cucumber");
         dishWithImage.AddIngredient(8, "Piece", "Crab meat");
@@ -209,7 +211,7 @@ public class SqlDishRepositoryTests
         var dish = _dbContext.Dishes.Find(_dishes[0].Id);
 
         var imageContent = new byte[] { 0x02 };
-        dish!.Image = new DishImage(imageContent, "image/jpeg");
+        dish!.SetImage(imageContent, "image/jpeg");
         _repository.Update(dish);
 
         _dbContext.ChangeTracker.Clear();
@@ -221,8 +223,8 @@ public class SqlDishRepositoryTests
     public void Update_WhenImageRemoved_DeletesImage()
     {
         var dish = _dbContext.Dishes.Find(_dishes[0].Id);
-        dish!.Image = null;
 
+        dish!.RemoveImage();
         _repository.Update(dish);
 
         _dbContext.ChangeTracker.Clear();

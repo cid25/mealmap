@@ -16,6 +16,7 @@ namespace Mealmap.Api.Controllers;
 public class MealsController : ControllerBase
 {
     private readonly ILogger<MealsController> _logger;
+    private readonly MealFactory _factory;
     private readonly IMealRepository _repository;
     private readonly IMealService _mealService;
     private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
@@ -23,12 +24,14 @@ public class MealsController : ControllerBase
 
     public MealsController(
         ILogger<MealsController> logger,
+        MealFactory factory,
         IMealRepository mealRepository,
         IMealService mealService,
         IOutputMapper<MealDTO, Meal> outputMapper,
         IRequestContext context)
     {
         _logger = logger;
+        _factory = factory;
         _repository = mealRepository;
         _mealService = mealService;
         _outputMapper = outputMapper;
@@ -100,7 +103,7 @@ public class MealsController : ControllerBase
             throw new ValidationException("Id not allowed as part of request.");
         }
 
-        var meal = _mealService.CreateMeal(dto.DiningDate);
+        var meal = _factory.CreateMealWith(dto.DiningDate);
 
         try
         {
@@ -214,11 +217,11 @@ public class MealsController : ControllerBase
         if (_context.IfMatchHeader == null || _context.IfMatchHeader == String.Empty)
             throw new ValidationException("The If-Match header must be set.");
 
-        _mealService.SetVersion(meal, Convert.FromBase64String(_context.IfMatchHeader));
+        meal.SetVersion(Convert.FromBase64String(_context.IfMatchHeader));
 
-        _mealService.ChangeDiningDate(meal, dto.DiningDate);
+        meal.DiningDate = dto.DiningDate;
 
-        _mealService.RemoveAllCourses(meal);
+        meal.RemoveAllCourses();
         if (dto.Courses != null)
             foreach (var course in dto.Courses)
                 _mealService.AddCourseToMeal(meal, course.Index, course.MainCourse, course.DishId);

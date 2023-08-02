@@ -96,7 +96,8 @@ public class DishesPipelineTests
         {
             services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
             {
-                Dish dish = new("Tuna Supreme") { Image = new DishImage(new byte[1], contentType) };
+                Dish dish = new("Tuna Supreme");
+                dish.SetImage(new byte[1], contentType);
                 return Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == dish);
             }));
         });

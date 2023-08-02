@@ -25,11 +25,9 @@ public class DishOutputMapperTests
 
         const string SomeName = "Sailors Suprise";
         var someGuid = Guid.NewGuid();
-        var dish = new Dish(someGuid, SomeName)
-        {
-            Image = new DishImage(content: new byte[1], contentType: "image/jpeg"),
-            Version = new byte[] { 0x01 }
-        };
+        var dish = new Dish(someGuid, SomeName);
+        dish.SetImage(new byte[1], "image/jpeg");
+        dish.SetVersion(new byte[] { 0x01 });
 
         var dto = mapper.FromEntity(dish);
 

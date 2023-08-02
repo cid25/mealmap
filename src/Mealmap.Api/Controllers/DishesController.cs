@@ -15,21 +15,21 @@ namespace Mealmap.Api.Controllers;
 public class DishesController : ControllerBase
 {
     private readonly ILogger<DishesController> _logger;
+    private readonly DishFactory _factory;
     private readonly IDishRepository _repository;
-    private readonly DishService _service;
     private readonly IOutputMapper<DishDTO, Dish> _outputMapper;
     private readonly IRequestContext _context;
 
     public DishesController(
         ILogger<DishesController> logger,
+        DishFactory factory,
         IDishRepository repository,
-        DishService service,
         IOutputMapper<DishDTO, Dish> outputMapper,
         IRequestContext context)
     {
         _logger = logger;
+        _factory = factory;
         _repository = repository;
-        _service = service;
         _outputMapper = outputMapper;
         _context = context;
     }
@@ -92,7 +92,7 @@ public class DishesController : ControllerBase
         if (dto.Id != null && dto.Id != Guid.Empty)
             return BadRequest("Field id is not allowed.");
 
-        var dish = _service.Create(dto.Name, dto.Description, dto.Servings);
+        var dish = _factory.CreateDishWith(dto.Name, dto.Description, dto.Servings);
         SetIngredientsFromDataTransferObject(dish, dto);
 
         _repository.Add(dish);
@@ -199,7 +199,7 @@ public class DishesController : ControllerBase
         if (dish == null)
             return NotFound();
 
-        _service.SetImage(dish, image.Content, image.ContentType);
+        dish.SetImage(image.Content, image.ContentType);
         _repository.Update(dish);
 
         var actionLink = ActionLink(action: nameof(GetDishImage), values: new { id });
@@ -254,17 +254,19 @@ public class DishesController : ControllerBase
         if (dish.Image == null)
             return NoContent();
 
-        _service.RemoveImage(dish);
+        dish.RemoveImage();
         _repository.Update(dish);
 
         return Ok();
     }
 
-    private void SetIngredientsFromDataTransferObject(Dish dish, DishDTO dto)
+    private static void SetIngredientsFromDataTransferObject(Dish dish, DishDTO dto)
     {
+        dish.RemoveAllIngredients();
+
         if (dto.Ingredients != null)
             foreach (var ing in dto.Ingredients)
-                _service.AddIngredient(dish, ing.Quantity, ing.UnitOfMeasurement, ing.Description);
+                dish.AddIngredient(ing.Quantity, ing.UnitOfMeasurement, ing.Description);
     }
 
     private void UpdateDishFromDataTransferObject(Dish dish, DishDTO dto)
@@ -272,13 +274,12 @@ public class DishesController : ControllerBase
         if (_context.IfMatchHeader == null || _context.IfMatchHeader == String.Empty)
             throw new ValidationException("The If-Match header must be set.");
 
-        _service.SetVersion(dish, Convert.FromBase64String(_context.IfMatchHeader));
+        dish.SetVersion(Convert.FromBase64String(_context.IfMatchHeader));
 
-        _service.ChangeName(dish, dto.Name);
-        _service.SetDescription(dish, dto.Description);
-        _service.SetServings(dish, dto.Servings);
+        dish.Name = dto.Name;
+        dish.Description = dto.Description;
+        dish.Servings = dto.Servings;
 
-        _service.RemoveAllIngredients(dish);
         SetIngredientsFromDataTransferObject(dish, dto);
     }
 

@@ -4,7 +4,7 @@ namespace Mealmap.Domain.MealAggregate;
 
 public class Meal : EntityBase
 {
-    public DateOnly DiningDate { get; private set; }
+    public DateOnly DiningDate { get; set; }
 
     private List<Course> _courses;
 
@@ -25,9 +25,15 @@ public class Meal : EntityBase
         _courses = new List<Course>();
     }
 
-    internal void ChangeDiningDate(DateOnly diningDate)
+    public void SetVersion(byte[] version)
     {
-        DiningDate = diningDate;
+        Version = version;
+    }
+
+
+    public void RemoveAllCourses()
+    {
+        _courses = new List<Course>();
     }
 
     /// <exception cref="DomainValidationException"></exception>
@@ -68,10 +74,5 @@ public class Meal : EntityBase
     {
         _courses.Remove(course);
         AddCourse(course with { Index = course.Index + 1 });
-    }
-
-    internal void RemoveAllCourses()
-    {
-        _courses = new List<Course>();
     }
 }

@@ -28,8 +28,8 @@ public class DishesControllerTests
         var baseMapper = new MapperConfiguration(cfg => cfg.AddProfile<AutomapperProfile>()).CreateMapper();
         _controller = new DishesController(
             _loggerMock,
+            new DishFactory(),
             _repositoryFake,
-            new DishService(),
             new DishOutputMapper(baseMapper, contextMock),
             contextMock
         );
@@ -44,10 +44,8 @@ public class DishesControllerTests
         _dishes[0] = dishWithoutImage;
         _repositoryFake.Add(dishWithoutImage);
 
-        var dishWithImage = new Dish("Tuna Supreme")
-        {
-            Image = new DishImage(content: new byte[1], contentType: "image/jpeg")
-        };
+        var dishWithImage = new Dish("Tuna Supreme");
+        dishWithImage.SetImage(new byte[1], "image/jpeg");
         _dishes[1] = dishWithImage;
         _repositoryFake.Add(dishWithImage);
     }
@@ -89,7 +87,7 @@ public class DishesControllerTests
 
         var context = Mock.Of<IRequestContext>(m => m.Method == "POST");
         var outputMapper = Mock.Of<IOutputMapper<DishDTO, Dish>>(m => m.FromEntity(It.IsAny<Dish>()) == dish);
-        var controller = new DishesController(_loggerMock, _repositoryFake, new DishService(), outputMapper, context);
+        var controller = new DishesController(_loggerMock, new DishFactory(), _repositoryFake, outputMapper, context);
 
         var result = controller.PostDish(dish);
 
@@ -124,8 +122,8 @@ public class DishesControllerTests
         mockRepository.Setup(m => m.Update(It.IsAny<Dish>())).Throws(new DbUpdateConcurrencyException());
         var controller = new DishesController(
             _loggerMock,
+            new DishFactory(),
             mockRepository.Object,
-            new DishService(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == eTag)
         );
@@ -143,8 +141,8 @@ public class DishesControllerTests
     {
         var controller = new DishesController(
             _loggerMock,
+            new DishFactory(),
             _repositoryFake,
-            new DishService(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == header)
         );
@@ -165,8 +163,8 @@ public class DishesControllerTests
         const string someHeader = "AAAA";
         var controller = new DishesController(
             _loggerMock,
+            new DishFactory(),
             _repositoryFake,
-            new DishService(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == someHeader)
         );
@@ -185,8 +183,8 @@ public class DishesControllerTests
         const string someETag = "AAAA";
         var controller = new DishesController(
             _loggerMock,
+            new DishFactory(),
             _repositoryFake,
-            new DishService(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == someETag)
         );
@@ -216,8 +214,8 @@ public class DishesControllerTests
         mockRepository.Setup(m => m.Update(It.IsAny<Dish>())).Throws(new DbUpdateConcurrencyException());
         var controller = new DishesController(
             _loggerMock,
+            new DishFactory(),
             mockRepository.Object,
-            new DishService(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == eTag)
         );

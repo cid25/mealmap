@@ -6,14 +6,14 @@ namespace Mealmap.Domain.DishAggregate;
 public class Dish : EntityBase
 {
     [MaxLength(100)]
-    public string Name { get; internal set; }
+    public string Name { get; set; }
 
-    public string? Description { get; internal set; }
+    public string? Description { get; set; }
 
     [Range(1, int.MaxValue)]
-    public int Servings { get; internal set; }
+    public int Servings { get; set; }
 
-    public DishImage? Image { get; internal set; }
+    public DishImage? Image { get; private set; }
 
     private List<Ingredient> _ingredients;
 
@@ -33,8 +33,23 @@ public class Dish : EntityBase
         _ingredients = new List<Ingredient>();
     }
 
+    public void SetVersion(byte[] version)
+    {
+        Version = version;
+    }
+
+    public void SetImage(byte[] content, string mediaType)
+    {
+        Image = new DishImage(content, mediaType);
+    }
+
+    public void RemoveImage()
+    {
+        Image = null;
+    }
+
     /// <exception cref="DomainValidationException"></exception>
-    internal void AddIngredient(decimal quantity, string unitOfMeasurementName, string description)
+    public void AddIngredient(decimal quantity, string unitOfMeasurementName, string description)
     {
         var unit = new UnitOfMeasurement(unitOfMeasurementName);
         Ingredient ingredient = new(quantity, unit, description);
@@ -42,13 +57,13 @@ public class Dish : EntityBase
         _ingredients.Add(ingredient);
     }
 
-    internal void ReplaceIngredientsWith(ICollection<Ingredient> ingredients)
+    public void ReplaceIngredientsWith(ICollection<Ingredient> ingredients)
     {
         _ingredients = ingredients.ToList();
     }
 
     /// <exception cref="DomainValidationException"></exception>
-    internal void RemoveIngredient(decimal quantity, string unitOfMeasurementName, string description)
+    public void RemoveIngredient(decimal quantity, string unitOfMeasurementName, string description)
     {
         if (!Ingredients.Any())
             return;
@@ -59,12 +74,12 @@ public class Dish : EntityBase
         _ingredients.Remove(newIngredient);
     }
 
-    internal void RemoveIngredient(Ingredient ingredient)
+    public void RemoveIngredient(Ingredient ingredient)
     {
         _ingredients.Remove(ingredient);
     }
 
-    internal void RemoveAllIngredients()
+    public void RemoveAllIngredients()
     {
         _ingredients = new List<Ingredient>();
     }

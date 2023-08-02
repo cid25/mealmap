@@ -7,7 +7,7 @@ public abstract class EntityBase
     public Guid Id { get; }
 
     [Timestamp]
-    public byte[]? Version { get; internal set; }
+    public byte[]? Version { get; set; }
 
     public EntityBase()
         => Id = Guid.NewGuid();

@@ -32,6 +32,7 @@ public class MealsControllerTests
 
         _controller = new MealsController(
             _logger,
+            new MealFactory(),
             _mealRepository,
             new MealService(_dishRepository),
             _outputMapper,
@@ -105,14 +106,12 @@ public class MealsControllerTests
     [Fact]
     public void PostMeal_WhenServiceThrowsDomainValidationException_ReturnsBadRequest()
     {
-        Meal dummy = new Meal(DateOnly.FromDateTime(DateTime.Now));
         var serviceMock = new Mock<IMealService>();
-        serviceMock.Setup(m => m.CreateMeal(It.IsAny<DateOnly>()))
-            .Returns(dummy);
         serviceMock.Setup(m => m.AddCourseToMeal(It.IsAny<Meal>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>()))
             .Throws(new DomainValidationException(""));
         var controller = new MealsController(
             _logger,
+            new MealFactory(),
             _mealRepository,
             serviceMock.Object,
             _outputMapper,
@@ -120,6 +119,7 @@ public class MealsControllerTests
         );
         MealDTO mealDto = new()
         {
+            DiningDate = DateOnly.FromDateTime(DateTime.Now),
             Courses = new CourseDTO[1] { new CourseDTO() { Index = 1, DishId = Guid.NewGuid(), MainCourse = true } }
         };
 
@@ -132,18 +132,18 @@ public class MealsControllerTests
     public void PostMeal_WhenRepositoryThrowsDbUpdateException_ReturnsBadRequest()
     {
         var serviceMock = new Mock<IMealService>();
-        serviceMock.Setup(m => m.CreateMeal(It.IsAny<DateOnly>())).Returns(new Meal(DateOnly.FromDateTime(DateTime.Now)));
         var repositoryMock = new Mock<IMealRepository>();
         repositoryMock.Setup(m => m.Add(It.IsAny<Meal>())).Throws(new ConcurrentUpdateException(""));
         var controller = new MealsController(
             _logger,
+            new MealFactory(),
             repositoryMock.Object,
             serviceMock.Object,
             _outputMapper,
             Mock.Of<IRequestContext>()
         );
 
-        MealDTO mealDto = new();
+        MealDTO mealDto = new() { DiningDate = DateOnly.FromDateTime(DateTime.Now) };
 
         var result = controller.PostMeal(mealDto);
 
