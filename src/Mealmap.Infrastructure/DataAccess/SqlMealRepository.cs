@@ -6,15 +6,17 @@ namespace Mealmap.Infrastructure.DataAccess;
 public class SqlMealRepository : IMealRepository
 {
     private MealmapDbContext _dbContext { get; }
+    internal DbSet<Meal> dbSet { get; }
 
     public SqlMealRepository(MealmapDbContext dbContext)
     {
         _dbContext = dbContext;
+        dbSet = dbContext.Set<Meal>();
     }
 
     public IEnumerable<Meal> GetAll(DateOnly? fromDate = null, DateOnly? toDate = null)
     {
-        var meals = _dbContext.Meals.AsQueryable();
+        var meals = dbSet.AsQueryable();
 
         if (fromDate != null)
             meals = meals.Where(m => m.DiningDate >= fromDate);
@@ -26,7 +28,7 @@ public class SqlMealRepository : IMealRepository
 
     public Meal? GetSingleById(Guid id)
     {
-        var meal = _dbContext.Meals.FirstOrDefault(x => x.Id == id);
+        var meal = dbSet.FirstOrDefault(x => x.Id == id);
 
         return meal;
     }
@@ -35,7 +37,7 @@ public class SqlMealRepository : IMealRepository
     public void Add(Meal meal)
     {
 
-        _dbContext.Meals.Add(meal);
+        dbSet.Add(meal);
         try
         {
             _dbContext.SaveChanges();
@@ -51,7 +53,7 @@ public class SqlMealRepository : IMealRepository
 
     public void Update(Meal meal)
     {
-        var existingMeal = _dbContext.Meals.Find(meal.Id);
+        var existingMeal = dbSet.Find(meal.Id);
         if (existingMeal == null || existingMeal != meal)
             throw new InvalidOperationException();
 
@@ -70,11 +72,11 @@ public class SqlMealRepository : IMealRepository
 
     public void Remove(Meal meal)
     {
-        var removable = _dbContext.Meals.Find(meal.Id);
+        var removable = dbSet.Find(meal.Id);
 
         if (removable != null)
         {
-            _dbContext.Meals.Remove(removable);
+            dbSet.Remove(removable);
             _dbContext.SaveChanges();
         }
     }

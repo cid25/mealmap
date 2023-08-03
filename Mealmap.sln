@@ -5,16 +5,6 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api", "src\Mealmap.Api\Mealmap.Api.csproj", "{9B38E491-3837-4106-93C6-33283ACE0274}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.UnitTests", "tests\Mealmap.Api.Tests\Mealmap.Api.UnitTests.csproj", "{8899AFCD-81D7-4D26-9A0E-C8F3FFBB07F1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Domain", "src\Mealmap.Model\Mealmap.Domain.csproj", "{B57D2C53-7EDF-4E4C-9797-AF62DE7471F9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.BoundaryTests", "tests\Mealmap.Api.NarrowIntegrationTests\Mealmap.Api.BoundaryTests.csproj", "{3A44C2EE-E07A-42D0-A693-6FC65E310031}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Infrastructure.IntegrationTests", "tests\Mealmap.Api.BroadIntegrationTests\Mealmap.Infrastructure.IntegrationTests.csproj", "{F869DD60-0C7B-428E-9C50-54A4600EF10B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Domain.Tests", "tests\Mealmap.Model.Tests\Mealmap.Domain.Tests.csproj", "{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Testdata", "src\Mealmap.Testdata\Mealmap.Testdata.csproj", "{8A82CA7F-0833-480A-8780-3EBA1C275BD3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A608CA3F-1681-4128-91FE-0B1FEE3102F2}"
@@ -22,7 +12,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Infrastructure", "src\Mealmap.DataAccess\Mealmap.Infrastructure.csproj", "{BBC4E933-0363-412A-BA0A-9313DE86ACFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Domain", "src\Mealmap.Domain\Mealmap.Domain.csproj", "{BF81E45E-C238-4A84-B98A-B3AEFE114E88}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Infrastructure", "src\Mealmap.Infrastructure\Mealmap.Infrastructure.csproj", "{83990975-CBA1-4BC6-B8A9-586768B0378F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.BoundaryTests", "tests\Mealmap.Api.BoundaryTests\Mealmap.Api.BoundaryTests.csproj", "{2814B880-D0A4-415A-95F8-02725B204B2B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.UnitTests", "tests\Mealmap.Api.UnitTests\Mealmap.Api.UnitTests.csproj", "{C912D383-81B7-4E07-8286-3A00E7B05C80}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Domain.UnitTests", "tests\Mealmap.Domain.UnitTests\Mealmap.Domain.UnitTests.csproj", "{05A4C300-0723-4E30-BFB8-2D1D1B8177B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Infrastructure.IntegrationTests", "tests\Mealmap.Infrastructure.IntegrationTests\Mealmap.Infrastructure.IntegrationTests.csproj", "{72D5BC9D-4304-476F-847C-49BF7DB8278C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,34 +34,34 @@ Global
 		{9B38E491-3837-4106-93C6-33283ACE0274}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B38E491-3837-4106-93C6-33283ACE0274}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B38E491-3837-4106-93C6-33283ACE0274}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8899AFCD-81D7-4D26-9A0E-C8F3FFBB07F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8899AFCD-81D7-4D26-9A0E-C8F3FFBB07F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8899AFCD-81D7-4D26-9A0E-C8F3FFBB07F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8899AFCD-81D7-4D26-9A0E-C8F3FFBB07F1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B57D2C53-7EDF-4E4C-9797-AF62DE7471F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B57D2C53-7EDF-4E4C-9797-AF62DE7471F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B57D2C53-7EDF-4E4C-9797-AF62DE7471F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B57D2C53-7EDF-4E4C-9797-AF62DE7471F9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A44C2EE-E07A-42D0-A693-6FC65E310031}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A44C2EE-E07A-42D0-A693-6FC65E310031}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A44C2EE-E07A-42D0-A693-6FC65E310031}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A44C2EE-E07A-42D0-A693-6FC65E310031}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F869DD60-0C7B-428E-9C50-54A4600EF10B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F869DD60-0C7B-428E-9C50-54A4600EF10B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F869DD60-0C7B-428E-9C50-54A4600EF10B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F869DD60-0C7B-428E-9C50-54A4600EF10B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3BA9CA79-5D1F-4EBE-9030-AC4C82092878}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8A82CA7F-0833-480A-8780-3EBA1C275BD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8A82CA7F-0833-480A-8780-3EBA1C275BD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A82CA7F-0833-480A-8780-3EBA1C275BD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A82CA7F-0833-480A-8780-3EBA1C275BD3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BBC4E933-0363-412A-BA0A-9313DE86ACFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BBC4E933-0363-412A-BA0A-9313DE86ACFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BBC4E933-0363-412A-BA0A-9313DE86ACFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BBC4E933-0363-412A-BA0A-9313DE86ACFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF81E45E-C238-4A84-B98A-B3AEFE114E88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF81E45E-C238-4A84-B98A-B3AEFE114E88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF81E45E-C238-4A84-B98A-B3AEFE114E88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF81E45E-C238-4A84-B98A-B3AEFE114E88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83990975-CBA1-4BC6-B8A9-586768B0378F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83990975-CBA1-4BC6-B8A9-586768B0378F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83990975-CBA1-4BC6-B8A9-586768B0378F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83990975-CBA1-4BC6-B8A9-586768B0378F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2814B880-D0A4-415A-95F8-02725B204B2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2814B880-D0A4-415A-95F8-02725B204B2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2814B880-D0A4-415A-95F8-02725B204B2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2814B880-D0A4-415A-95F8-02725B204B2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C912D383-81B7-4E07-8286-3A00E7B05C80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C912D383-81B7-4E07-8286-3A00E7B05C80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C912D383-81B7-4E07-8286-3A00E7B05C80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C912D383-81B7-4E07-8286-3A00E7B05C80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05A4C300-0723-4E30-BFB8-2D1D1B8177B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05A4C300-0723-4E30-BFB8-2D1D1B8177B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05A4C300-0723-4E30-BFB8-2D1D1B8177B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05A4C300-0723-4E30-BFB8-2D1D1B8177B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72D5BC9D-4304-476F-847C-49BF7DB8278C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72D5BC9D-4304-476F-847C-49BF7DB8278C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72D5BC9D-4304-476F-847C-49BF7DB8278C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72D5BC9D-4304-476F-847C-49BF7DB8278C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

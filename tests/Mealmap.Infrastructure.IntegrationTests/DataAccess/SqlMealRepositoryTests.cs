@@ -50,7 +50,7 @@ public class SqlMealRepositoryTests
             _meals[day - 1] = _mealFactory.CreateMealWith(diningDate: new DateOnly(2020, 1, day));
             mealService.AddCourseToMeal(_meals[day - 1], 1, true, _dishes[0].Id);
         }
-        _dbContext.Meals.AddRange(_meals);
+        _dbContext.AddRange(_meals);
 
         _dbContext.SaveChanges();
     }
@@ -128,13 +128,13 @@ public class SqlMealRepositoryTests
 
         _repository.Add(meal);
 
-        _dbContext.Meals.First(x => x.Id == aGuid).Should().NotBeNull();
+        _dbContext.Find<Meal>(meal.Id).Should().NotBeNull();
     }
 
     [Fact]
     public void Update_WhenMealDisconnected_ThrowsInvalidOperationException()
     {
-        var initialMeal = _dbContext.Meals.Find(_meals![0].Id);
+        var initialMeal = _dbContext.Find<Meal>(_meals![0].Id);
         var disconnectedMeal = _mealFactory.CreateMealWith(id: initialMeal!.Id, diningDate: initialMeal.DiningDate);
 
         Action act = () => _repository.Update(disconnectedMeal);
@@ -145,7 +145,7 @@ public class SqlMealRepositoryTests
     [Fact]
     public void Update_WhenConcurrentUpdate_ThrowsConcurrentUpdateException()
     {
-        Meal meal = _dbContext.Meals.Find(_meals![1].Id)!;
+        Meal meal = _dbContext.Find<Meal>(_meals![1].Id)!;
         _dbContext.Entry(meal).Property(m => m.DiningDate).IsModified = true;
 
         _dbContext.Database.ExecuteSqlRaw("UPDATE [mealmap].[meal] SET [DiningDate] = '2020-01-31' WHERE [Id] = '" + meal.Id + "';");
@@ -157,7 +157,7 @@ public class SqlMealRepositoryTests
     [Fact]
     public void Update_WhenExplicitVersionNotMatchingDatabase_ThrowsConcurrentUpdateException()
     {
-        Meal meal = _dbContext.Meals.Find(_meals![1].Id)!;
+        Meal meal = _dbContext.Find<Meal>(_meals![1].Id)!;
         _dbContext.Entry(meal).Property(m => m.DiningDate).IsModified = true;
         var nonMatchingVersion = "AAAA";
         meal!.Version.Set(nonMatchingVersion);
@@ -170,7 +170,7 @@ public class SqlMealRepositoryTests
     [Fact]
     public void Update_WhenCourseAdded_AddsCourseAndUpsMealVersion()
     {
-        Meal meal = _dbContext.Meals.Find(_meals![0].Id)!;
+        Meal meal = _dbContext.Find<Meal>(_meals![0].Id)!;
         var originalCount = meal!.Courses.Count();
         var originalVersion = meal.Version;
 
@@ -179,7 +179,7 @@ public class SqlMealRepositoryTests
         _repository.Update(meal);
 
         _dbContext.ChangeTracker.Clear();
-        var result = _dbContext.Meals.Find(meal.Id);
+        var result = _dbContext.Find<Meal>(meal.Id);
         result!.Courses.Should().HaveCount(originalCount + 1);
         result.Version.AsBytes().Should().NotEqual(originalVersion.AsBytes());
     }
@@ -187,14 +187,14 @@ public class SqlMealRepositoryTests
     [Fact]
     public void Update_WhenIngredientsRemoved_RemovesIngredientAndUpsDishVersion()
     {
-        Meal meal = _dbContext.Meals.Find(_meals![0].Id)!;
+        Meal meal = _dbContext.Find<Meal>(_meals![0].Id)!;
         var originalVersion = meal.Version;
 
         meal!.RemoveAllCourses();
         _repository.Update(meal);
 
         _dbContext.ChangeTracker.Clear();
-        var result = _dbContext.Meals.Find(meal.Id);
+        var result = _dbContext.Find<Meal>(meal.Id);
         result!.Courses.Should().HaveCount(0);
         result.Version.AsBytes().Should().NotEqual(originalVersion.AsBytes());
     }
@@ -207,18 +207,18 @@ public class SqlMealRepositoryTests
 
         _repository.Remove(meal);
 
-        _dbContext.Meals.Count().Should().Be(expectedCount - 1);
+        _repository.dbSet.Count().Should().Be(expectedCount - 1);
     }
 
     [Fact]
     public void Remove_WhenGivenTrackedEntity_RemovesEntry()
     {
         var expectedCount = _meals!.Length;
-        var meal = _dbContext.Meals.Find(_meals[0].Id);
+        var meal = _dbContext.Find<Meal>(_meals[0].Id);
 
         _repository.Remove(meal!);
 
-        _dbContext.Meals.Count().Should().Be(expectedCount - 1);
+        _repository.dbSet.Count().Should().Be(expectedCount - 1);
     }
 }
 

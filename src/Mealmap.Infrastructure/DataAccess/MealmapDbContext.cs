@@ -1,6 +1,4 @@
 ﻿using Mealmap.Domain.Common;
-using Mealmap.Domain.DishAggregate;
-using Mealmap.Domain.MealAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -29,7 +27,4 @@ public class MealmapDbContext : DbContext
 
         modelBuilder.ConfigureMeal(converters);
     }
-
-    public DbSet<Meal> Meals { get; set; }
-    public DbSet<Dish> Dishes { get; set; }
 }

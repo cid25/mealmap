@@ -20,13 +20,13 @@ InjectTestData(dbContext);
 static void InjectTestData(MealmapDbContext dbContext)
 {
     var dishes = GenerateDishes(new DishFactory());
-    dbContext.Dishes.AddRange(dishes);
+    dbContext.AddRange(dishes);
 
     var meals = GenerateMeals(
         new MealFactory(),
         new MealService(new SqlDishRepository(dbContext)),
         dishes);
-    dbContext.Meals.AddRange(meals);
+    dbContext.AddRange(meals);
 
     dbContext.SaveChanges();
 }

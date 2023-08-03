@@ -8,10 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.9" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Mealmap.Model\Mealmap.Domain.csproj" />
+    <ProjectReference Include="..\Mealmap.Domain\Mealmap.Domain.csproj" />
+    <InternalsVisibleTo Include="Mealmap.Infrastructure.IntegrationTests" />
   </ItemGroup>
 
 </Project>

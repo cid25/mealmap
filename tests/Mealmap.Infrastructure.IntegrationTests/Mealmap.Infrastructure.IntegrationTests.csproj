@@ -32,8 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Mealmap.DataAccess\Mealmap.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\src\Mealmap.Model\Mealmap.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Mealmap.Infrastructure\Mealmap.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

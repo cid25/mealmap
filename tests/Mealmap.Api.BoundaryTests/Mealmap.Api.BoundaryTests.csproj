@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Mealmap.Api\Mealmap.Api.csproj" />
-    <ProjectReference Include="..\..\src\Mealmap.Model\Mealmap.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Mealmap.Domain\Mealmap.Domain.csproj" />
   </ItemGroup>
 
 </Project>

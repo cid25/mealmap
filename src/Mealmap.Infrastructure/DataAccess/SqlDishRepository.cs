@@ -6,27 +6,29 @@ namespace Mealmap.Infrastructure.DataAccess;
 public class SqlDishRepository : IDishRepository
 {
     private MealmapDbContext _dbContext { get; }
+    internal DbSet<Dish> dbSet { get; }
 
     public SqlDishRepository(MealmapDbContext dbContext)
     {
         _dbContext = dbContext;
+        dbSet = dbContext.Set<Dish>();
     }
 
     public IEnumerable<Dish> GetAll()
     {
-        var dishes = _dbContext.Dishes.ToList();
+        var dishes = dbSet.ToList();
 
         return dishes;
     }
 
     public Dish? GetSingleById(Guid id)
     {
-        return _dbContext.Dishes.Find(id);
+        return dbSet.Find(id);
     }
 
     public void Add(Dish dish)
     {
-        _dbContext.Dishes.Add(dish);
+        dbSet.Add(dish);
         _dbContext.SaveChanges();
     }
 
@@ -34,7 +36,7 @@ public class SqlDishRepository : IDishRepository
     /// <exception cref="ConcurrentUpdateException"></exception>
     public void Update(Dish dish)
     {
-        var existingDish = _dbContext.Dishes.Find(dish.Id);
+        var existingDish = dbSet.Find(dish.Id);
         if (existingDish == null || existingDish != dish)
             throw new InvalidOperationException();
 

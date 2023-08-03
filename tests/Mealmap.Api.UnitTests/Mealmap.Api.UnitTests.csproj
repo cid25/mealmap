@@ -11,6 +11,10 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="6.11.0" />
+    <PackageReference Include="FluentAssertions.Analyzers" Version="0.21.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="xunit" Version="2.4.2" />
@@ -25,7 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Mealmap.Model\Mealmap.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Mealmap.Api\Mealmap.Api.csproj" />
+    <ProjectReference Include="..\..\src\Mealmap.Domain\Mealmap.Domain.csproj" />
   </ItemGroup>
 
 </Project>
