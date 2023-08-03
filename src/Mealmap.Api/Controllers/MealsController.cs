@@ -144,14 +144,14 @@ public class MealsController : ControllerBase
     [SwaggerResponseExample(200, typeof(MealResponseExampleWithIdAndEtag))]
     public ActionResult<MealDTO> PutMeal([FromRoute] Guid id, [FromBody] MealDTO dto)
     {
+        if (dto.Id == null)
+            return BadRequest("Field id is mandatory.");
+
+        if (id != dto.Id)
+            return BadRequest("Field id must match route.");
+
         if (String.IsNullOrEmpty(_context.IfMatchHeader))
             return new StatusCodeResult(StatusCodes.Status428PreconditionRequired);
-
-        if (dto.Id == null || id != dto.Id)
-            return BadRequest("Field id is mandatory and resource must match route.");
-
-        if (dto.Id == Guid.Empty)
-            return BadRequest("Field id cannot be empty.");
 
         var meal = _repository.GetSingleById(id);
 
