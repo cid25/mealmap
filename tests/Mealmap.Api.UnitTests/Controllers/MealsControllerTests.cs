@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentAssertions;
+using Mealmap.Api.Commands;
 using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
@@ -7,9 +8,8 @@ using Mealmap.Domain.Common;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
 using Mealmap.Infrastructure.DataAccess;
-using Microsoft.AspNetCore.Http;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -36,7 +36,9 @@ public class MealsControllerTests
             _mealRepository,
             _service,
             _outputMapper,
-            Mock.Of<IRequestContext>());
+            Mock.Of<IRequestContext>(),
+            Mock.Of<IMediator>()
+        );
 
         fakeData();
     }
@@ -114,7 +116,8 @@ public class MealsControllerTests
             _mealRepository,
             serviceMock.Object,
             _outputMapper,
-            Mock.Of<IRequestContext>()
+            Mock.Of<IRequestContext>(),
+            Mock.Of<IMediator>()
         );
         MealDTO mealDto = new()
         {
@@ -138,7 +141,8 @@ public class MealsControllerTests
             repositoryMock.Object,
             serviceMock.Object,
             _outputMapper,
-            Mock.Of<IRequestContext>()
+            Mock.Of<IRequestContext>(),
+            Mock.Of<IMediator>()
         );
 
         MealDTO mealDto = new() { DiningDate = DateOnly.FromDateTime(DateTime.Now) };
@@ -148,75 +152,95 @@ public class MealsControllerTests
         result.Result.Should().BeOfType<BadRequestObjectResult>();
     }
 
-    [Fact]
-    public void PutMeal_WhenIfMatchHeaderNotSet_ReturnsPreconditionRequired()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public async void PutMeal_WhenIfMatchHeaderNotSet_ReturnsPreconditionRequired(string? header)
     {
-        var aGuid = Guid.NewGuid();
-        var repositoryMock = Mock.Of<IMealRepository>(m =>
-            m.GetSingleById(It.Is<Guid>(m => m == aGuid)) ==
-                new Meal(aGuid, DateOnly.FromDateTime(DateTime.Now)));
         var controller = new MealsController(
             _logger,
-            repositoryMock,
+            Mock.Of<IMealRepository>(),
             Mock.Of<IMealService>(),
-            _outputMapper,
-            Mock.Of<IRequestContext>(m => m.IfMatchHeader == null)
+            Mock.Of<IOutputMapper<MealDTO, Meal>>(),
+            Mock.Of<IRequestContext>(m => m.IfMatchHeader == header),
+            Mock.Of<IMediator>()
         );
 
-        MealDTO mealDto = new() { Id = aGuid, DiningDate = DateOnly.FromDateTime(DateTime.Now) };
-
-        var result = controller.PutMeal(aGuid, mealDto);
+        MealDTO dto = new();
+        var result = await controller.PutMeal(Guid.NewGuid(), dto);
 
         result.Result.Should().BeOfType<StatusCodeResult>();
-        ((StatusCodeResult)result.Result!).StatusCode.Should().Be(StatusCodes.Status428PreconditionRequired);
+        ((StatusCodeResult)result.Result!).StatusCode.Should().Be(428);
     }
 
     [Fact]
-    public void PutMeal_WhenMealDoesNotExist_ReturnsNotFound()
+    public async void PutDish_WhenVersionDoesNotMatch_ReturnsPreconditionFailed()
     {
-        const string aVersion = "AAAAAAAA";
-        var repositoryMock = Mock.Of<IMealRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == null);
+        CommandNotification<MealDTO> notification = new();
+        notification.Errors.Add(new CommandError(CommandErrorCodes.EtagMismatch));
+        var mediatorMock = new Mock<IMediator>();
+        mediatorMock.Setup(m => m.Send(It.IsAny<UpdateMealCommand>(), It.IsAny<CancellationToken>()).Result)
+            .Returns(notification);
         var controller = new MealsController(
             _logger,
-            repositoryMock,
+            Mock.Of<IMealRepository>(),
             Mock.Of<IMealService>(),
-            _outputMapper,
-            Mock.Of<IRequestContext>(m => m.IfMatchHeader == aVersion)
+            Mock.Of<IOutputMapper<MealDTO, Meal>>(),
+            Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
+            mediatorMock.Object
         );
 
-        Guid anUnknownMealsGuid = Guid.NewGuid();
-        MealDTO mealDto = new() { Id = anUnknownMealsGuid, DiningDate = DateOnly.FromDateTime(DateTime.Now) };
+        MealDTO dto = new();
+        var result = await controller.PutMeal(Guid.NewGuid(), dto);
 
-        var result = controller.PutMeal(anUnknownMealsGuid, mealDto);
+        result.Result.Should().BeOfType<StatusCodeResult>();
+        ((StatusCodeResult)result.Result!).StatusCode.Should().Be(412);
+    }
+
+    [Fact]
+    public async void PutDish_WhenDishNotFound_ReturnsNotFound()
+    {
+        CommandNotification<MealDTO> notification = new();
+        notification.Errors.Add(new CommandError(CommandErrorCodes.NotFound));
+        var mediatorMock = new Mock<IMediator>();
+        mediatorMock.Setup(m => m.Send(It.IsAny<UpdateMealCommand>(), It.IsAny<CancellationToken>()).Result)
+            .Returns(notification);
+        var controller = new MealsController(
+            _logger,
+            Mock.Of<IMealRepository>(),
+            Mock.Of<IMealService>(),
+            Mock.Of<IOutputMapper<MealDTO, Meal>>(),
+            Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
+            mediatorMock.Object
+        );
+
+        MealDTO dto = new();
+        var result = await controller.PutMeal(Guid.NewGuid(), dto);
 
         result.Result.Should().BeOfType<NotFoundObjectResult>();
     }
 
     [Fact]
-    public void PutMeal_WhenUpdateThrowException_ReturnsPreconditionFailed()
+    public async void PutDish_WhenValidationError_ReturnsBadRequest()
     {
-        var aGuid = Guid.NewGuid();
-        const string aVersion = "AAAAAAAA";
-        const string aDifferentVersion = "BBBBBBBB";
-        Meal meal = new(aGuid, DateOnly.FromDateTime(DateTime.Now));
-        meal.Version.Set(aVersion);
-        var repositoryMock = new Mock<IMealRepository>();
-        repositoryMock.Setup(m => m.GetSingleById(It.Is<Guid>(m => m == aGuid))).Returns(meal);
-        repositoryMock.Setup(m => m.Update(It.Is<Meal>(m => m == meal))).Throws(new DbUpdateConcurrencyException());
+        CommandNotification<MealDTO> notification = new();
+        notification.Errors.Add(new CommandError(CommandErrorCodes.NotValid));
+        var mediatorMock = new Mock<IMediator>();
+        mediatorMock.Setup(m => m.Send(It.IsAny<UpdateMealCommand>(), It.IsAny<CancellationToken>()).Result)
+            .Returns(notification);
         var controller = new MealsController(
             _logger,
-            repositoryMock.Object,
+            Mock.Of<IMealRepository>(),
             Mock.Of<IMealService>(),
-            _outputMapper,
-            Mock.Of<IRequestContext>(m => m.IfMatchHeader == aDifferentVersion)
+            Mock.Of<IOutputMapper<MealDTO, Meal>>(),
+            Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
+            mediatorMock.Object
         );
 
-        MealDTO mealDto = new() { Id = aGuid, DiningDate = DateOnly.FromDateTime(DateTime.Now) };
+        MealDTO dto = new();
+        var result = await controller.PutMeal(Guid.NewGuid(), dto);
 
-        var result = controller.PutMeal(aGuid, mealDto);
-
-        result.Result.Should().BeOfType<StatusCodeResult>();
-        ((StatusCodeResult)result.Result!).StatusCode.Should().Be(StatusCodes.Status412PreconditionFailed);
+        result.Result.Should().BeOfType<BadRequestObjectResult>();
     }
 
     [Fact]

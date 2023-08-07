@@ -1,12 +1,13 @@
-﻿using Mealmap.Api.DataTransferObjects;
+﻿using Mealmap.Api.Commands;
+using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.Exceptions;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.Swagger;
 using Mealmap.Domain.Common;
 using Mealmap.Domain.MealAggregate;
 using Mealmap.Infrastructure.DataAccess;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Mealmap.Api.Controllers;
@@ -20,19 +21,22 @@ public class MealsController : ControllerBase
     private readonly IMealService _mealService;
     private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
     private readonly IRequestContext _context;
+    private readonly IMediator _mediator;
 
     public MealsController(
         ILogger<MealsController> logger,
         IMealRepository mealRepository,
         IMealService mealService,
         IOutputMapper<MealDTO, Meal> outputMapper,
-        IRequestContext context)
+        IRequestContext context,
+        IMediator mediator)
     {
         _logger = logger;
         _repository = mealRepository;
         _mealService = mealService;
         _outputMapper = outputMapper;
         _context = context;
+        _mediator = mediator;
     }
 
     /// <summary>
@@ -139,36 +143,26 @@ public class MealsController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status428PreconditionRequired)]
     [SwaggerRequestExample(typeof(MealDTO), typeof(MealRequestExampleWithIdWithoutEtag))]
     [SwaggerResponseExample(200, typeof(MealResponseExampleWithIdAndEtag))]
-    public ActionResult<MealDTO> PutMeal([FromRoute] Guid id, [FromBody] MealDTO dto)
+    public async Task<ActionResult<MealDTO>> PutMeal([FromRoute] Guid id, [FromBody] MealDTO dto)
     {
         if (String.IsNullOrEmpty(_context.IfMatchHeader))
             return new StatusCodeResult(StatusCodes.Status428PreconditionRequired);
 
-        var meal = _repository.GetSingleById(id);
+        var result = await _mediator.Send(new UpdateMealCommand(id, _context.IfMatchHeader, dto));
 
-        if (meal == null)
-            return NotFound($"Meal with id does not exist.");
+        if (!result.Success)
+        {
+            if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.EtagMismatch))
+                return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
 
-        try
-        {
-            UpdateMealFromDataTransferObject(meal, dto);
-        }
-        catch (DomainValidationException)
-        {
-            return BadRequest("Dish with id does not exist.");
-        }
+            if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotFound))
+                return NotFound(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotFound)));
 
-        try
-        {
-            _repository.Update(meal);
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
+            if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotValid))
+                return BadRequest(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotValid)));
         }
 
-        _logger.LogInformation("Updated dish with id {Id}", meal.Id);
-        return _outputMapper.FromEntity(meal);
+        return result.Result!;
     }
 
     /// <summary>
@@ -205,20 +199,5 @@ public class MealsController : ControllerBase
                 _mealService.AddCourseToMeal(meal, course.Index, course.MainCourse, course.DishId);
             }
         }
-    }
-
-    private void UpdateMealFromDataTransferObject(Meal meal, MealDTO dto)
-    {
-        if (_context.IfMatchHeader == null || _context.IfMatchHeader == String.Empty)
-            throw new ValidationException("The If-Match header must be set.");
-
-        meal.Version.Set(_context.IfMatchHeader);
-
-        meal.DiningDate = dto.DiningDate;
-
-        meal.RemoveAllCourses();
-        if (dto.Courses != null)
-            foreach (var course in dto.Courses)
-                _mealService.AddCourseToMeal(meal, course.Index, course.MainCourse, course.DishId);
     }
 }

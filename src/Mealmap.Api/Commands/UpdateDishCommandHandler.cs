@@ -34,7 +34,7 @@ public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, Comma
             return Task.FromResult(result);
         }
 
-        updatePropertiesFromRequest(dish, request);
+        setPropertiesFromRequest(dish, request);
 
         try
         {
@@ -46,13 +46,13 @@ public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, Comma
             return Task.FromResult(result);
         }
 
-        _logger.LogInformation("Updated dish with id {Id}", dish.Id);
+        _logger.LogInformation("Updated Dish with id {Id}", dish.Id);
         result.Result = _outputMapper.FromEntity(dish);
 
         return Task.FromResult(result);
     }
 
-    private static void updatePropertiesFromRequest(Dish dish, UpdateDishCommand request)
+    private static void setPropertiesFromRequest(Dish dish, UpdateDishCommand request)
     {
         dish.Version.Set(request.Version);
         dish.Name = request.Dto.Name;

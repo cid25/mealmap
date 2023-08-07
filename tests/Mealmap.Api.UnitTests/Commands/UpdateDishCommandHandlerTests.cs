@@ -16,24 +16,23 @@ public class UpdateDishCommandHandlerTests
     public async void Handle_SavesUpdateAndReturnsDTO()
     {
         // Arrange
-        const string someDishName = "Sailors Surprise";
-        const string aVersion = "AAAA";
         var aGuid = Guid.NewGuid();
-        DishDTO dish = new(someDishName) { Id = aGuid };
+        const string aVersion = "AAAAAAAA";
+        DishDTO dto = new("fakeDishName");
 
-        Dish dummyDish = new(aGuid, someDishName, null, 2);
+        Dish dummyDish = new(aGuid, "fakeDishName", null, 2);
 
         var mockRepository = new Mock<IDishRepository>();
-        mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(dummyDish);
+        mockRepository.Setup(m => m.GetSingleById(It.Is<Guid>(g => g == aGuid))).Returns(dummyDish);
         var handler = new UpdateDishCommandHandler(
             mockRepository.Object,
-            Mock.Of<IOutputMapper<DishDTO, Dish>>(m => m.FromEntity(dummyDish) == dish),
+            Mock.Of<IOutputMapper<DishDTO, Dish>>(m => m.FromEntity(dummyDish) == dto),
             Mock.Of<ILogger<UpdateDishCommandHandler>>()
         );
 
         // Act
         var result = await handler.Handle(
-            new UpdateDishCommand(aGuid, aVersion, dish),
+            new UpdateDishCommand(aGuid, aVersion, dto),
             new CancellationTokenSource().Token);
 
         // Assert
@@ -45,10 +44,9 @@ public class UpdateDishCommandHandlerTests
     public async void Handle_WhenDishDoesNotExist_ReturnsNotificationWithNotFoundError()
     {
         // Arrange
-        const string someDishName = "Sailors Surprise";
-        const string aVersion = "AAAA";
         var aGuid = Guid.NewGuid();
-        DishDTO dish = new(someDishName) { Id = aGuid };
+        const string aVersion = "AAAAAAAA";
+        DishDTO dto = new("fakeDishName");
 
         var mockRepository = new Mock<IDishRepository>();
         mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(value: null);
@@ -60,7 +58,7 @@ public class UpdateDishCommandHandlerTests
 
         // Act
         var result = await handler.Handle(
-            new UpdateDishCommand(aGuid, aVersion, dish),
+            new UpdateDishCommand(aGuid, aVersion, dto),
             new CancellationTokenSource().Token);
 
         // Assert
@@ -72,12 +70,11 @@ public class UpdateDishCommandHandlerTests
     public async void Handle_WhenSavingThrowsConcurrencyException_ReturnsNotificationWithEtagMismatchError()
     {
         // Arrange
-        const string someDishName = "Sailors Surprise";
-        const string aVersion = "AAAA";
         var aGuid = Guid.NewGuid();
-        DishDTO dish = new(someDishName) { Id = aGuid };
+        const string aVersion = "AAAAAAAA";
+        DishDTO dto = new("fakeDishName");
 
-        Dish dummyDish = new(aGuid, someDishName, null, 2);
+        Dish dummyDish = new(aGuid, "fakeDishName", null, 2);
 
         var mockRepository = new Mock<IDishRepository>();
         mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(dummyDish);
@@ -90,7 +87,7 @@ public class UpdateDishCommandHandlerTests
 
         // Act
         var result = await handler.Handle(
-            new UpdateDishCommand(aGuid, aVersion, dish),
+            new UpdateDishCommand(aGuid, aVersion, dto),
             new CancellationTokenSource().Token);
 
         // Assert
