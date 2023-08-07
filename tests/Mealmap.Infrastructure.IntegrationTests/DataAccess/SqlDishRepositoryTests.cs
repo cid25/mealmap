@@ -12,13 +12,11 @@ namespace Mealmap.Infrastructure.IntegrationTests.DataAccess;
 public class SqlDishRepositoryTests
 {
     private readonly MealmapDbContext _dbContext;
-    private readonly DishFactory _factory;
     private readonly SqlDishRepository _repository;
     private readonly Dish[] _dishes;
 
     public SqlDishRepositoryTests()
     {
-        _factory = new DishFactory();
 
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
         var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
@@ -40,19 +38,13 @@ public class SqlDishRepositoryTests
 
     private void seedData()
     {
-        var dishWithoutImage = _factory.CreateDishWith(
-            name: "Krabby Patty",
-            description: "The fishiest burger in town.",
-            servings: 2);
+        Dish dishWithoutImage = new("Krabby Patty", "The fishiest burger in town.", 2);
         dishWithoutImage.AddIngredient(4, "Slice", "Old bread");
         dishWithoutImage.AddIngredient(2, "Piece", "Unidentifiable meat");
         dishWithoutImage.AddIngredient(20, "Mililiter", "Fishy sauce");
         _dishes[0] = dishWithoutImage;
 
-        var dishWithImage = _factory.CreateDishWith(
-            name: "Sailors Surprise",
-            description: "The darkest, wettest dream of every boatsman.",
-            servings: 4);
+        Dish dishWithImage = new("Sailors Surprise", "The darkest, wettest dream of every boatsman.", 4);
         dishWithImage.SetImage(new byte[] { 0x01 }, "image/jpeg");
         dishWithImage.AddIngredient(800, "Mililiter", "Seawater");
         dishWithImage.AddIngredient(6, "Piece", "Sea cucumber");
@@ -98,11 +90,7 @@ public class SqlDishRepositoryTests
     public void Add_WhenDishValid_CreatesEntry()
     {
         Guid aGuid = Guid.NewGuid();
-        Dish aValidDish = _factory.CreateDishWith(
-            id: aGuid,
-            name: "Salty Sea Dog",
-            description: null,
-            servings: 1);
+        Dish aValidDish = new(aGuid, "Salty Sea Dog", null, 1);
 
         _repository.Add(aValidDish);
 
@@ -114,11 +102,7 @@ public class SqlDishRepositoryTests
     public void Add_WhenDishHasIngredients_CreatesIngredients()
     {
         var aGuid = Guid.NewGuid();
-        Dish aDish = _factory.CreateDishWith(
-            id: aGuid,
-            name: "Salty Sea Dog",
-            description: null,
-            servings: 1);
+        Dish aDish = new(aGuid, "Salty Sea Dog", null, 1);
         aDish.AddIngredient(1, "Kilogram", "Sausages");
         aDish.AddIngredient(0.5m, "Liter", "Ketchup");
         aDish.AddIngredient(0.3m, "Liter", "Mustard");
@@ -133,11 +117,7 @@ public class SqlDishRepositoryTests
     public void Update_WhenDishDisconnected_ThrowsInvalidOperationException()
     {
         var initialDish = _dbContext.Find<Dish>(_dishes[0].Id);
-        var aDisconnectedDish = _factory.CreateDishWith(
-            id: initialDish!.Id,
-            name: initialDish.Name,
-            description: initialDish.Description,
-            servings: initialDish.Servings);
+        Dish aDisconnectedDish = new(initialDish!.Id, initialDish.Name, initialDish.Description, initialDish.Servings);
 
         Action act = () => _repository.Update(aDisconnectedDish);
 
@@ -188,7 +168,7 @@ public class SqlDishRepositoryTests
     public void Update_WhenIngredientAdded_AddsIngredientAndUpsDishVersion()
     {
         var dish = _dbContext.Find<Dish>(_dishes[0].Id);
-        var originalCount = dish!.Ingredients.Count();
+        var originalCount = dish!.Ingredients.Count;
         var originalVersion = dish.Version;
 
         dish!.AddIngredient(1, "Pinch", "Pepper");
@@ -204,7 +184,7 @@ public class SqlDishRepositoryTests
     public void Update_WhenIngredientRemoved_RemovesIngredientAndUpsDishVersion()
     {
         var dish = _dbContext.Find<Dish>(_dishes[0].Id);
-        var originalCount = dish!.Ingredients.Count();
+        var originalCount = dish!.Ingredients.Count;
         var originalVersion = dish.Version;
 
         dish!.RemoveIngredient(dish.Ingredients.First());

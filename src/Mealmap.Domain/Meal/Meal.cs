@@ -13,12 +13,12 @@ public class Meal : EntityBase
         get => _courses.AsReadOnly();
     }
 
-    internal Meal(DateOnly diningDate) : base()
+    public Meal(DateOnly diningDate) : base()
     {
         DiningDate = diningDate;
     }
 
-    internal Meal(Guid id, DateOnly diningDate) : base(id)
+    public Meal(Guid id, DateOnly diningDate) : base(id)
     {
         DiningDate = diningDate;
     }

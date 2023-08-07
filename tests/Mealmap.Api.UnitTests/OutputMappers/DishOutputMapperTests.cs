@@ -25,8 +25,7 @@ public class DishOutputMapperTests
 
         const string SomeName = "Sailors Suprise";
         var aGuid = Guid.NewGuid();
-        DishFactory factory = new();
-        var dish = factory.CreateDishWith(id: aGuid, name: SomeName, description: null, servings: 2);
+        Dish dish = new(aGuid, SomeName, null, 2);
         dish.SetImage(new byte[1], "image/jpeg");
         dish.Version.Set(new byte[] { 0x01 });
 
@@ -47,10 +46,9 @@ public class DishOutputMapperTests
             Mock.Of<IRequestContext>(m => m.Scheme == "https" && m.Host == "test.com" && m.Port == 443)
         );
         List<Dish> dtos = new();
-        DishFactory factory = new();
 
         for (int i = 0; i < 10; i++)
-            dtos.Add(factory.CreateDishWith("Dish" + i, null, i));
+            dtos.Add(new Dish("Dish" + i, null, i));
 
         // Act
         var result = mapper.FromEntities(dtos);

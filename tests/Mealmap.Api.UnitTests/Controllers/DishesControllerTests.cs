@@ -26,7 +26,6 @@ public class DishesControllerTests
         var baseMapper = new MapperConfiguration(cfg => cfg.AddProfile<AutomapperProfile>()).CreateMapper();
         _controller = new DishesController(
             _loggerMock,
-            new DishFactory(),
             _repositoryFake,
             new DishOutputMapper(baseMapper, contextMock),
             contextMock,
@@ -39,13 +38,11 @@ public class DishesControllerTests
 
     private void seedData()
     {
-        DishFactory factory = new();
-
-        var dishWithoutImage = factory.CreateDishWith(name: "Krabby Patty", description: null, servings: 2);
+        Dish dishWithoutImage = new("Krabby Patty", null, 2);
         _dishes[0] = dishWithoutImage;
         _repositoryFake.Add(dishWithoutImage);
 
-        var dishWithImage = factory.CreateDishWith(name: "Tuna Supreme", description: null, servings: 2);
+        Dish dishWithImage = new("Tuna Supreme", null, 2);
         dishWithImage.SetImage(new byte[1], "image/jpeg");
         _dishes[1] = dishWithImage;
         _repositoryFake.Add(dishWithImage);
@@ -88,7 +85,7 @@ public class DishesControllerTests
 
         var context = Mock.Of<IRequestContext>(m => m.Method == "POST");
         var outputMapper = Mock.Of<IOutputMapper<DishDTO, Dish>>(m => m.FromEntity(It.IsAny<Dish>()) == dish);
-        var controller = new DishesController(_loggerMock, new DishFactory(), _repositoryFake, outputMapper, context, Mock.Of<IMediator>());
+        var controller = new DishesController(_loggerMock, _repositoryFake, outputMapper, context, Mock.Of<IMediator>());
 
         var result = controller.PostDish(dish);
 
@@ -114,7 +111,6 @@ public class DishesControllerTests
     {
         var controller = new DishesController(
             _loggerMock,
-            new DishFactory(),
             _repositoryFake,
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == header),
@@ -138,7 +134,6 @@ public class DishesControllerTests
             .Returns(notification);
         var controller = new DishesController(
             _loggerMock,
-            new DishFactory(),
             _repositoryFake,
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
@@ -162,7 +157,6 @@ public class DishesControllerTests
             .Returns(notification);
         var controller = new DishesController(
             _loggerMock,
-            new DishFactory(),
             _repositoryFake,
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
@@ -185,7 +179,6 @@ public class DishesControllerTests
             .Returns(notification);
         var controller = new DishesController(
             _loggerMock,
-            new DishFactory(),
             _repositoryFake,
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),

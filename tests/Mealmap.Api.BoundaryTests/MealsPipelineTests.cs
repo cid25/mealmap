@@ -13,8 +13,7 @@ public class MealsPipelineTests
 
     public MealsPipelineTests()
     {
-        MealFactory factory = new();
-        _dummyMeal = factory.CreateMealWith(DateOnly.FromDateTime(DateTime.Now));
+        _dummyMeal = new(DateOnly.FromDateTime(DateTime.Now));
     }
 
     [Fact]

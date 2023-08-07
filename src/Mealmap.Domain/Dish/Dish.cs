@@ -21,14 +21,24 @@ public class Dish : EntityBase
     {
         get => _ingredients.AsReadOnly();
     }
-    internal Dish(string name) : base()
+    public Dish(string name) : base()
     {
         Name = name;
     }
 
-    internal Dish(Guid id, string name) : base(id)
+    public Dish(Guid id, string name) : base(id)
     {
         Name = name;
+    }
+
+    public Dish(string name, string? description, int servings)
+    {
+        (Name, Description, Servings) = (name, description, servings);
+    }
+
+    public Dish(Guid id, string name, string? description, int servings) : base(id)
+    {
+        (Name, Description, Servings) = (name, description, servings);
     }
 
     public void SetImage(byte[] content, string mediaType)

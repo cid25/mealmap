@@ -16,7 +16,6 @@ namespace Mealmap.Api.Controllers;
 public class MealsController : ControllerBase
 {
     private readonly ILogger<MealsController> _logger;
-    private readonly MealFactory _factory;
     private readonly IMealRepository _repository;
     private readonly IMealService _mealService;
     private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
@@ -24,14 +23,12 @@ public class MealsController : ControllerBase
 
     public MealsController(
         ILogger<MealsController> logger,
-        MealFactory factory,
         IMealRepository mealRepository,
         IMealService mealService,
         IOutputMapper<MealDTO, Meal> outputMapper,
         IRequestContext context)
     {
         _logger = logger;
-        _factory = factory;
         _repository = mealRepository;
         _mealService = mealService;
         _outputMapper = outputMapper;
@@ -104,7 +101,7 @@ public class MealsController : ControllerBase
             throw new ValidationException("Id not allowed as part of request.");
         }
 
-        var meal = _factory.CreateMealWith(dto.DiningDate);
+        Meal meal = new(dto.DiningDate);
 
         try
         {

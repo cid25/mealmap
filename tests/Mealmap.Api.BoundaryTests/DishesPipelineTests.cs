@@ -13,8 +13,7 @@ public class DishesPipelineTests
 
     public DishesPipelineTests()
     {
-        DishFactory factory = new();
-        _dummyDish = factory.CreateDishWith(name: "Tuna Supreme", description: null, servings: 2);
+        _dummyDish = new("Tuna Supreme") { Description = null, Servings = 2 };
     }
 
 

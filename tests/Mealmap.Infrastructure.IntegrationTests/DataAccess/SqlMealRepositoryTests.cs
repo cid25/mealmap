@@ -14,8 +14,6 @@ public class SqlMealRepositoryTests
 {
     private readonly MealmapDbContext _dbContext;
     private readonly SqlMealRepository _repository;
-    private readonly DishFactory _dishFactory = new();
-    private readonly MealFactory _mealFactory = new();
     private Dish[]? _dishes;
     private Meal[]? _meals;
 
@@ -37,17 +35,14 @@ public class SqlMealRepositoryTests
     private void seedData()
     {
         _dishes = new Dish[1];
-        _dishes[0] = _dishFactory.CreateDishWith(
-            name: "Sailors Surprise",
-            description: null,
-            servings: 1);
+        _dishes[0] = new("Sailors Surprise", null, 1);
         _dbContext.Add(_dishes[0]);
 
         _meals = new Meal[4];
         MealService mealService = new(Mock.Of<IDishRepository>(m => m.GetSingleById(It.Is<Guid>(x => x == _dishes[0].Id)) == _dishes[0]));
         for (var day = 1; day <= 4; day++)
         {
-            _meals[day - 1] = _mealFactory.CreateMealWith(diningDate: new DateOnly(2020, 1, day));
+            _meals[day - 1] = new(diningDate: new DateOnly(2020, 1, day));
             mealService.AddCourseToMeal(_meals[day - 1], 1, true, _dishes[0].Id);
         }
         _dbContext.AddRange(_meals);
@@ -124,7 +119,7 @@ public class SqlMealRepositoryTests
     public void Add_WhenMealValid_CreatesEntry()
     {
         var aGuid = Guid.NewGuid();
-        Meal meal = _mealFactory.CreateMealWith(id: aGuid, diningDate: new DateOnly(2020, 12, 31));
+        Meal meal = new(aGuid, DateOnly.FromDateTime(DateTime.Now));
 
         _repository.Add(meal);
 
@@ -135,7 +130,7 @@ public class SqlMealRepositoryTests
     public void Update_WhenMealDisconnected_ThrowsInvalidOperationException()
     {
         var initialMeal = _dbContext.Find<Meal>(_meals![0].Id);
-        var disconnectedMeal = _mealFactory.CreateMealWith(id: initialMeal!.Id, diningDate: initialMeal.DiningDate);
+        Meal disconnectedMeal = new(initialMeal!.Id, initialMeal.DiningDate);
 
         Action act = () => _repository.Update(disconnectedMeal);
 
@@ -171,7 +166,7 @@ public class SqlMealRepositoryTests
     public void Update_WhenCourseAdded_AddsCourseAndUpsMealVersion()
     {
         Meal meal = _dbContext.Find<Meal>(_meals![0].Id)!;
-        var originalCount = meal!.Courses.Count();
+        var originalCount = meal!.Courses.Count;
         var originalVersion = meal.Version;
 
         MealService mealService = new(Mock.Of<IDishRepository>(m => m.GetSingleById(It.Is<Guid>(x => x == _dishes![0].Id)) == _dishes![0]));

@@ -20,7 +20,6 @@ public class MealsControllerTests
     private readonly ILogger<MealsController> _logger = new Mock<ILogger<MealsController>>().Object;
     private readonly FakeMealRepository _mealRepository = new();
     private readonly FakeDishRepository _dishRepository = new();
-    private readonly MealFactory _factory = new();
     private readonly MealService _service;
     private readonly MealsController _controller;
     private readonly MealOutputMapper _outputMapper;
@@ -34,7 +33,6 @@ public class MealsControllerTests
 
         _controller = new MealsController(
             _logger,
-            _factory,
             _mealRepository,
             _service,
             _outputMapper,
@@ -45,11 +43,10 @@ public class MealsControllerTests
 
     private void fakeData()
     {
-        DishFactory factory = new();
-        var krabbyPatty = factory.CreateDishWith(name: "Krabby Patty", description: null, servings: 2);
+        Dish krabbyPatty = new("Krabby Patty") { Description = null, Servings = 2 };
         _dishRepository.Add(krabbyPatty);
 
-        var meal = _factory.CreateMealWith(diningDate: DateOnly.FromDateTime(DateTime.Now));
+        Meal meal = new(diningDate: DateOnly.FromDateTime(DateTime.Now));
         _service.AddCourseToMeal(meal, index: 1, mainCourse: true, dishId: krabbyPatty.Id);
         _mealRepository.Add(meal);
     }
@@ -114,7 +111,6 @@ public class MealsControllerTests
             .Throws(new DomainValidationException(""));
         var controller = new MealsController(
             _logger,
-            _factory,
             _mealRepository,
             serviceMock.Object,
             _outputMapper,
@@ -139,7 +135,6 @@ public class MealsControllerTests
         repositoryMock.Setup(m => m.Add(It.IsAny<Meal>())).Throws(new ConcurrentUpdateException(""));
         var controller = new MealsController(
             _logger,
-            _factory,
             repositoryMock.Object,
             serviceMock.Object,
             _outputMapper,
@@ -159,10 +154,9 @@ public class MealsControllerTests
         var aGuid = Guid.NewGuid();
         var repositoryMock = Mock.Of<IMealRepository>(m =>
             m.GetSingleById(It.Is<Guid>(m => m == aGuid)) ==
-                _factory.CreateMealWith(aGuid, DateOnly.FromDateTime(DateTime.Now)));
+                new Meal(aGuid, DateOnly.FromDateTime(DateTime.Now)));
         var controller = new MealsController(
             _logger,
-            _factory,
             repositoryMock,
             Mock.Of<IMealService>(),
             _outputMapper,
@@ -184,7 +178,6 @@ public class MealsControllerTests
         var repositoryMock = Mock.Of<IMealRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == null);
         var controller = new MealsController(
             _logger,
-            _factory,
             repositoryMock,
             Mock.Of<IMealService>(),
             _outputMapper,
@@ -205,14 +198,13 @@ public class MealsControllerTests
         var aGuid = Guid.NewGuid();
         const string aVersion = "AAAAAAAA";
         const string aDifferentVersion = "BBBBBBBB";
-        var meal = _factory.CreateMealWith(aGuid, DateOnly.FromDateTime(DateTime.Now));
+        Meal meal = new(aGuid, DateOnly.FromDateTime(DateTime.Now));
         meal.Version.Set(aVersion);
         var repositoryMock = new Mock<IMealRepository>();
         repositoryMock.Setup(m => m.GetSingleById(It.Is<Guid>(m => m == aGuid))).Returns(meal);
         repositoryMock.Setup(m => m.Update(It.Is<Meal>(m => m == meal))).Throws(new DbUpdateConcurrencyException());
         var controller = new MealsController(
             _logger,
-            _factory,
             repositoryMock.Object,
             Mock.Of<IMealService>(),
             _outputMapper,

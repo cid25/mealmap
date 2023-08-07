@@ -21,8 +21,7 @@ public class UpdateDishCommandHandlerTests
         var aGuid = Guid.NewGuid();
         DishDTO dish = new(someDishName) { Id = aGuid };
 
-        DishFactory dishFactory = new DishFactory();
-        var dummyDish = dishFactory.CreateDishWith(id: aGuid, name: someDishName, description: null, servings: 2);
+        Dish dummyDish = new(aGuid, someDishName, null, 2);
 
         var mockRepository = new Mock<IDishRepository>();
         mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(dummyDish);
@@ -78,8 +77,7 @@ public class UpdateDishCommandHandlerTests
         var aGuid = Guid.NewGuid();
         DishDTO dish = new(someDishName) { Id = aGuid };
 
-        DishFactory dishFactory = new DishFactory();
-        var dummyDish = dishFactory.CreateDishWith(id: aGuid, name: someDishName, description: null, servings: 2);
+        Dish dummyDish = new(aGuid, someDishName, null, 2);
 
         var mockRepository = new Mock<IDishRepository>();
         mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(dummyDish);

@@ -15,7 +15,6 @@ namespace Mealmap.Api.Controllers;
 public class DishesController : ControllerBase
 {
     private readonly ILogger<DishesController> _logger;
-    private readonly DishFactory _factory;
     private readonly IDishRepository _repository;
     private readonly IOutputMapper<DishDTO, Dish> _outputMapper;
     private readonly IRequestContext _context;
@@ -23,14 +22,12 @@ public class DishesController : ControllerBase
 
     public DishesController(
         ILogger<DishesController> logger,
-        DishFactory factory,
         IDishRepository repository,
         IOutputMapper<DishDTO, Dish> outputMapper,
         IRequestContext context,
         IMediator mediator)
     {
         _logger = logger;
-        _factory = factory;
         _repository = repository;
         _outputMapper = outputMapper;
         _context = context;
@@ -95,14 +92,17 @@ public class DishesController : ControllerBase
         if (dto.Id != null && dto.Id != Guid.Empty)
             return BadRequest("Field id is not allowed.");
 
-        var dish = _factory.CreateDishWith(dto.Name, dto.Description, dto.Servings);
+        Dish dish = new(dto.Name) { Description = dto.Description, Servings = dto.Servings };
         SetIngredientsFromDataTransferObject(dish, dto);
 
         _repository.Add(dish);
         _logger.LogInformation("Created dish with id {Id}", dish.Id);
 
         var dishCreated = _outputMapper.FromEntity(dish);
-        return CreatedAtAction(nameof(GetDish), new { id = dishCreated.Id }, dishCreated);
+        return CreatedAtAction(nameof(GetDish), new
+        {
+            id = dishCreated.Id
+        }, dishCreated);
     }
 
     /// <summary>
