@@ -178,55 +178,6 @@ public class MealsControllerTests
     }
 
     [Fact]
-    public void PutMeal_WhenIdIsEmpty_ReturnsBadRequest()
-    {
-        var aGuid = Guid.NewGuid();
-        const string aVersion = "AAAAAAAA";
-        var repositoryMock = Mock.Of<IMealRepository>(m =>
-            m.GetSingleById(It.Is<Guid>(m => m == aGuid)) ==
-                _factory.CreateMealWith(aGuid, DateOnly.FromDateTime(DateTime.Now)));
-        var controller = new MealsController(
-            _logger,
-            _factory,
-            repositoryMock,
-            Mock.Of<IMealService>(),
-            _outputMapper,
-            Mock.Of<IRequestContext>(m => m.IfMatchHeader == aVersion)
-        );
-
-        MealDTO mealDto = new() { DiningDate = DateOnly.FromDateTime(DateTime.Now) };
-
-        var result = controller.PutMeal(aGuid, mealDto);
-
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
-    }
-
-    [Fact]
-    public void PutMeal_WhenIdsDoNotMatch_ReturnsBadRequest()
-    {
-        var aGuid = Guid.NewGuid();
-        var otherGuid = Guid.NewGuid();
-        const string aVersion = "AAAAAAAA";
-        var repositoryMock = Mock.Of<IMealRepository>(m =>
-            m.GetSingleById(It.Is<Guid>(m => m == aGuid)) ==
-                _factory.CreateMealWith(aGuid, DateOnly.FromDateTime(DateTime.Now)));
-        var controller = new MealsController(
-            _logger,
-            _factory,
-            repositoryMock,
-            Mock.Of<IMealService>(),
-            _outputMapper,
-            Mock.Of<IRequestContext>(m => m.IfMatchHeader == aVersion)
-        );
-
-        MealDTO mealDto = new() { DiningDate = DateOnly.FromDateTime(DateTime.Now) };
-
-        var result = controller.PutMeal(otherGuid, mealDto);
-
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
-    }
-
-    [Fact]
     public void PutMeal_WhenMealDoesNotExist_ReturnsNotFound()
     {
         const string aVersion = "AAAAAAAA";

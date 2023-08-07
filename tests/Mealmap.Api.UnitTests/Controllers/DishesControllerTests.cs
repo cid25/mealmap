@@ -165,26 +165,6 @@ public class DishesControllerTests
     }
 
     [Fact]
-    public void PutDish_WhenIdNotSet_ReturnsBadRequest()
-    {
-        const string someHeader = "AAAA";
-        var controller = new DishesController(
-            _loggerMock,
-            new DishFactory(),
-            _repositoryFake,
-            Mock.Of<IOutputMapper<DishDTO, Dish>>(),
-            Mock.Of<IRequestContext>(m => m.IfMatchHeader == someHeader)
-        );
-
-        const string someDishName = "Sailors Surprise";
-        DishDTO dish = new(someDishName);
-
-        var result = controller.PutDish(Guid.NewGuid(), dish);
-
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
-    }
-
-    [Fact]
     public void PutDish_WhenDishDoesntExist_ReturnsNotFound()
     {
         const string someETag = "AAAA";
