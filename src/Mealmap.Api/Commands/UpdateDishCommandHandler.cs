@@ -34,12 +34,7 @@ public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, Comma
             return Task.FromResult(result);
         }
 
-        dish.Version.Set(request.Version);
-        dish.Name = request.Dto.Name;
-        dish.Description = request.Dto.Description;
-        dish.Servings = request.Dto.Servings;
-
-        SetIngredientsFromDataTransferObject(dish, request.Dto);
+        updatePropertiesFromRequest(dish, request);
 
         try
         {
@@ -57,12 +52,16 @@ public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, Comma
         return Task.FromResult(result);
     }
 
-    private static void SetIngredientsFromDataTransferObject(Dish dish, DishDTO dto)
+    private static void updatePropertiesFromRequest(Dish dish, UpdateDishCommand request)
     {
-        dish.RemoveAllIngredients();
+        dish.Version.Set(request.Version);
+        dish.Name = request.Dto.Name;
+        dish.Description = request.Dto.Description;
+        dish.Servings = request.Dto.Servings;
 
-        if (dto.Ingredients != null)
-            foreach (var ing in dto.Ingredients)
+        dish.RemoveAllIngredients();
+        if (request.Dto.Ingredients != null)
+            foreach (var ing in request.Dto.Ingredients)
                 dish.AddIngredient(ing.Quantity, ing.UnitOfMeasurement, ing.Description);
     }
 }

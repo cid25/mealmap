@@ -21,16 +21,6 @@ public class Ingredient : IEquatable<Ingredient>
     private readonly UnitOfMeasurementCodes _unitOfMeasurementCode;
 #pragma warning restore IDE0052
 
-    internal Ingredient(decimal quantity, UnitOfMeasurement unitOfMeasurement, string description)
-    {
-        Id = Guid.NewGuid();
-
-        Quantity = quantity;
-        _unitOfMeasurementCode = unitOfMeasurement.UnitOfMeasurementCode;
-        UnitOfMeasurement = unitOfMeasurement;
-        Description = description;
-    }
-
     internal Ingredient(decimal quantity, UnitOfMeasurementCodes unitOfMeasurementCode, string description)
     {
         Id = Guid.NewGuid();
@@ -40,6 +30,12 @@ public class Ingredient : IEquatable<Ingredient>
         UnitOfMeasurement = new UnitOfMeasurement(unitOfMeasurementCode);
         Description = description;
     }
+
+    internal Ingredient(decimal quantity, UnitOfMeasurement unitOfMeasurement, string description)
+        : this(quantity, unitOfMeasurement.UnitOfMeasurementCode, description) { }
+
+    internal Ingredient(decimal quantity, string unitOfMeasurement, string description)
+        : this(quantity, new UnitOfMeasurement(unitOfMeasurement), description) { }
 
     public bool Equals(Ingredient? other)
     {

@@ -44,8 +44,7 @@ public class Dish : EntityBase
     /// <exception cref="DomainValidationException"></exception>
     public void AddIngredient(decimal quantity, string unitOfMeasurementName, string description)
     {
-        var unit = new UnitOfMeasurement(unitOfMeasurementName);
-        Ingredient ingredient = new(quantity, unit, description);
+        Ingredient ingredient = new(quantity, unitOfMeasurementName, description);
 
         _ingredients.Add(ingredient);
     }
