@@ -17,9 +17,9 @@ public class Dish : EntityBase
 
     private List<Ingredient> _ingredients = new();
 
-    public IEnumerable<Ingredient> Ingredients
+    public IReadOnlyCollection<Ingredient> Ingredients
     {
-        get => _ingredients;
+        get => _ingredients.AsReadOnly();
     }
     internal Dish(string name) : base()
     {

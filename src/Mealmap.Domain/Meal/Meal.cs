@@ -8,9 +8,9 @@ public class Meal : EntityBase
 
     private List<Course> _courses = new();
 
-    public IEnumerable<Course> Courses
+    public IReadOnlyCollection<Course> Courses
     {
-        get => _courses;
+        get => _courses.AsReadOnly();
     }
 
     internal Meal(DateOnly diningDate) : base()
