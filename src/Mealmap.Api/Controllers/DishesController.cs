@@ -124,12 +124,6 @@ public class DishesController : ControllerBase
     [SwaggerResponseExample(200, typeof(DishResponseExampleWithIdAndEtag))]
     public ActionResult<DishDTO> PutDish([FromRoute] Guid id, [FromBody] DishDTO dto)
     {
-        if (dto.Id == null)
-            return BadRequest("Field id is mandatory.");
-
-        if (id != dto.Id)
-            return BadRequest("Field id must match route.");
-
         if (String.IsNullOrEmpty(_context.IfMatchHeader))
             return new StatusCodeResult(StatusCodes.Status428PreconditionRequired);
 

@@ -144,12 +144,6 @@ public class MealsController : ControllerBase
     [SwaggerResponseExample(200, typeof(MealResponseExampleWithIdAndEtag))]
     public ActionResult<MealDTO> PutMeal([FromRoute] Guid id, [FromBody] MealDTO dto)
     {
-        if (dto.Id == null)
-            return BadRequest("Field id is mandatory.");
-
-        if (id != dto.Id)
-            return BadRequest("Field id must match route.");
-
         if (String.IsNullOrEmpty(_context.IfMatchHeader))
             return new StatusCodeResult(StatusCodes.Status428PreconditionRequired);
 
