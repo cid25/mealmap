@@ -18,6 +18,9 @@ public class CommandError
 
     public string Message { get; } = "";
 
+    public CommandError(CommandErrorCodes errorCode)
+        => ErrorCode = errorCode;
+
     public CommandError(CommandErrorCodes errorCode, string message)
         => (ErrorCode, Message) = (errorCode, message);
 }
@@ -25,5 +28,6 @@ public class CommandError
 public enum CommandErrorCodes
 {
     NotFound,
-    NotValid
+    NotValid,
+    EtagMismatch
 }

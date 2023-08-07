@@ -14,23 +14,24 @@ using Swashbuckle.AspNetCore.Filters;
 var builder = WebApplication.CreateBuilder(args);
 
 
-// Add configuration
+// Add Configuration
 builder.Services.Configure<HostingOptions>(
     builder.Configuration.GetSection(HostingOptions.SectionName));
 
-// Add domain services
+// Add Domain Services
 builder.Services.AddScoped<DishFactory>();
 builder.Services.AddScoped<MealFactory>();
 builder.Services.AddScoped<IMealService, MealService>();
 
-// Add data access
+// Add Infrastructure Services
 builder.Services.AddDbContext<MealmapDbContext>(options
     => options.UseSqlServer(
         builder.Configuration.GetConnectionString("MealmapDb")));
 builder.Services.AddScoped<IMealRepository, SqlMealRepository>();
 builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
 
-// Add data transfer
+// Add Application Services
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IRequestContext, RequestContext>();
 builder.Services.AddAutoMapper(typeof(AutomapperProfile));

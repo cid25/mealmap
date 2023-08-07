@@ -1,11 +1,11 @@
-﻿using Mealmap.Api.DataTransferObjects;
-using Mealmap.Api.Exceptions;
+﻿using Mealmap.Api.Commands;
+using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.RequestFormatters;
 using Mealmap.Api.Swagger;
 using Mealmap.Domain.DishAggregate;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Mealmap.Api.Controllers;
@@ -19,19 +19,22 @@ public class DishesController : ControllerBase
     private readonly IDishRepository _repository;
     private readonly IOutputMapper<DishDTO, Dish> _outputMapper;
     private readonly IRequestContext _context;
+    private readonly IMediator _mediator;
 
     public DishesController(
         ILogger<DishesController> logger,
         DishFactory factory,
         IDishRepository repository,
         IOutputMapper<DishDTO, Dish> outputMapper,
-        IRequestContext context)
+        IRequestContext context,
+        IMediator mediator)
     {
         _logger = logger;
         _factory = factory;
         _repository = repository;
         _outputMapper = outputMapper;
         _context = context;
+        _mediator = mediator;
     }
 
     /// <summary>
@@ -122,29 +125,26 @@ public class DishesController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status428PreconditionRequired)]
     [SwaggerRequestExample(typeof(DishDTO), typeof(DishRequestExampleWithIdWithoutEtag))]
     [SwaggerResponseExample(200, typeof(DishResponseExampleWithIdAndEtag))]
-    public ActionResult<DishDTO> PutDish([FromRoute] Guid id, [FromBody] DishDTO dto)
+    public async Task<ActionResult<DishDTO>> PutDish([FromRoute] Guid id, [FromBody] DishDTO dto)
     {
         if (String.IsNullOrEmpty(_context.IfMatchHeader))
             return new StatusCodeResult(StatusCodes.Status428PreconditionRequired);
 
-        var dish = _repository.GetSingleById(id);
+        var result = await _mediator.Send(new UpdateDishCommand(id, _context.IfMatchHeader, dto));
 
-        if (dish == null)
-            return NotFound($"Dish with id does not exist.");
-
-        UpdateDishFromDataTransferObject(dish, dto);
-
-        try
+        if (!result.Success)
         {
-            _repository.Update(dish);
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
+            if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.EtagMismatch))
+                return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
+
+            if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotFound))
+                return NotFound(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotFound)));
+
+            if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotValid))
+                return BadRequest(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotValid)));
         }
 
-        _logger.LogInformation("Updated dish with id {Id}", dish.Id);
-        return _outputMapper.FromEntity(dish);
+        return result.Result!;
     }
 
     /// <summary>
@@ -261,20 +261,6 @@ public class DishesController : ControllerBase
         if (dto.Ingredients != null)
             foreach (var ing in dto.Ingredients)
                 dish.AddIngredient(ing.Quantity, ing.UnitOfMeasurement, ing.Description);
-    }
-
-    private void UpdateDishFromDataTransferObject(Dish dish, DishDTO dto)
-    {
-        if (_context.IfMatchHeader == null || _context.IfMatchHeader == String.Empty)
-            throw new ValidationException("The If-Match header must be set.");
-
-        dish.Version.Set(_context.IfMatchHeader);
-
-        dish.Name = dto.Name;
-        dish.Description = dto.Description;
-        dish.Servings = dto.Servings;
-
-        SetIngredientsFromDataTransferObject(dish, dto);
     }
 
     private string? ActionLink(string action, object? values)
