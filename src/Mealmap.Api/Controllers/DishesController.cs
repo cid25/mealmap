@@ -137,13 +137,13 @@ public class DishesController : ControllerBase
         try
         {
             _repository.Update(dish);
-            _logger.LogInformation("Updated dish with id {Id}", dish.Id);
         }
         catch (DbUpdateConcurrencyException)
         {
             return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
         }
 
+        _logger.LogInformation("Updated dish with id {Id}", dish.Id);
         return _outputMapper.FromEntity(dish);
     }
 

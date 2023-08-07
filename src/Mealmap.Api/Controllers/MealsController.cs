@@ -164,13 +164,13 @@ public class MealsController : ControllerBase
         try
         {
             _repository.Update(meal);
-            _logger.LogInformation("Updated dish with id {Id}", meal.Id);
         }
         catch (DbUpdateConcurrencyException)
         {
             return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
         }
 
+        _logger.LogInformation("Updated dish with id {Id}", meal.Id);
         return _outputMapper.FromEntity(meal);
     }
 
