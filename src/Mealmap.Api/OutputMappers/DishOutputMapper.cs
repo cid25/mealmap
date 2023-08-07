@@ -39,8 +39,7 @@ public class DishOutputMapper : IOutputMapper<DishDTO, Dish>
     {
         List<DishDTO> dtos = new();
 
-        foreach (var dish in entities)
-            dtos.Add(FromEntity(dish));
+        dtos.AddRange(entities.Select(FromEntity));
 
         return dtos;
     }

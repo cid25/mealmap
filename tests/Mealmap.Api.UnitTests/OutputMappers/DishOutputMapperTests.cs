@@ -37,4 +37,25 @@ public class DishOutputMapperTests
         dto.ImageUrl!.ToString().Should().EndWith(aGuid.ToString() + "/image");
         dto.ETag.Should().NotBeNullOrEmpty();
     }
+
+    [Fact]
+    public void FromEntities_ReturnsCorrectCount()
+    {
+        // Arrange
+        var mapper = new DishOutputMapper(
+            _baseMapper,
+            Mock.Of<IRequestContext>(m => m.Scheme == "https" && m.Host == "test.com" && m.Port == 443)
+        );
+        List<Dish> dtos = new();
+        DishFactory factory = new();
+
+        for (int i = 0; i < 10; i++)
+            dtos.Add(factory.CreateDishWith("Dish" + i, null, i));
+
+        // Act
+        var result = mapper.FromEntities(dtos);
+
+        // Assert
+        result.Should().HaveCount(10);
+    }
 }
