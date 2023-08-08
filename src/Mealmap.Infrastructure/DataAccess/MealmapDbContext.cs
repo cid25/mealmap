@@ -1,4 +1,7 @@
 ﻿using Mealmap.Domain.Common;
+using Mealmap.Domain.DishAggregate;
+using Mealmap.Domain.MealAggregate;
+using Mealmap.Infrastructure.DataAccess.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -6,14 +9,15 @@ namespace Mealmap.Infrastructure.DataAccess;
 
 public class MealmapDbContext : DbContext
 {
-    public MealmapDbContext(DbContextOptions<MealmapDbContext> options)
-        : base(options)
-    {
-    }
+    public const string SCHEMA = "mealmap";
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    private static readonly Dictionary<string, ValueConverter> _converters;
+
+    public static IReadOnlyDictionary<string, ValueConverter> Converters { get => _converters.AsReadOnly(); }
+
+    static MealmapDbContext()
     {
-        Dictionary<string, ValueConverter> converters = new()
+        _converters = new()
         {
             {
                 "VersionConverter",
@@ -22,9 +26,15 @@ public class MealmapDbContext : DbContext
                     v => new EntityVersion(v))
             }
         };
+    }
 
-        modelBuilder.ConfigureDish(converters);
+    public MealmapDbContext(DbContextOptions<MealmapDbContext> options)
+        : base(options) { }
 
-        modelBuilder.ConfigureMeal(converters);
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        new DishEntityTypeConfiguration().Configure(modelBuilder.Entity<Dish>());
+
+        new MealEntityTypeConfiguration().Configure(modelBuilder.Entity<Meal>());
     }
 }

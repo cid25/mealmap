@@ -2,10 +2,11 @@
 using FluentAssertions;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Infrastructure.DataAccess;
+using Mealmap.Infrastructure.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace Mealmap.Infrastructure.IntegrationTests.DataAccess;
+namespace Mealmap.Infrastructure.IntegrationTests.DataAccess.Repositories;
 
 [Collection("InSequence")]
 [Trait("Target", "Database")]
@@ -89,7 +90,7 @@ public class SqlDishRepositoryTests
     [Fact]
     public void Add_WhenDishValid_CreatesEntry()
     {
-        Guid aGuid = Guid.NewGuid();
+        var aGuid = Guid.NewGuid();
         Dish aValidDish = new(aGuid, "Salty Sea Dog", null, 1);
 
         _repository.Add(aValidDish);

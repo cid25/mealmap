@@ -7,6 +7,7 @@ using Mealmap.Api.Swagger;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
 using Mealmap.Infrastructure.DataAccess;
+using Mealmap.Infrastructure.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;

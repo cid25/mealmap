@@ -2,11 +2,12 @@
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
 using Mealmap.Infrastructure.DataAccess;
+using Mealmap.Infrastructure.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moq;
 
-namespace Mealmap.Infrastructure.IntegrationTests.DataAccess;
+namespace Mealmap.Infrastructure.IntegrationTests.DataAccess.Repositories;
 
 [Collection("InSequence")]
 [Trait("Target", "Database")]
@@ -140,7 +141,7 @@ public class SqlMealRepositoryTests
     [Fact]
     public void Update_WhenConcurrentUpdate_ThrowsConcurrentUpdateException()
     {
-        Meal meal = _dbContext.Find<Meal>(_meals![1].Id)!;
+        var meal = _dbContext.Find<Meal>(_meals![1].Id)!;
         _dbContext.Entry(meal).Property(m => m.DiningDate).IsModified = true;
 
         _dbContext.Database.ExecuteSqlRaw("UPDATE [mealmap].[meal] SET [DiningDate] = '2020-01-31' WHERE [Id] = '" + meal.Id + "';");
@@ -152,7 +153,7 @@ public class SqlMealRepositoryTests
     [Fact]
     public void Update_WhenExplicitVersionNotMatchingDatabase_ThrowsConcurrentUpdateException()
     {
-        Meal meal = _dbContext.Find<Meal>(_meals![1].Id)!;
+        var meal = _dbContext.Find<Meal>(_meals![1].Id)!;
         _dbContext.Entry(meal).Property(m => m.DiningDate).IsModified = true;
         var nonMatchingVersion = "AAAA";
         meal!.Version.Set(nonMatchingVersion);
@@ -165,7 +166,7 @@ public class SqlMealRepositoryTests
     [Fact]
     public void Update_WhenCourseAdded_AddsCourseAndUpsMealVersion()
     {
-        Meal meal = _dbContext.Find<Meal>(_meals![0].Id)!;
+        var meal = _dbContext.Find<Meal>(_meals![0].Id)!;
         var originalCount = meal!.Courses.Count;
         var originalVersion = meal.Version;
 
@@ -182,7 +183,7 @@ public class SqlMealRepositoryTests
     [Fact]
     public void Update_WhenIngredientsRemoved_RemovesIngredientAndUpsDishVersion()
     {
-        Meal meal = _dbContext.Find<Meal>(_meals![0].Id)!;
+        var meal = _dbContext.Find<Meal>(_meals![0].Id)!;
         var originalVersion = meal.Version;
 
         meal!.RemoveAllCourses();

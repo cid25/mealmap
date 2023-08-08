@@ -1,7 +1,7 @@
 ﻿using Mealmap.Domain.DishAggregate;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mealmap.Infrastructure.DataAccess;
+namespace Mealmap.Infrastructure.DataAccess.Repositories;
 
 public class SqlDishRepository : IDishRepository
 {
