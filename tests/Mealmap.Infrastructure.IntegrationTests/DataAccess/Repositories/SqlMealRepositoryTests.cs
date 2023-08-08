@@ -5,7 +5,6 @@ using Mealmap.Infrastructure.DataAccess;
 using Mealmap.Infrastructure.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Moq;
 
 namespace Mealmap.Infrastructure.IntegrationTests.DataAccess.Repositories;
 
@@ -40,11 +39,10 @@ public class SqlMealRepositoryTests
         _dbContext.Add(_dishes[0]);
 
         _meals = new Meal[4];
-        MealService mealService = new(Mock.Of<IDishRepository>(m => m.GetSingleById(It.Is<Guid>(x => x == _dishes[0].Id)) == _dishes[0]));
         for (var day = 1; day <= 4; day++)
         {
             _meals[day - 1] = new(diningDate: new DateOnly(2020, 1, day));
-            mealService.AddCourseToMeal(_meals[day - 1], 1, true, _dishes[0].Id);
+            _meals[day - 1].AddCourse(1, true, _dishes[0].Id);
         }
         _dbContext.AddRange(_meals);
 
@@ -170,8 +168,7 @@ public class SqlMealRepositoryTests
         var originalCount = meal!.Courses.Count;
         var originalVersion = meal.Version;
 
-        MealService mealService = new(Mock.Of<IDishRepository>(m => m.GetSingleById(It.Is<Guid>(x => x == _dishes![0].Id)) == _dishes![0]));
-        mealService.AddCourseToMeal(meal, 2, false, _dishes![0].Id);
+        meal.AddCourse(2, false, _dishes![0].Id);
         _repository.Update(meal);
 
         _dbContext.ChangeTracker.Clear();

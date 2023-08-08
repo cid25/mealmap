@@ -22,9 +22,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<HostingOptions>(
     builder.Configuration.GetSection(HostingOptions.SectionName));
 
-// Add Domain Services
-builder.Services.AddScoped<IMealService, MealService>();
-
 // Add Infrastructure Services
 builder.Services.AddDbContext<MealmapDbContext>(options
     => options.UseSqlServer(
@@ -37,6 +34,7 @@ builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
     cfg.AddBehavior<IPipelineBehavior<UpdateMealCommand, CommandNotification<MealDTO>>, MealCommandValidationBehavior>();
+    cfg.AddBehavior<IPipelineBehavior<CreateMealCommand, CommandNotification<MealDTO>>, MealCommandValidationBehavior>();
 });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IRequestContext, RequestContext>();

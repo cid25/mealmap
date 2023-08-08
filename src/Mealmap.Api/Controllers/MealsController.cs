@@ -1,11 +1,8 @@
 ﻿using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
-using Mealmap.Api.Exceptions;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.Swagger;
-using Mealmap.Domain.Common;
 using Mealmap.Domain.MealAggregate;
-using Mealmap.Infrastructure.DataAccess;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
@@ -18,7 +15,6 @@ public class MealsController : ControllerBase
 {
     private readonly ILogger<MealsController> _logger;
     private readonly IMealRepository _repository;
-    private readonly IMealService _mealService;
     private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
     private readonly IRequestContext _context;
     private readonly IMediator _mediator;
@@ -26,14 +22,12 @@ public class MealsController : ControllerBase
     public MealsController(
         ILogger<MealsController> logger,
         IMealRepository mealRepository,
-        IMealService mealService,
         IOutputMapper<MealDTO, Meal> outputMapper,
         IRequestContext context,
         IMediator mediator)
     {
         _logger = logger;
         _repository = mealRepository;
-        _mealService = mealService;
         _outputMapper = outputMapper;
         _context = context;
         _mediator = mediator;
@@ -98,29 +92,14 @@ public class MealsController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [SwaggerRequestExample(typeof(MealDTO), typeof(MealRequestExampleWithoutIdAndEtag))]
     [SwaggerResponseExample(201, typeof(MealResponseExampleWithIdAndEtag))]
-    public ActionResult<MealDTO> PostMeal([FromBody] MealDTO dto)
+    public async Task<ActionResult<MealDTO>> PostMeal([FromBody] MealDTO dto)
     {
-        if (dto.Id != Guid.Empty && dto.Id != null)
-        {
-            throw new ValidationException("Id not allowed as part of request.");
-        }
+        var result = await _mediator.Send(new CreateMealCommand(dto));
 
-        Meal meal = new(dto.DiningDate);
+        if (!result.Success && result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotValid))
+            return BadRequest(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotValid).Select(er => er.Message)));
 
-        try
-        {
-            SetCoursesFromDataTransferObject(meal, dto);
-            _repository.Add(meal);
-        }
-        catch (Exception ex)
-            when (ex is ConcurrentUpdateException || ex is DomainValidationException)
-        {
-            _logger.LogInformation(ex.Message);
-            return BadRequest(ex.Message);
-        }
-
-        var mealCreated = _outputMapper.FromEntity(meal);
-        return CreatedAtAction(nameof(GetMeal), new { id = mealCreated.Id }, mealCreated);
+        return CreatedAtAction(nameof(GetMeal), new { id = result.Result!.Id! }, result.Result);
     }
 
     /// <summary>
@@ -187,17 +166,5 @@ public class MealsController : ControllerBase
 
         var dto = _outputMapper.FromEntity(meal);
         return Ok(dto);
-    }
-
-    /// <exception cref="DomainValidationException"/>
-    private void SetCoursesFromDataTransferObject(Meal meal, MealDTO dto)
-    {
-        if (dto.Courses != null)
-        {
-            foreach (var course in dto.Courses)
-            {
-                _mealService.AddCourseToMeal(meal, course.Index, course.MainCourse, course.DishId);
-            }
-        }
     }
 }

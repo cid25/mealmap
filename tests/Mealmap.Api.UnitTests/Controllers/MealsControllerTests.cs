@@ -4,10 +4,8 @@ using Mealmap.Api.Commands;
 using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
-using Mealmap.Domain.Common;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
-using Mealmap.Infrastructure.DataAccess;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -20,21 +18,17 @@ public class MealsControllerTests
     private readonly ILogger<MealsController> _logger = new Mock<ILogger<MealsController>>().Object;
     private readonly FakeMealRepository _mealRepository = new();
     private readonly FakeDishRepository _dishRepository = new();
-    private readonly MealService _service;
     private readonly MealsController _controller;
     private readonly MealOutputMapper _outputMapper;
 
     public MealsControllerTests()
     {
-        _service = new MealService(_dishRepository);
-
         _outputMapper = new MealOutputMapper(
           new MapperConfiguration(cfg => cfg.AddProfile<AutomapperProfile>()).CreateMapper());
 
         _controller = new MealsController(
             _logger,
             _mealRepository,
-            _service,
             _outputMapper,
             Mock.Of<IRequestContext>(),
             Mock.Of<IMediator>()
@@ -49,7 +43,7 @@ public class MealsControllerTests
         _dishRepository.Add(krabbyPatty);
 
         Meal meal = new(diningDate: DateOnly.FromDateTime(DateTime.Now));
-        _service.AddCourseToMeal(meal, index: 1, mainCourse: true, dishId: krabbyPatty.Id);
+        meal.AddCourse(index: 1, mainCourse: true, dishId: krabbyPatty.Id);
         _mealRepository.Add(meal);
     }
 
@@ -83,74 +77,52 @@ public class MealsControllerTests
     }
 
     [Fact]
-    public void PostMeal_WhenMealIsValid_ReturnsMealWithId()
+    public async void PostMeal_WhenMealIsValid_ReturnsMeal()
     {
         MealDTO mealDto = new() { DiningDate = new DateOnly(2020, 1, 2) };
+        CommandNotification<MealDTO> notification = new()
+        {
+            Result = mealDto
+        };
+        var mediatorMock = new Mock<IMediator>();
+        mediatorMock.Setup(m => m.Send(It.IsAny<CreateMealCommand>(), It.IsAny<CancellationToken>()).Result).Returns(notification);
+        var controller = new MealsController(
+            _logger,
+            _mealRepository,
+            _outputMapper,
+            Mock.Of<IRequestContext>(),
+            mediatorMock.Object
+        );
 
-        var result = _controller.PostMeal(mealDto);
+        var result = await controller.PostMeal(mealDto);
 
         result.Result.Should().BeOfType<CreatedAtActionResult>();
         ((CreatedAtActionResult)result.Result!).Value.Should().BeOfType<MealDTO>();
         var value = (MealDTO)((CreatedAtActionResult)result.Result!).Value!;
-        value.Id.Should().NotBeNull().And.NotBeEmpty();
     }
 
     [Fact]
-    public void PostMeal_WhenMealIsValid_StoresMeal()
+    public async void PostMeal_WhenMealIsInvalid_ReturnsBadRequest()
     {
-        MealDTO mealDto = new() { DiningDate = new DateOnly(2020, 1, 2) };
-
-        _controller.PostMeal(mealDto);
-
-        _mealRepository.Should().NotBeEmpty().And.HaveCountGreaterThan(1);
-    }
-
-    [Fact]
-    public void PostMeal_WhenServiceThrowsDomainValidationException_ReturnsBadRequest()
-    {
-        var serviceMock = new Mock<IMealService>();
-        serviceMock.Setup(m => m.AddCourseToMeal(It.IsAny<Meal>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>()))
-            .Throws(new DomainValidationException(""));
+        MealDTO mealDto = new();
+        CommandNotification<MealDTO> notification = new();
+        notification.Errors.Add(new CommandError(CommandErrorCodes.NotValid));
+        var mediatorMock = new Mock<IMediator>();
+        mediatorMock.Setup(m => m.Send(It.IsAny<CreateMealCommand>(), It.IsAny<CancellationToken>()).Result)
+            .Returns(notification);
         var controller = new MealsController(
             _logger,
             _mealRepository,
-            serviceMock.Object,
             _outputMapper,
             Mock.Of<IRequestContext>(),
-            Mock.Of<IMediator>()
+            mediatorMock.Object
         );
-        MealDTO mealDto = new()
-        {
-            DiningDate = DateOnly.FromDateTime(DateTime.Now),
-            Courses = new CourseDTO[1] { new CourseDTO() { Index = 1, DishId = Guid.NewGuid(), MainCourse = true } }
-        };
 
-        var result = controller.PostMeal(mealDto);
+        var result = await controller.PostMeal(mealDto);
 
         result.Result.Should().BeOfType<BadRequestObjectResult>();
     }
 
-    [Fact]
-    public void PostMeal_WhenRepositoryThrowsDbUpdateException_ReturnsBadRequest()
-    {
-        var serviceMock = new Mock<IMealService>();
-        var repositoryMock = new Mock<IMealRepository>();
-        repositoryMock.Setup(m => m.Add(It.IsAny<Meal>())).Throws(new ConcurrentUpdateException(""));
-        var controller = new MealsController(
-            _logger,
-            repositoryMock.Object,
-            serviceMock.Object,
-            _outputMapper,
-            Mock.Of<IRequestContext>(),
-            Mock.Of<IMediator>()
-        );
-
-        MealDTO mealDto = new() { DiningDate = DateOnly.FromDateTime(DateTime.Now) };
-
-        var result = controller.PostMeal(mealDto);
-
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
-    }
 
     [Theory]
     [InlineData(null)]
@@ -160,7 +132,6 @@ public class MealsControllerTests
         var controller = new MealsController(
             _logger,
             Mock.Of<IMealRepository>(),
-            Mock.Of<IMealService>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == header),
             Mock.Of<IMediator>()
@@ -184,7 +155,6 @@ public class MealsControllerTests
         var controller = new MealsController(
             _logger,
             Mock.Of<IMealRepository>(),
-            Mock.Of<IMealService>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
             mediatorMock.Object
@@ -208,7 +178,6 @@ public class MealsControllerTests
         var controller = new MealsController(
             _logger,
             Mock.Of<IMealRepository>(),
-            Mock.Of<IMealService>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
             mediatorMock.Object
@@ -231,7 +200,6 @@ public class MealsControllerTests
         var controller = new MealsController(
             _logger,
             Mock.Of<IMealRepository>(),
-            Mock.Of<IMealService>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
             mediatorMock.Object

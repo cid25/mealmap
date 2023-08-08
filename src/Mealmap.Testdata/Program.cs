@@ -1,7 +1,6 @@
 ﻿using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
 using Mealmap.Infrastructure.DataAccess;
-using Mealmap.Infrastructure.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -23,9 +22,7 @@ static void InjectTestData(MealmapDbContext dbContext)
     var dishes = GenerateDishes();
     dbContext.AddRange(dishes);
 
-    var meals = GenerateMeals(
-        new MealService(new SqlDishRepository(dbContext)),
-        dishes);
+    var meals = GenerateMeals(dishes);
     dbContext.AddRange(meals);
 
     dbContext.SaveChanges();
@@ -49,7 +46,7 @@ static Dish[] GenerateDishes()
     return dishes;
 }
 
-static Meal[] GenerateMeals(MealService service, Dish[] dishes)
+static Meal[] GenerateMeals(Dish[] dishes)
 {
     Meal[] meals = new Meal[35];
 
@@ -59,8 +56,8 @@ static Meal[] GenerateMeals(MealService service, Dish[] dishes)
     for (int i = 0; i < 35; i++)
     {
         meals[i] = new Meal(startOfWeek.AddDays(-14).AddDays(i));
-        service.AddCourseToMeal(meals[i], index: 1, mainCourse: true, dishId: dishes[0].Id);
-        service.AddCourseToMeal(meals[i], index: 2, mainCourse: false, dishId: dishes[1].Id);
+        meals[i].AddCourse(index: 1, mainCourse: true, dishId: dishes[0].Id);
+        meals[i].AddCourse(index: 2, mainCourse: false, dishId: dishes[1].Id);
 
     }
 
