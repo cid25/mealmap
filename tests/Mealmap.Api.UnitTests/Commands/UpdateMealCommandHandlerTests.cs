@@ -27,8 +27,7 @@ public class UpdateMealCommandHandlerTests
         var handler = new UpdateMealCommandHandler(
             mockRepository.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(m => m.FromEntity(dummyMeal) == dto),
-            Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            Mock.Of<IMealService>()
+            Mock.Of<ILogger<UpdateMealCommandHandler>>()
         );
 
         // Act
@@ -54,8 +53,7 @@ public class UpdateMealCommandHandlerTests
         var handler = new UpdateMealCommandHandler(
             mockRepository.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
-            Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            Mock.Of<IMealService>()
+            Mock.Of<ILogger<UpdateMealCommandHandler>>()
         );
 
         // Act
@@ -84,8 +82,7 @@ public class UpdateMealCommandHandlerTests
         var handler = new UpdateMealCommandHandler(
             mockRepository.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
-            Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            Mock.Of<IMealService>()
+            Mock.Of<ILogger<UpdateMealCommandHandler>>()
         );
 
         // Act
@@ -97,5 +94,4 @@ public class UpdateMealCommandHandlerTests
         result.Errors.Should().HaveCount(1);
         result.Errors[0].ErrorCode.Should().Be(CommandErrorCodes.EtagMismatch);
     }
-
 }

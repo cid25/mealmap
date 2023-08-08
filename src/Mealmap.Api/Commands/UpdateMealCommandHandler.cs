@@ -11,18 +11,15 @@ public class UpdateMealCommandHandler : IRequestHandler<UpdateMealCommand, Comma
     private readonly IMealRepository _repository;
     private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
     private readonly ILogger<UpdateMealCommandHandler> _logger;
-    private readonly IMealService _service;
 
     public UpdateMealCommandHandler(
         IMealRepository repository,
         IOutputMapper<MealDTO, Meal> outputMapper,
-        ILogger<UpdateMealCommandHandler> logger,
-        IMealService service)
+        ILogger<UpdateMealCommandHandler> logger)
     {
         _repository = repository;
         _outputMapper = outputMapper;
         _logger = logger;
-        _service = service;
     }
 
     public Task<CommandNotification<MealDTO>> Handle(UpdateMealCommand request, CancellationToken cancellationToken)
@@ -55,7 +52,7 @@ public class UpdateMealCommandHandler : IRequestHandler<UpdateMealCommand, Comma
         return Task.FromResult(result);
     }
 
-    private void updatePropertiesFromRequest(Meal meal, UpdateMealCommand request)
+    private static void updatePropertiesFromRequest(Meal meal, UpdateMealCommand request)
     {
         meal.Version.Set(request.Version);
         meal.DiningDate = request.Dto.DiningDate;
@@ -63,6 +60,6 @@ public class UpdateMealCommandHandler : IRequestHandler<UpdateMealCommand, Comma
         meal.RemoveAllCourses();
         if (request.Dto.Courses != null)
             foreach (var course in request.Dto.Courses)
-                _service.AddCourseToMeal(meal, course.Index, course.MainCourse, course.DishId);
+                meal.AddCourse(course.Index, course.MainCourse, course.DishId);
     }
 }

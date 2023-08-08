@@ -29,7 +29,7 @@ public class Meal : EntityBase
     }
 
     /// <exception cref="DomainValidationException"></exception>
-    internal void AddCourse(int index, bool mainCourse, Guid dishId)
+    public void AddCourse(int index, bool mainCourse, Guid dishId)
     {
         if (mainCourse)
             ValidateNoMainCourse();

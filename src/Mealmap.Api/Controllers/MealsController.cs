@@ -156,10 +156,10 @@ public class MealsController : ControllerBase
                 return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
 
             if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotFound))
-                return NotFound(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotFound)));
+                return NotFound(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotFound).Select(er => er.Message)));
 
             if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotValid))
-                return BadRequest(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotValid)));
+                return BadRequest(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotValid).Select(er => er.Message)));
         }
 
         return result.Result!;
