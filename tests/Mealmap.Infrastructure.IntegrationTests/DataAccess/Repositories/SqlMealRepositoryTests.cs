@@ -137,32 +137,34 @@ public class SqlMealRepositoryTests
     }
 
     [Fact]
-    public void Update_WhenConcurrentUpdate_ThrowsConcurrentUpdateException()
+    public void SaveOnUpdate_WhenConcurrentUpdate_ThrowsDbUpdateConcurrencyException()
     {
         var meal = _dbContext.Find<Meal>(_meals![1].Id)!;
         _dbContext.Entry(meal).Property(m => m.DiningDate).IsModified = true;
 
         _dbContext.Database.ExecuteSqlRaw("UPDATE [mealmap].[meal] SET [DiningDate] = '2020-01-31' WHERE [Id] = '" + meal.Id + "';");
-        Action act = () => _repository.Update(meal);
+        _repository.Update(meal);
+        Action act = () => _dbContext.SaveChanges();
 
-        act.Should().Throw<ConcurrentUpdateException>();
+        act.Should().Throw<DbUpdateConcurrencyException>();
     }
 
     [Fact]
-    public void Update_WhenExplicitVersionNotMatchingDatabase_ThrowsConcurrentUpdateException()
+    public void SaveOnUpdate_WhenExplicitVersionNotMatchingDatabase_ThrowsDbUpdateConcurrencyException()
     {
         var meal = _dbContext.Find<Meal>(_meals![1].Id)!;
         _dbContext.Entry(meal).Property(m => m.DiningDate).IsModified = true;
         var nonMatchingVersion = "AAAA";
         meal!.Version.Set(nonMatchingVersion);
 
-        Action act = () => _repository.Update(meal);
+        _repository.Update(meal);
+        Action act = () => _dbContext.SaveChanges();
 
-        act.Should().Throw<ConcurrentUpdateException>();
+        act.Should().Throw<DbUpdateConcurrencyException>();
     }
 
     [Fact]
-    public void Update_WhenCourseAdded_AddsCourseAndUpsMealVersion()
+    public void SaveOnUpdate_WhenCourseAdded_AddsCourseAndUpsMealVersion()
     {
         var meal = _dbContext.Find<Meal>(_meals![0].Id)!;
         var originalCount = meal!.Courses.Count;
@@ -170,6 +172,7 @@ public class SqlMealRepositoryTests
 
         meal.AddCourse(2, false, _dishes![0].Id);
         _repository.Update(meal);
+        _dbContext.SaveChanges();
 
         _dbContext.ChangeTracker.Clear();
         var result = _dbContext.Find<Meal>(meal.Id);
@@ -178,13 +181,14 @@ public class SqlMealRepositoryTests
     }
 
     [Fact]
-    public void Update_WhenIngredientsRemoved_RemovesIngredientAndUpsDishVersion()
+    public void SaveOnUpdate_WhenIngredientsRemoved_RemovesIngredientAndUpsDishVersion()
     {
         var meal = _dbContext.Find<Meal>(_meals![0].Id)!;
         var originalVersion = meal.Version;
 
         meal!.RemoveAllCourses();
         _repository.Update(meal);
+        _dbContext.SaveChanges();
 
         _dbContext.ChangeTracker.Clear();
         var result = _dbContext.Find<Meal>(meal.Id);

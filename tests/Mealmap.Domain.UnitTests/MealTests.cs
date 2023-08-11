@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using Mealmap.Domain.Common;
 using Mealmap.Domain.MealAggregate;
+using Mealmap.Domain.Seedwork.Validation;
 
 namespace Mealmap.Domain.Tests;
 

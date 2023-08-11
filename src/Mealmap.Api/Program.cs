@@ -6,6 +6,7 @@ using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.RequestFormatters;
 using Mealmap.Api.Swagger;
+using Mealmap.Domain;
 using Mealmap.Domain.Common;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
@@ -23,18 +24,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<HostingOptions>(
     builder.Configuration.GetSection(HostingOptions.SectionName));
 
+// Add Domain Services
+builder.Services.AddScoped<IDeferredDomainValidator, DeferredDomainValidator>();
+
 // Add Infrastructure Services
 builder.Services.AddDbContext<MealmapDbContext>(options
     => options.UseSqlServer(
         builder.Configuration.GetConnectionString("MealmapDb")));
-builder.Services.AddScoped<AbstractUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IMealRepository, SqlMealRepository>();
 builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
 
-// Add Application Services
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+    cfg.RegisterServicesFromAssemblyContaining<EntityBase>();
     cfg.AddBehavior<IPipelineBehavior<UpdateMealCommand, CommandNotification<MealDTO>>, MealCommandValidationBehavior>();
     cfg.AddBehavior<IPipelineBehavior<CreateMealCommand, CommandNotification<MealDTO>>, MealCommandValidationBehavior>();
 });

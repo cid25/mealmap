@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Mealmap.Domain.Common;
+using Mealmap.Domain.Seedwork.Validation;
 
 namespace Mealmap.Domain.DishAggregate;
 

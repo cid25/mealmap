@@ -1,4 +1,5 @@
 ﻿using Mealmap.Domain.Common;
+using Mealmap.Domain.Seedwork.Validation;
 
 namespace Mealmap.Domain.MealAggregate;
 

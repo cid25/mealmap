@@ -1,7 +1,7 @@
 ﻿using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
-using Mealmap.Domain.Common;
 using Mealmap.Domain.MealAggregate;
+using Mealmap.Domain.Seedwork.Validation;
 using MediatR;
 
 namespace Mealmap.Api.Commands;

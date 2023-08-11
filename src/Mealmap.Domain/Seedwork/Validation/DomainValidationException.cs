@@ -1,4 +1,4 @@
-﻿namespace Mealmap.Domain.Common;
+﻿namespace Mealmap.Domain.Seedwork.Validation;
 
 public class DomainValidationException : Exception
 {

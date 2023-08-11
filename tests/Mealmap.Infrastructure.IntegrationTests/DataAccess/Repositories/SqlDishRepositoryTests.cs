@@ -18,7 +18,6 @@ public class SqlDishRepositoryTests
 
     public SqlDishRepositoryTests()
     {
-
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
         var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
             .UseSqlServer(configuration.GetConnectionString("MealmapDb"))

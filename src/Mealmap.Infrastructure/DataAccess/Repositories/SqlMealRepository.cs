@@ -51,23 +51,17 @@ public class SqlMealRepository : IMealRepository
         }
     }
 
+    /// <exception cref="InvalidOperationException"></exception>
+
     public void Update(Meal meal)
     {
         var existingMeal = dbSet.Find(meal.Id);
         if (existingMeal == null || existingMeal != meal)
             throw new InvalidOperationException();
 
-        try
-        {
-            MarkCoursesForReplacement();
-            MarkMealForVersionUpdate(meal);
-            AdoptVersionFromClient(meal);
-            _dbContext.SaveChanges();
-        }
-        catch (DbUpdateConcurrencyException ex)
-        {
-            throw new ConcurrentUpdateException("Saving meal failed due to version mismatch.", ex);
-        }
+        MarkCoursesForReplacement();
+        MarkMealForVersionUpdate(meal);
+        AdoptVersionFromClient(meal);
     }
 
     public void Remove(Meal meal)

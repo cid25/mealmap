@@ -2,6 +2,7 @@
 using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
+using Mealmap.Domain;
 using Mealmap.Domain.MealAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -26,6 +27,7 @@ public class UpdateMealCommandHandlerTests
         mockRepository.Setup(m => m.GetSingleById(It.Is<Guid>(g => g == aGuid))).Returns(dummyMeal);
         var handler = new UpdateMealCommandHandler(
             mockRepository.Object,
+            Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(m => m.FromEntity(dummyMeal) == dto),
             Mock.Of<ILogger<UpdateMealCommandHandler>>()
         );
@@ -52,6 +54,7 @@ public class UpdateMealCommandHandlerTests
         mockRepository.Setup(m => m.GetSingleById(It.Is<Guid>(g => g == aGuid))).Returns(value: null);
         var handler = new UpdateMealCommandHandler(
             mockRepository.Object,
+            Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<ILogger<UpdateMealCommandHandler>>()
         );
@@ -78,9 +81,11 @@ public class UpdateMealCommandHandlerTests
 
         var mockRepository = new Mock<IMealRepository>();
         mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(dummyMeal);
-        mockRepository.Setup(m => m.Update(It.IsAny<Meal>())).Throws(new DbUpdateConcurrencyException());
+        var mockUnitOfWork = new Mock<IUnitOfWork>();
+        mockUnitOfWork.Setup(m => m.SaveTransactionAsync()).Throws(new DbUpdateConcurrencyException());
         var handler = new UpdateMealCommandHandler(
             mockRepository.Object,
+            mockUnitOfWork.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<ILogger<UpdateMealCommandHandler>>()
         );
