@@ -87,22 +87,14 @@ public class DishesController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [SwaggerRequestExample(typeof(DishDTO), typeof(DishRequestExampleWithoutIdAndEtag))]
     [SwaggerResponseExample(201, typeof(DishResponseExampleWithIdAndEtag))]
-    public ActionResult<DishDTO> PostDish([FromBody] DishDTO dto)
+    public async Task<ActionResult<DishDTO>> PostDish([FromBody] DishDTO dto)
     {
-        if (dto.Id != null && dto.Id != Guid.Empty)
-            return BadRequest("Field id is not allowed.");
+        var result = await _mediator.Send(new CreateDishCommand(dto));
 
-        Dish dish = new(dto.Name) { Description = dto.Description, Servings = dto.Servings };
-        SetIngredientsFromDataTransferObject(dish, dto);
+        if (!result.Success && result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotValid))
+            return BadRequest(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotValid).Select(er => er.Message)));
 
-        _repository.Add(dish);
-        _logger.LogInformation("Created dish with id {Id}", dish.Id);
-
-        var dishCreated = _outputMapper.FromEntity(dish);
-        return CreatedAtAction(nameof(GetDish), new
-        {
-            id = dishCreated.Id
-        }, dishCreated);
+        return CreatedAtAction(nameof(GetDish), new { id = result.Result!.Id }, result.Result);
     }
 
     /// <summary>
@@ -252,15 +244,6 @@ public class DishesController : ControllerBase
         _repository.Update(dish);
 
         return Ok();
-    }
-
-    private static void SetIngredientsFromDataTransferObject(Dish dish, DishDTO dto)
-    {
-        dish.RemoveAllIngredients();
-
-        if (dto.Ingredients != null)
-            foreach (var ing in dto.Ingredients)
-                dish.AddIngredient(ing.Quantity, ing.UnitOfMeasurement, ing.Description);
     }
 
     private string? ActionLink(string action, object? values)

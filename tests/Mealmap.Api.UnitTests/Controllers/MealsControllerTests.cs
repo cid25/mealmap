@@ -145,7 +145,7 @@ public class MealsControllerTests
     }
 
     [Fact]
-    public async void PutDish_WhenVersionDoesNotMatch_ReturnsPreconditionFailed()
+    public async void PutMeal_WhenVersionDoesNotMatch_ReturnsPreconditionFailed()
     {
         CommandNotification<MealDTO> notification = new();
         notification.Errors.Add(new CommandError(CommandErrorCodes.EtagMismatch));
@@ -168,7 +168,7 @@ public class MealsControllerTests
     }
 
     [Fact]
-    public async void PutDish_WhenDishNotFound_ReturnsNotFound()
+    public async void PutMeal_WhenDishNotFound_ReturnsNotFound()
     {
         CommandNotification<MealDTO> notification = new();
         notification.Errors.Add(new CommandError(CommandErrorCodes.NotFound));
@@ -190,7 +190,7 @@ public class MealsControllerTests
     }
 
     [Fact]
-    public async void PutDish_WhenValidationError_ReturnsBadRequest()
+    public async void PutMeal_WhenValidationError_ReturnsBadRequest()
     {
         CommandNotification<MealDTO> notification = new();
         notification.Errors.Add(new CommandError(CommandErrorCodes.NotValid));

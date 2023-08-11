@@ -99,7 +99,7 @@ public class MealsController : ControllerBase
         if (!result.Success && result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotValid))
             return BadRequest(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotValid).Select(er => er.Message)));
 
-        return CreatedAtAction(nameof(GetMeal), new { id = result.Result!.Id! }, result.Result);
+        return CreatedAtAction(nameof(GetMeal), new { id = result.Result!.Id }, result.Result);
     }
 
     /// <summary>

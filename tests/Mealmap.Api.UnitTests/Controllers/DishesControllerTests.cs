@@ -78,30 +78,48 @@ public class DishesControllerTests
     }
 
     [Fact]
-    public void PostDish_WhenDishIsValid_ReturnsDTO()
+    public async void PostDish_WhenDishIsValid_ReturnsMeal()
     {
-        const string someDishName = "Sailors Surprise";
-        DishDTO dish = new(someDishName);
+        DishDTO dto = new("fakeName");
+        CommandNotification<DishDTO> notification = new() { Result = dto };
+        var mediatorMock = new Mock<IMediator>();
+        mediatorMock.Setup(m => m.Send(It.IsAny<CreateDishCommand>(), It.IsAny<CancellationToken>()).Result)
+            .Returns(notification);
+        var controller = new DishesController(
+            Mock.Of<ILogger<DishesController>>(),
+            _repositoryFake,
+            Mock.Of<IOutputMapper<DishDTO, Dish>>(),
+            Mock.Of<IRequestContext>(),
+            mediatorMock.Object
+        );
 
-        var context = Mock.Of<IRequestContext>(m => m.Method == "POST");
-        var outputMapper = Mock.Of<IOutputMapper<DishDTO, Dish>>(m => m.FromEntity(It.IsAny<Dish>()) == dish);
-        var controller = new DishesController(_loggerMock, _repositoryFake, outputMapper, context, Mock.Of<IMediator>());
-
-        var result = controller.PostDish(dish);
+        var result = await controller.PostDish(dto);
 
         result.Result.Should().BeOfType<CreatedAtActionResult>();
         ((CreatedAtActionResult)result.Result!).Value.Should().BeOfType<DishDTO>();
+        var value = (DishDTO)((CreatedAtActionResult)result.Result!).Value!;
     }
 
     [Fact]
-    public void PostDish_WhenDishIsValid_StoresDish()
+    public async void PostDish_WhenDishIsInvalid_ReturnsBadRequest()
     {
-        const string someDishName = "Sailors Surprise";
-        DishDTO dish = new(someDishName);
+        DishDTO dto = new("fakeName");
+        CommandNotification<DishDTO> notification = new();
+        notification.Errors.Add(new CommandError(CommandErrorCodes.NotValid));
+        var mediatorMock = new Mock<IMediator>();
+        mediatorMock.Setup(m => m.Send(It.IsAny<CreateDishCommand>(), It.IsAny<CancellationToken>()).Result)
+            .Returns(notification);
+        var controller = new DishesController(
+            Mock.Of<ILogger<DishesController>>(),
+            _repositoryFake,
+            Mock.Of<IOutputMapper<DishDTO, Dish>>(),
+            Mock.Of<IRequestContext>(),
+            mediatorMock.Object
+        );
 
-        _ = _controller.PostDish(dish);
+        var result = await controller.PostDish(dto);
 
-        _repositoryFake.Should().NotBeEmpty().And.HaveCountGreaterThan(1);
+        result.Result.Should().BeOfType<BadRequestObjectResult>();
     }
 
     [Theory]
