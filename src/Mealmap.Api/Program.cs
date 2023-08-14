@@ -1,18 +1,15 @@
 ﻿using System.Reflection;
 using Mealmap.Api;
 using Mealmap.Api.Behaviors;
-using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.RequestFormatters;
 using Mealmap.Api.Swagger;
 using Mealmap.Domain;
-using Mealmap.Domain.Common;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
 using Mealmap.Infrastructure.DataAccess;
 using Mealmap.Infrastructure.DataAccess.Repositories;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -38,9 +35,8 @@ builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-    cfg.RegisterServicesFromAssemblyContaining<EntityBase>();
-    cfg.AddBehavior<IPipelineBehavior<UpdateMealCommand, CommandNotification<MealDTO>>, MealCommandValidationBehavior>();
-    cfg.AddBehavior<IPipelineBehavior<CreateMealCommand, CommandNotification<MealDTO>>, MealCommandValidationBehavior>();
+    cfg.RegisterApplicationBehaviors();
+    cfg.RegisterDeferredDomainValidation();
 });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IRequestContext, RequestContext>();
