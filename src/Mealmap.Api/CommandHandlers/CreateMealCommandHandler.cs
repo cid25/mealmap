@@ -1,10 +1,11 @@
-﻿using Mealmap.Api.DataTransferObjects;
+﻿using Mealmap.Api.Commands;
+using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Domain.MealAggregate;
 using Mealmap.Domain.Seedwork.Validation;
 using MediatR;
 
-namespace Mealmap.Api.Commands;
+namespace Mealmap.Api.CommandHandlers;
 
 public class CreateMealCommandHandler : IRequestHandler<CreateMealCommand, CommandNotification<MealDTO>>
 {

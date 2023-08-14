@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Mealmap.Api.CommandHandlers;
 using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace Mealmap.Api.UnitTests.Commands;
+namespace Mealmap.Api.UnitTests.CommandHandlers;
 
 public class UpdateMealCommandHandlerTests
 {

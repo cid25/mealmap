@@ -1,10 +1,11 @@
-﻿using Mealmap.Api.DataTransferObjects;
+﻿using Mealmap.Api.Commands;
+using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Domain.DishAggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mealmap.Api.Commands;
+namespace Mealmap.Api.CommandHandlers;
 
 public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, CommandNotification<DishDTO>>
 {
