@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Mealmap.Api.Commands;
 
-public class UpdateMealCommand : AbstractMealCommand, IRequest<CommandNotification<MealDTO>>
+public class UpdateMealCommand : AbstractCommand<MealDTO>, IRequest<CommandNotification<MealDTO>>
 {
     public Guid Id { get; }
 

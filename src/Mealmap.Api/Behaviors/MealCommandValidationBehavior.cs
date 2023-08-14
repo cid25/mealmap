@@ -5,14 +5,14 @@ using MediatR;
 
 namespace Mealmap.Api.Behaviors;
 
-public class MealCommandValidationBehavior : IPipelineBehavior<AbstractMealCommand, CommandNotification<MealDTO>>
+public class MealCommandValidationBehavior : IPipelineBehavior<AbstractCommand<MealDTO>, CommandNotification<MealDTO>>
 {
     private readonly IDishRepository _repository;
 
     public MealCommandValidationBehavior(IDishRepository repository)
         => _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
-    public Task<CommandNotification<MealDTO>> Handle(AbstractMealCommand request, RequestHandlerDelegate<CommandNotification<MealDTO>> next, CancellationToken cancellationToken)
+    public Task<CommandNotification<MealDTO>> Handle(AbstractCommand<MealDTO> request, RequestHandlerDelegate<CommandNotification<MealDTO>> next, CancellationToken cancellationToken)
     {
         if (request.Dto.Courses != null)
         {
