@@ -21,7 +21,7 @@ public class MealValidator : IRequestHandler<ValidationRequest<Meal>, DomainVali
         if (meal.Courses.Any())
             foreach (var course in meal.Courses)
                 if (_repository.GetSingleById(course.DishId) == null)
-                    result.AddError("Dish not found.");
+                    result.AddError($"Dish with Id {course.DishId} not found.");
 
         return Task.FromResult(result);
     }

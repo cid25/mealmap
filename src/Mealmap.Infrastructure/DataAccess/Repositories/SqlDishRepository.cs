@@ -29,7 +29,6 @@ public class SqlDishRepository : IDishRepository
     public void Add(Dish dish)
     {
         dbSet.Add(dish);
-        _dbContext.SaveChanges();
     }
 
     /// <exception cref="InvalidOperationException"></exception>
@@ -40,23 +39,14 @@ public class SqlDishRepository : IDishRepository
         if (existingDish == null || existingDish != dish)
             throw new InvalidOperationException();
 
-        try
-        {
-            MarkIngredientsForReplacement();
-            MarkDishForVersionUpdate(dish);
-            AdoptVersionFromClient(dish);
-            _dbContext.SaveChanges();
-        }
-        catch (DbUpdateConcurrencyException ex)
-        {
-            throw new ConcurrentUpdateException("Saving dish failed due to version mismatch.", ex);
-        }
+        MarkIngredientsForReplacement();
+        MarkDishForVersionUpdate(dish);
+        AdoptVersionFromClient(dish);
     }
 
     public void Remove(Dish dish)
     {
         _dbContext.Remove(dish);
-        _dbContext.SaveChanges();
     }
 
     private void MarkIngredientsForReplacement()

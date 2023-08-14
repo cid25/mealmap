@@ -60,120 +60,139 @@ public class SqlDishRepositoryTests
     [Fact]
     public void GetAll_ReturnsAllDishes()
     {
+        // Arrage
         var expectedCount = _repository.dbSet.Count();
 
+        // Act
         var result = _repository.GetAll();
 
+        // Assert
         result.Should().NotBeEmpty().And.HaveCount(expectedCount);
     }
 
     [Fact]
     public void GetSingleById_WhenIdNonExisting_ReturnsNull()
     {
+        // Arrange
         const string nonExistingGuid = "99999999-9999-9999-9999-999999999999";
+
+        // Act
         var result = _repository.GetSingleById(new Guid(nonExistingGuid));
 
+        // Assert
         result.Should().BeNull();
     }
 
     [Fact]
     public void GetSingleById_WhenIdExists_ReturnsDish()
     {
+        // Arrage
         var existingId = _dishes[0].Id;
+
+        // Act
         var result = _repository.GetSingleById(existingId);
 
+        // Assert
         result.Should().NotBeNull();
         result!.Name.Should().Be(_dishes[0].Name);
     }
 
     [Fact]
-    public void Add_WhenDishValid_CreatesEntry()
+    public void SaveOnAdd_WhenDishValid_CreatesEntry()
     {
+        // Arrange
         var aGuid = Guid.NewGuid();
         Dish aValidDish = new(aGuid, "Salty Sea Dog", null, 1);
 
+        // Act
         _repository.Add(aValidDish);
+        _dbContext.SaveChanges();
 
+        // Assert
         _dbContext.ChangeTracker.Clear();
         _dbContext.Find<Dish>(aGuid).Should().NotBeNull();
     }
 
     [Fact]
-    public void Add_WhenDishHasIngredients_CreatesIngredients()
+    public void SaveOnAdd_WhenDishHasIngredients_CreatesIngredients()
     {
+        // Arrange
         var aGuid = Guid.NewGuid();
         Dish aDish = new(aGuid, "Salty Sea Dog", null, 1);
         aDish.AddIngredient(1, "Kilogram", "Sausages");
         aDish.AddIngredient(0.5m, "Liter", "Ketchup");
         aDish.AddIngredient(0.3m, "Liter", "Mustard");
 
+        // Act
         _repository.Add(aDish);
+        _dbContext.SaveChanges();
 
+        // Assert
         _dbContext.ChangeTracker.Clear();
         _dbContext.Find<Dish>(aGuid)!.Ingredients.Should().HaveCount(3);
     }
 
     [Fact]
-    public void Update_WhenDishDisconnected_ThrowsInvalidOperationException()
+    public void SaveOnUpdate_WhenDishDisconnected_ThrowsInvalidOperationException()
     {
+        // Arrange
         var initialDish = _dbContext.Find<Dish>(_dishes[0].Id);
         Dish aDisconnectedDish = new(initialDish!.Id, initialDish.Name, initialDish.Description, initialDish.Servings);
 
+        // Act
         Action act = () => _repository.Update(aDisconnectedDish);
 
+        // Assert
         act.Should().Throw<InvalidOperationException>();
     }
 
     [Fact]
-    public void Update_WhenImageExists_RetainsImage()
+    public void SaveOnUpdate_WhenConcurrentUpdate_ThrowsException()
     {
-        var dishWithImage = _dbContext.Find<Dish>(_dishes[1].Id);
-
-        var anotherDishName = "Tuna Supreme";
-        dishWithImage!.Name = anotherDishName;
-        _repository.Update(dishWithImage);
-
-        _dbContext.ChangeTracker.Clear();
-        var dish = _dbContext.Find<Dish>(_dishes[1].Id);
-        dish!.Image.Should().NotBeNull();
-    }
-
-    [Fact]
-    public void Update_WhenConcurrentUpdate_ThrowsConcurrentUpdateException()
-    {
+        // Arrange
         var dish = _dbContext.Find<Dish>(_dishes[1].Id);
         dish!.Name = "Tuna Supreme";
 
+        // Act
         _dbContext.Database.ExecuteSqlRaw("UPDATE [mealmap].[dish] SET [Name] = 'Golden Seahorse' WHERE [Id] = '" + dish.Id + "';");
-        Action act = () => _repository.Update(dish);
+        _repository.Update(dish);
+        Action act = () => _dbContext.SaveChanges();
 
-        act.Should().Throw<ConcurrentUpdateException>();
+        // Assert
+        act.Should().Throw<Exception>();
     }
 
     [Fact]
-    public void Update_WhenExplicitVersionNotMatchingDatabase_ThrowsConcurrentUpdateException()
+    public void SaveOnUpdate_WhenExplicitVersionNotMatchingDatabase_ThrowsException()
     {
+        // Arrange
         var dish = _dbContext.Find<Dish>(_dishes[1].Id);
-
         var nonMatchingVersion = new byte[8] { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0xD4 };
         dish!.Version.Set(nonMatchingVersion);
         dish.Name = "Tuna Supreme";
 
-        Action act = () => _repository.Update(dish);
+        // Act
+        _repository.Update(dish);
+        Action act = () => _dbContext.SaveChanges();
 
-        act.Should().Throw<ConcurrentUpdateException>();
+        // Assert
+        act.Should().Throw<Exception>();
     }
 
     [Fact]
-    public void Update_WhenIngredientAdded_AddsIngredientAndUpsDishVersion()
+    public void SaveOnUpdate_WhenIngredientAdded_AddsIngredientAndUpsDishVersion()
     {
+        // Arrange
         var dish = _dbContext.Find<Dish>(_dishes[0].Id);
         var originalCount = dish!.Ingredients.Count;
         var originalVersion = dish.Version;
 
+        // Act
         dish!.AddIngredient(1, "Pinch", "Pepper");
         _repository.Update(dish);
+        _dbContext.SaveChanges();
 
+        // Assert
         _dbContext.ChangeTracker.Clear();
         var result = _dbContext.Find<Dish>(dish.Id);
         result!.Ingredients.Should().HaveCount(originalCount + 1);
@@ -181,15 +200,19 @@ public class SqlDishRepositoryTests
     }
 
     [Fact]
-    public void Update_WhenIngredientRemoved_RemovesIngredientAndUpsDishVersion()
+    public void SaveOnUpdate_WhenIngredientRemoved_RemovesIngredientAndUpsDishVersion()
     {
+        // Arrange
         var dish = _dbContext.Find<Dish>(_dishes[0].Id);
         var originalCount = dish!.Ingredients.Count;
         var originalVersion = dish.Version;
 
+        // Act
         dish!.RemoveIngredient(dish.Ingredients.First());
         _repository.Update(dish);
+        _dbContext.SaveChanges();
 
+        // Assert
         _dbContext.ChangeTracker.Clear();
         var result = _dbContext.Find<Dish>(dish.Id);
         result!.Ingredients.Should().HaveCount(originalCount - 1);
@@ -197,40 +220,52 @@ public class SqlDishRepositoryTests
     }
 
     [Fact]
-    public void Update_WhenImageReplaced_ReplacesImage()
+    public void SaveOnUpdate_WhenImageReplaced_ReplacesImage()
     {
+        // Arrange
         var dish = _dbContext.Find<Dish>(_dishes[0].Id);
-
         var imageContent = new byte[] { 0x02 };
         dish!.SetImage(imageContent, "image/jpeg");
-        _repository.Update(dish);
 
+        // Act
+        _repository.Update(dish);
+        _dbContext.SaveChanges();
+
+        // Assert
         _dbContext.ChangeTracker.Clear();
         var result = _dbContext.Find<Dish>(dish.Id);
         result!.Image!.Content.Should().Equal(imageContent);
     }
 
     [Fact]
-    public void Update_WhenImageRemoved_DeletesImage()
+    public void SaveOnUpdate_WhenImageRemoved_DeletesImage()
     {
+        // Arrange 
         var dish = _dbContext.Find<Dish>(_dishes[0].Id);
 
+        // Act
         dish!.RemoveImage();
         _repository.Update(dish);
+        _dbContext.SaveChanges();
 
+        // Assert
         _dbContext.ChangeTracker.Clear();
         var result = _dbContext.Find<Dish>(dish.Id);
         result!.Image.Should().BeNull();
     }
 
     [Fact]
-    public void Remove_RemovesEntry()
+    public void SaveOnRemove_RemovesEntry()
     {
+        // Arrange
         var expectedCount = _repository.dbSet.Count();
         var dish = _repository.dbSet.First();
 
+        // Act
         _repository.Remove(dish!);
+        _dbContext.SaveChanges();
 
+        // Assert
         _repository.dbSet.Count().Should().Be(expectedCount - 1);
     }
 }

@@ -4,35 +4,35 @@ using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Domain;
-using Mealmap.Domain.MealAggregate;
+using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.Seedwork.Validation;
 using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Mealmap.Api.UnitTests.CommandHandlers;
 
-public class CreateMealCommandHandlerTests
+public class CreateDishCommandHandlerTests
 {
     [Fact]
-    public async void Handle_WhenMealIsValid_StoresMealAndReturnsDto()
+    public async void Handle_WhenDishIsValid_StoresMealAndReturnsDto()
     {
-        var repository = new Mock<IMealRepository>();
+        var repository = new Mock<IDishRepository>();
         var unitOfWork = new Mock<IUnitOfWork>();
-        CreateMealCommandHandler handler = new(
+        CreateDishCommandHandler handler = new(
             repository.Object,
             unitOfWork.Object,
-            Mock.Of<IOutputMapper<MealDTO, Meal>>(m => m.FromEntity(It.IsAny<Meal>()) == new MealDTO()),
-            Mock.Of<ILogger<CreateMealCommandHandler>>()
+            Mock.Of<IOutputMapper<DishDTO, Dish>>(m => m.FromEntity(It.IsAny<Dish>()) == new DishDTO("fakeName")),
+            Mock.Of<ILogger<CreateDishCommandHandler>>()
         );
 
-        MealDTO dto = new() { DiningDate = new DateOnly(2020, 1, 2) };
+        DishDTO dto = new("fakeName");
 
         var result = await handler.Handle(
-            new CreateMealCommand(dto),
+            new CreateDishCommand(dto),
             new CancellationTokenSource().Token
         );
 
-        repository.Verify(m => m.Add(It.IsAny<Meal>()), Times.Once);
+        repository.Verify(m => m.Add(It.IsAny<Dish>()), Times.Once);
         unitOfWork.Verify(m => m.SaveTransactionAsync(), Times.Once);
         result.Success.Should().BeTrue();
         result.Result.Should().NotBeNull();
@@ -41,20 +41,20 @@ public class CreateMealCommandHandlerTests
     [Fact]
     public async void Handle_WhenSavingThrowsDomainValidationException_ReturnsNotificationWithNotValidError()
     {
-        var repository = new Mock<IMealRepository>();
+        var repository = new Mock<IDishRepository>();
         var unitOfWork = new Mock<IUnitOfWork>();
         unitOfWork.Setup(m => m.SaveTransactionAsync()).Throws(new DomainValidationException(String.Empty));
-        CreateMealCommandHandler handler = new(
+        CreateDishCommandHandler handler = new(
             repository.Object,
             unitOfWork.Object,
-            Mock.Of<IOutputMapper<MealDTO, Meal>>(m => m.FromEntity(It.IsAny<Meal>()) == new MealDTO()),
-            Mock.Of<ILogger<CreateMealCommandHandler>>()
+            Mock.Of<IOutputMapper<DishDTO, Dish>>(m => m.FromEntity(It.IsAny<Dish>()) == new DishDTO("fakeName")),
+            Mock.Of<ILogger<CreateDishCommandHandler>>()
         );
 
-        MealDTO dto = new() { DiningDate = new DateOnly(2020, 1, 2) };
+        DishDTO dto = new("fakeName");
 
         var result = await handler.Handle(
-            new CreateMealCommand(dto),
+            new CreateDishCommand(dto),
             new CancellationTokenSource().Token
         );
 

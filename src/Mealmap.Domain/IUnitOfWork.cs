@@ -1,7 +1,9 @@
-﻿namespace Mealmap.Domain
+﻿using Mealmap.Domain.Seedwork.Validation;
+
+namespace Mealmap.Domain;
+
+public interface IUnitOfWork
 {
-    public interface IUnitOfWork
-    {
-        Task SaveTransactionAsync();
-    }
+    /// <exception cref="DomainValidationException"></exception>
+    Task SaveTransactionAsync();
 }

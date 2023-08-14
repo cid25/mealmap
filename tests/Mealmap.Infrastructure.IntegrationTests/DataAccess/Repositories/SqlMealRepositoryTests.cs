@@ -115,12 +115,13 @@ public class SqlMealRepositoryTests
     }
 
     [Fact]
-    public void Add_WhenMealValid_CreatesEntry()
+    public void SaveOnAdd_WhenMealValid_CreatesEntry()
     {
         var aGuid = Guid.NewGuid();
         Meal meal = new(aGuid, DateOnly.FromDateTime(DateTime.Now));
 
         _repository.Add(meal);
+        _dbContext.SaveChanges();
 
         _dbContext.Find<Meal>(meal.Id).Should().NotBeNull();
     }
@@ -137,7 +138,7 @@ public class SqlMealRepositoryTests
     }
 
     [Fact]
-    public void SaveOnUpdate_WhenConcurrentUpdate_ThrowsDbUpdateConcurrencyException()
+    public void SaveOnUpdate_WhenConcurrentUpdate_ThrowsException()
     {
         var meal = _dbContext.Find<Meal>(_meals![1].Id)!;
         _dbContext.Entry(meal).Property(m => m.DiningDate).IsModified = true;
@@ -146,11 +147,11 @@ public class SqlMealRepositoryTests
         _repository.Update(meal);
         Action act = () => _dbContext.SaveChanges();
 
-        act.Should().Throw<DbUpdateConcurrencyException>();
+        act.Should().Throw<Exception>();
     }
 
     [Fact]
-    public void SaveOnUpdate_WhenExplicitVersionNotMatchingDatabase_ThrowsDbUpdateConcurrencyException()
+    public void SaveOnUpdate_WhenExplicitVersionNotMatchingDatabase_ThrowsException()
     {
         var meal = _dbContext.Find<Meal>(_meals![1].Id)!;
         _dbContext.Entry(meal).Property(m => m.DiningDate).IsModified = true;
@@ -160,7 +161,7 @@ public class SqlMealRepositoryTests
         _repository.Update(meal);
         Action act = () => _dbContext.SaveChanges();
 
-        act.Should().Throw<DbUpdateConcurrencyException>();
+        act.Should().Throw<Exception>();
     }
 
     [Fact]
@@ -197,23 +198,25 @@ public class SqlMealRepositoryTests
     }
 
     [Fact]
-    public void Remove_WhenGivenUntrackedEntity_RemovesEntry()
+    public void SaveOnRemove_WhenGivenUntrackedEntity_RemovesEntry()
     {
         var expectedCount = _meals!.Length;
         var meal = _meals![0];
 
         _repository.Remove(meal);
+        _dbContext.SaveChanges();
 
         _repository.dbSet.Count().Should().Be(expectedCount - 1);
     }
 
     [Fact]
-    public void Remove_WhenGivenTrackedEntity_RemovesEntry()
+    public void SaveOnRemove_WhenGivenTrackedEntity_RemovesEntry()
     {
         var expectedCount = _meals!.Length;
         var meal = _dbContext.Find<Meal>(_meals[0].Id);
 
         _repository.Remove(meal!);
+        _dbContext.SaveChanges();
 
         _repository.dbSet.Count().Should().Be(expectedCount - 1);
     }

@@ -36,19 +36,7 @@ public class SqlMealRepository : IMealRepository
     /// <exception cref="ConcurrentUpdateException"></exception>
     public void Add(Meal meal)
     {
-
         dbSet.Add(meal);
-        try
-        {
-            _dbContext.SaveChanges();
-        }
-        catch (DbUpdateException ex)
-        {
-            if (ex.InnerException != null && ex.InnerException.Message.Contains("DishId"))
-                throw new ConcurrentUpdateException("A given dish does not exist.", ex);
-            else
-                throw;
-        }
     }
 
     /// <exception cref="InvalidOperationException"></exception>
@@ -71,7 +59,6 @@ public class SqlMealRepository : IMealRepository
         if (removable != null)
         {
             dbSet.Remove(removable);
-            _dbContext.SaveChanges();
         }
     }
 

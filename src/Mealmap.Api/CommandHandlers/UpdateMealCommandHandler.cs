@@ -47,9 +47,9 @@ public class UpdateMealCommandHandler : IRequestHandler<UpdateMealCommand, Comma
         {
             await _unitOfWork.SaveTransactionAsync();
         }
-        catch (DomainValidationException)
+        catch (DomainValidationException ex)
         {
-            result.Errors.Add(new CommandError(CommandErrorCodes.NotValid, "The request is not valid."));
+            result.Errors.Add(new CommandError(CommandErrorCodes.NotValid, ex.Message));
             return result;
         }
         catch (DbUpdateConcurrencyException)
