@@ -1,10 +1,9 @@
 ﻿using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.Seedwork.Validation;
-using MediatR;
 
 namespace Mealmap.Domain.MealAggregate;
 
-public class MealValidator : IRequestHandler<ValidationRequest<Meal>, DomainValidationResult>
+public class MealValidator : IEntityValidator<Meal>
 {
     private readonly IDishRepository _repository;
 
@@ -13,13 +12,12 @@ public class MealValidator : IRequestHandler<ValidationRequest<Meal>, DomainVali
         _repository = repository;
     }
 
-    public Task<DomainValidationResult> Handle(ValidationRequest<Meal> request, CancellationToken cancellationToken)
+    public Task<DomainValidationResult> ValidateAsync(Meal entity)
     {
         DomainValidationResult result = new();
-        var meal = request.Entity;
 
-        if (meal.Courses.Any())
-            foreach (var course in meal.Courses)
+        if (entity.Courses.Any())
+            foreach (var course in entity.Courses)
                 if (_repository.GetSingleById(course.DishId) == null)
                     result.AddError($"Dish with Id {course.DishId} not found.");
 

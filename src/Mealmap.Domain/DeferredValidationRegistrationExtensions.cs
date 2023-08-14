@@ -1,12 +1,18 @@
-﻿using System.Reflection;
+﻿using Mealmap.Domain.Seedwork.Validation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mealmap.Domain;
 
 public static class DeferredValidationRegistrationExtensions
 {
-    public static void RegisterDeferredDomainValidation(this MediatRServiceConfiguration configuration)
+    public static void RegisterDeferredDomainValidation(this IServiceCollection services)
     {
-        configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+        services.AddScoped<IDeferredDomainValidator, DeferredDomainValidator>();
+
+        services.Scan(scan => scan
+            .FromCallingAssembly()
+                .AddClasses(classes => classes.AssignableTo(typeof(IEntityValidator<>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
     }
 }

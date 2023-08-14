@@ -22,7 +22,7 @@ builder.Services.Configure<HostingOptions>(
     builder.Configuration.GetSection(HostingOptions.SectionName));
 
 // Add Domain Services
-builder.Services.AddScoped<IDeferredDomainValidator, DeferredDomainValidator>();
+builder.Services.RegisterDeferredDomainValidation();
 
 // Add Infrastructure Services
 builder.Services.AddDbContext<MealmapDbContext>(options
@@ -36,7 +36,6 @@ builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
     cfg.RegisterApplicationBehaviors();
-    cfg.RegisterDeferredDomainValidation();
 });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IRequestContext, RequestContext>();
