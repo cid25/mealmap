@@ -1,8 +1,7 @@
-﻿using FluentAssertions;
-using Mealmap.Domain.MealAggregate;
+﻿using Mealmap.Domain.MealAggregate;
 using Mealmap.Domain.Seedwork.Validation;
 
-namespace Mealmap.Domain.Tests;
+namespace Mealmap.Domain.UnitTests.MealAggregate;
 
 public class MealTests
 {

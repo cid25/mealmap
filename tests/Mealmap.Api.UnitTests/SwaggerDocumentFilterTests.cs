@@ -1,11 +1,9 @@
-﻿using FluentAssertions;
-using Mealmap.Api.Swagger;
+﻿using Mealmap.Api.Swagger;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using Moq;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Mealmap.Api.UnitTests;

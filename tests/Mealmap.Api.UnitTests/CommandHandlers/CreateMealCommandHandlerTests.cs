@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using Mealmap.Api.CommandHandlers;
+﻿using Mealmap.Api.CommandHandlers;
 using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
@@ -7,7 +6,6 @@ using Mealmap.Domain;
 using Mealmap.Domain.MealAggregate;
 using Mealmap.Domain.Seedwork.Validation;
 using Microsoft.Extensions.Logging;
-using Moq;
 
 namespace Mealmap.Api.UnitTests.CommandHandlers;
 

@@ -1,8 +1,6 @@
-﻿using FluentAssertions;
-using Mealmap.Domain.MealAggregate;
+﻿using Mealmap.Domain.MealAggregate;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Moq;
 
 namespace Mealmap.Api.BoundaryTests;
 

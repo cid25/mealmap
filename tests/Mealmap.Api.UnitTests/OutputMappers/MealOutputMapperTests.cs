@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FluentAssertions;
 using Mealmap.Api.OutputMappers;
 
 namespace Mealmap.Api.UnitTests.OutputMappers;

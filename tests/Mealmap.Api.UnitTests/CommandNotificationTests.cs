@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-
-namespace Mealmap.Api.UnitTests;
+﻿namespace Mealmap.Api.UnitTests;
 
 public class CommandNotificationTests
 {

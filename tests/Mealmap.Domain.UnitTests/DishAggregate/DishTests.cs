@@ -1,7 +1,6 @@
-﻿using FluentAssertions;
-using Mealmap.Domain.DishAggregate;
+﻿using Mealmap.Domain.DishAggregate;
 
-namespace Mealmap.Domain.Tests;
+namespace Mealmap.Domain.UnitTests.DishAggregate;
 
 public class DishTests
 {

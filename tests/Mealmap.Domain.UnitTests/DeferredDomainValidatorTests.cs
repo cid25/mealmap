@@ -1,9 +1,7 @@
-﻿using FluentAssertions;
-using Mealmap.Domain;
+﻿using Mealmap.Domain;
 using Mealmap.Domain.Common;
 using Mealmap.Domain.MealAggregate;
 using Mealmap.Domain.Seedwork.Validation;
-using Moq;
 
 namespace Mealmap.Infrastructure.IntegrationTests.DataAccess;
 

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FluentAssertions;
 using Mealmap.Api.Commands;
 using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransferObjects;
@@ -9,7 +8,6 @@ using Mealmap.Domain.MealAggregate;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Moq;
 
 namespace Mealmap.Api.UnitTests.Controllers;
 

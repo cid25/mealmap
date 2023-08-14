@@ -1,8 +1,7 @@
-﻿using FluentAssertions;
-using Mealmap.Domain.DishAggregate;
+﻿using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.Seedwork.Validation;
 
-namespace Mealmap.Domain.Tests;
+namespace Mealmap.Domain.UnitTests.DishAggregate;
 
 public class UnitOfMeasurementTests
 {

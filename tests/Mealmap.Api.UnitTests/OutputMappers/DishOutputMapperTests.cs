@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using FluentAssertions;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Domain.DishAggregate;
-using Moq;
 
 namespace Mealmap.Api.UnitTests.OutputMappers;
 
