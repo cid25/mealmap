@@ -2,7 +2,6 @@
 using Mealmap.Domain.Common;
 using Mealmap.Domain.MealAggregate;
 using Mealmap.Domain.Seedwork.Validation;
-using Mealmap.Domain.UnitTests;
 
 namespace Mealmap.Infrastructure.IntegrationTests.DataAccess;
 
@@ -61,5 +60,28 @@ public class DeferredDomainValidatorTests
 
         // Assert
         act.Should().ThrowAsync<DomainValidationException>();
+    }
+}
+
+internal class DummyEntity : EntityBase
+{
+    public bool IsValid { get; set; }
+
+    public DummyEntity(bool isValid)
+    {
+        this.IsValid = isValid;
+    }
+}
+
+internal class DummyEntityValidator : AbstractEntityValidator<DummyEntity>
+{
+    public override Task<DomainValidationResult> ValidateAsync(DummyEntity entity)
+    {
+        DomainValidationResult result = new();
+
+        if (!entity.IsValid)
+            result.AddError("Dummy invalid.");
+
+        return Task.FromResult(result);
     }
 }
