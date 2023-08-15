@@ -61,6 +61,28 @@ public class DeferredDomainValidatorTests
         // Assert
         act.Should().ThrowAsync<DomainValidationException>();
     }
+
+    [Fact]
+    public async void ValidateEntitiesAsync_CallsForCorrectValidatorOnly()
+    {
+        // Arrange
+        DomainValidationResult validValidationResult = new();
+
+        var applicableValidator = new DummyEntityValidator();
+
+        var serviceProdiver = new Mock<IServiceProvider>();
+        serviceProdiver.Setup(x => x.GetService(It.IsAny<Type>())).Returns(applicableValidator);
+
+        DeferredDomainValidator deferredValidator = new(serviceProdiver.Object);
+
+        // Act
+        await deferredValidator.ValidateEntitiesAsync(new List<EntityBase>() {
+            new DummyEntity(isValid: true) });
+
+        // Assert
+        serviceProdiver.Verify(x => x.GetService(typeof(AbstractEntityValidator<DummyEntity>)), Times.Once);
+        serviceProdiver.VerifyNoOtherCalls();
+    }
 }
 
 internal class DummyEntity : EntityBase
