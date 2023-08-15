@@ -3,7 +3,7 @@ using Mealmap.Domain.Seedwork.Validation;
 
 namespace Mealmap.Domain.MealAggregate;
 
-public class MealValidator : IEntityValidator<Meal>
+public class MealValidator : AbstractEntityValidator<Meal>
 {
     private readonly IDishRepository _repository;
 
@@ -12,7 +12,7 @@ public class MealValidator : IEntityValidator<Meal>
         _repository = repository;
     }
 
-    public Task<DomainValidationResult> ValidateAsync(Meal entity)
+    public override Task<DomainValidationResult> ValidateAsync(Meal entity)
     {
         DomainValidationResult result = new();
 

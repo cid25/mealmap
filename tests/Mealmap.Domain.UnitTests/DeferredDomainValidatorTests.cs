@@ -2,13 +2,14 @@
 using Mealmap.Domain.Common;
 using Mealmap.Domain.MealAggregate;
 using Mealmap.Domain.Seedwork.Validation;
+using Mealmap.Domain.UnitTests;
 
 namespace Mealmap.Infrastructure.IntegrationTests.DataAccess;
 
 public class DeferredDomainValidatorTests
 {
     [Fact]
-    public async void ValidateEntitiesAsync_WhenNoEntities_CompletesWithoutExceptionOrCallToMediator()
+    public async void ValidateEntitiesAsync_WhenNoEntities_CompletesWithoutExceptionOrCallToServiceProvider()
     {
         // Arrange
         var serviceProvider = new Mock<IServiceProvider>();
@@ -24,41 +25,39 @@ public class DeferredDomainValidatorTests
     }
 
     [Fact]
-    public async void ValidateEntitiesAsync_WhenEntitiesContainValidMeal_CallsEntityValidatorAndCompletesWithoutException()
+    public async void ValidateEntitiesAsync_WhenEntityValid_CompletesWithoutException()
     {
         // Arrange
         DomainValidationResult validValidationResult = new();
-        var mealValidator = new Mock<IEntityValidator<Meal>>();
-        mealValidator.Setup(m => m.ValidateAsync(It.IsAny<Meal>())).Returns(Task.FromResult(validValidationResult));
+
+        var validator = new DummyEntityValidator();
+
         var serviceProdiver = new Mock<IServiceProvider>();
-        serviceProdiver.Setup(x => x.GetService(It.IsAny<Type>()))
-            .Returns(mealValidator.Object);
+        serviceProdiver.Setup(x => x.GetService(It.IsAny<Type>())).Returns(validator);
+
         DeferredDomainValidator deferredValidator = new(serviceProdiver.Object);
 
         // Act
         await deferredValidator.ValidateEntitiesAsync(new List<EntityBase>() {
-            new Meal(DateOnly.FromDateTime(DateTime.Now)) });
-
-        // Assert
-        mealValidator.Verify(m => m.ValidateAsync(It.IsAny<Meal>()), Times.Once);
+            new DummyEntity(isValid: true) });
     }
 
     [Fact]
-    public void ValidateEntitiesAsync_WhenEntitiesContainInvalidMeal_ThrowsDomainValidationException()
+    public void ValidateEntitiesAsync_WhenEntityInvalid_ThrowsDomainValidationException()
     {
         // Arrange
-        DomainValidationResult invalidValidationResult = new();
-        invalidValidationResult.AddError(String.Empty);
-        var mealValidator = new Mock<IEntityValidator<Meal>>();
-        mealValidator.Setup(m => m.ValidateAsync(It.IsAny<Meal>())).Returns(Task.FromResult(invalidValidationResult));
+        DomainValidationResult validValidationResult = new();
+
+        var validator = new DummyEntityValidator();
+
         var serviceProdiver = new Mock<IServiceProvider>();
-        serviceProdiver.Setup(x => x.GetService(It.IsAny<Type>()))
-            .Returns(mealValidator.Object);
+        serviceProdiver.Setup(x => x.GetService(It.IsAny<Type>())).Returns(validator);
+
         DeferredDomainValidator deferredValidator = new(serviceProdiver.Object);
 
         // Act
-        var act = () => deferredValidator.ValidateEntitiesAsync(new List<EntityBase>() {
-            new Meal(DateOnly.FromDateTime(DateTime.Now)) });
+        var act = async () => await deferredValidator.ValidateEntitiesAsync(new List<EntityBase>() {
+            new DummyEntity(isValid: false) });
 
         // Assert
         act.Should().ThrowAsync<DomainValidationException>();

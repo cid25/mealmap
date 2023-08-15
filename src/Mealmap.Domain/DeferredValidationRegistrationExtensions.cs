@@ -11,7 +11,7 @@ public static class DeferredValidationRegistrationExtensions
 
         services.Scan(scan => scan
             .FromCallingAssembly()
-                .AddClasses(classes => classes.AssignableTo(typeof(IEntityValidator<>)))
+                .AddClasses(classes => classes.AssignableTo(typeof(AbstractEntityValidator<>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
     }

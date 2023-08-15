@@ -6,7 +6,7 @@ namespace Mealmap.Domain.UnitTests.MealAggregate;
 public class MealValidatorTests
 {
     [Fact]
-    public void ValidateAsync_WhenDishValid_ReturnsValidResult()
+    public void ValidateAsync_WhenDishInCourseValid_ReturnsValidResult()
     {
         // Arrange
         var meal = new Meal(DateOnly.FromDateTime(DateTime.Now));
@@ -23,7 +23,7 @@ public class MealValidatorTests
     }
 
     [Fact]
-    public void ValidateAsync_WhenDishNotFound_ReturnsErrorResult()
+    public void ValidateAsync_WhenDishInCourseNotFound_ReturnsErrorResult()
     {
         // Arrange
         var meal = new Meal(DateOnly.FromDateTime(DateTime.Now));

@@ -1,5 +1,4 @@
 ﻿using Mealmap.Domain.Common;
-using Mealmap.Domain.MealAggregate;
 using Mealmap.Domain.Seedwork.Validation;
 
 namespace Mealmap.Domain;
@@ -15,29 +14,26 @@ public class DeferredDomainValidator : IDeferredDomainValidator
 
     public async Task ValidateEntitiesAsync(IReadOnlyCollection<EntityBase> entities)
     {
-        if (entities != null)
+        foreach (var entity in entities)
         {
-            foreach (var entity in entities)
+            var validator = GetValidator(entity);
+
+            if (validator != null)
             {
-                DomainValidationResult? result = null;
+                var result = await validator.ValidateEntityAsync(entity);
 
-                var validatorType = typeof(IEntityValidator<>).MakeGenericType(entity.GetType());
-                dynamic? validator = _provider.GetService(validatorType);
-
-                if (validator != null)
-                {
-                    result = entity switch
-                    {
-                        Meal meal => await validator.ValidateAsync(meal),
-                        _ => null
-                    };
-                }
-
-                if (result != null && !result.IsValid)
+                if (!result.IsValid)
                     throw new DomainValidationException($"{entity.GetType} with Id {entity.Id} is invalid.");
             }
         }
+    }
 
-        return;
+    private IEntityValidator? GetValidator<TEntity>(TEntity entity)
+    {
+        var entityType = entity!.GetType();
+        var validatorType = typeof(AbstractEntityValidator<>).MakeGenericType(entityType);
+        var validator = (IEntityValidator?)_provider.GetService(validatorType);
+
+        return validator;
     }
 }

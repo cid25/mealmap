@@ -1,6 +1,8 @@
-﻿namespace Mealmap.Domain.Seedwork.Validation;
+﻿using Mealmap.Domain.Common;
 
-public interface IEntityValidator<TEntity>
+namespace Mealmap.Domain.Seedwork.Validation;
+
+public interface IEntityValidator
 {
-    public Task<DomainValidationResult> ValidateAsync(TEntity entity);
+    public Task<DomainValidationResult> ValidateEntityAsync(EntityBase entity);
 }
