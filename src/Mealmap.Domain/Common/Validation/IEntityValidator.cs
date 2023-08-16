@@ -1,6 +1,4 @@
-﻿using Mealmap.Domain.Common;
-
-namespace Mealmap.Domain.Seedwork.Validation;
+﻿namespace Mealmap.Domain.Common.Validation;
 
 public interface IEntityValidator
 {

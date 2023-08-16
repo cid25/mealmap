@@ -1,4 +1,5 @@
 ﻿using Mealmap.Domain.DishAggregate;
+using Mealmap.Domain.Common.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Infrastructure.DataAccess.Repositories;

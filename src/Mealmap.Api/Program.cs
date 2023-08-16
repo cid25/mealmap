@@ -5,14 +5,15 @@ using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.RequestFormatters;
 using Mealmap.Api.Swagger;
-using Mealmap.Domain;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
+using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Infrastructure.DataAccess;
 using Mealmap.Infrastructure.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using Mealmap.Domain.Common.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 

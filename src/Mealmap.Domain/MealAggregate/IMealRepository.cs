@@ -1,4 +1,4 @@
-﻿using Mealmap.Domain.Common;
+﻿using Mealmap.Domain.Common.DataAccess;
 
 namespace Mealmap.Domain.MealAggregate;
 

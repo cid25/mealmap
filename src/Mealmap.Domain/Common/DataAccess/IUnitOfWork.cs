@@ -1,6 +1,6 @@
-﻿using Mealmap.Domain.Seedwork.Validation;
+﻿using Mealmap.Domain.Common.Validation;
 
-namespace Mealmap.Domain;
+namespace Mealmap.Domain.Common.DataAccess;
 
 public interface IUnitOfWork
 {

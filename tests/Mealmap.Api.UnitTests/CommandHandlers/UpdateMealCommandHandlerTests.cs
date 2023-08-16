@@ -2,9 +2,9 @@
 using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
-using Mealmap.Domain;
 using Mealmap.Domain.MealAggregate;
-using Mealmap.Domain.Seedwork.Validation;
+using Mealmap.Domain.Common.DataAccess;
+using Mealmap.Domain.Common.Validation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

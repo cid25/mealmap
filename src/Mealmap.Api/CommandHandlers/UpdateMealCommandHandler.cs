@@ -1,11 +1,10 @@
 ﻿using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
-using Mealmap.Domain;
+using Mealmap.Domain.Common.DataAccess;
+using Mealmap.Domain.Common.Validation;
 using Mealmap.Domain.MealAggregate;
-using Mealmap.Domain.Seedwork.Validation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Api.CommandHandlers;
 
@@ -52,7 +51,7 @@ public class UpdateMealCommandHandler : IRequestHandler<UpdateMealCommand, Comma
             result.Errors.Add(new CommandError(CommandErrorCodes.NotValid, ex.Message));
             return result;
         }
-        catch (DbUpdateConcurrencyException)
+        catch (ConcurrentUpdateException)
         {
             result.Errors.Add(new CommandError(CommandErrorCodes.EtagMismatch, "If-Match Header does not match existing version."));
             return result;

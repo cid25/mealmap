@@ -1,6 +1,6 @@
-﻿using Mealmap.Domain;
-using Mealmap.Domain.Common;
-using Mealmap.Domain.Seedwork.Validation;
+﻿using Mealmap.Domain.Common;
+using Mealmap.Domain.Common.DataAccess;
+using Mealmap.Domain.Common.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Infrastructure.DataAccess;
@@ -15,7 +15,6 @@ public class UnitOfWork : AbstractUnitOfWork
         _context = context;
     }
 
-    /// <exception cref="DomainValidationException"></exception>
     /// <exception cref="ConcurrentUpdateException"></exception>
     protected override async Task SaveChangesAsync()
     {

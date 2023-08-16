@@ -1,7 +1,4 @@
-﻿using Mealmap.Domain.Common;
-using Mealmap.Domain.Seedwork.Validation;
-
-namespace Mealmap.Domain;
+﻿namespace Mealmap.Domain.Common.Validation;
 
 public class DeferredDomainValidator : IDeferredDomainValidator
 {

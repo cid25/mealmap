@@ -1,7 +1,6 @@
-﻿using Mealmap.Domain;
-using Mealmap.Domain.Common;
+﻿using Mealmap.Domain.Common;
 using Mealmap.Domain.MealAggregate;
-using Mealmap.Domain.Seedwork.Validation;
+using Mealmap.Domain.Common.Validation;
 
 namespace Mealmap.Infrastructure.IntegrationTests.DataAccess;
 

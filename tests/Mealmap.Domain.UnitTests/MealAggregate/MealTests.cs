@@ -1,5 +1,5 @@
 ﻿using Mealmap.Domain.MealAggregate;
-using Mealmap.Domain.Seedwork.Validation;
+using Mealmap.Domain.Common.Validation;
 
 namespace Mealmap.Domain.UnitTests.MealAggregate;
 

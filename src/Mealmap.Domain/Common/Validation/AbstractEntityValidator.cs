@@ -1,6 +1,6 @@
 ﻿using Mealmap.Domain.Common;
 
-namespace Mealmap.Domain.Seedwork.Validation;
+namespace Mealmap.Domain.Common.Validation;
 
 public abstract class AbstractEntityValidator<TEntity> : IEntityValidator
     where TEntity : EntityBase

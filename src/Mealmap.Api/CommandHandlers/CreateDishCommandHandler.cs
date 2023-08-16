@@ -1,9 +1,9 @@
 ﻿using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
-using Mealmap.Domain;
 using Mealmap.Domain.DishAggregate;
-using Mealmap.Domain.Seedwork.Validation;
+using Mealmap.Domain.Common.DataAccess;
+using Mealmap.Domain.Common.Validation;
 using MediatR;
 
 namespace Mealmap.Api.CommandHandlers;

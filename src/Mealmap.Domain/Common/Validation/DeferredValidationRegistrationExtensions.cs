@@ -1,7 +1,6 @@
-﻿using Mealmap.Domain.Seedwork.Validation;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Mealmap.Domain;
+namespace Mealmap.Domain.Common.Validation;
 
 public static class DeferredValidationRegistrationExtensions
 {

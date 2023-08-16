@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Mealmap.Domain.Common;
-using Mealmap.Domain.Seedwork.Validation;
+using Mealmap.Domain.Common.Validation;
 
 namespace Mealmap.Domain.DishAggregate;
 

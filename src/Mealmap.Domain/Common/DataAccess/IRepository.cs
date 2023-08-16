@@ -1,4 +1,4 @@
-﻿namespace Mealmap.Domain.Common;
+﻿namespace Mealmap.Domain.Common.DataAccess;
 
 public interface IRepository<T>
 {
