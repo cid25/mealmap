@@ -42,7 +42,7 @@ public class UpdateMealCommandHandler : IRequestHandler<UpdateMealCommand, Comma
         if (_validator.Validate(request) is var validationErrors && validationErrors.Any())
             return notification.WithErrors(validationErrors);
 
-        updatePropertiesFromRequest(meal, request);
+        UpdatePropertiesFromRequest(meal, request);
         _repository.Update(meal);
 
         try
@@ -64,7 +64,7 @@ public class UpdateMealCommandHandler : IRequestHandler<UpdateMealCommand, Comma
         return notification;
     }
 
-    private static void updatePropertiesFromRequest(Meal meal, UpdateMealCommand request)
+    private static void UpdatePropertiesFromRequest(Meal meal, UpdateMealCommand request)
     {
         meal.Version.Set(request.Version);
         meal.DiningDate = request.Dto.DiningDate;

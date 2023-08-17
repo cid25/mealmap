@@ -36,7 +36,7 @@ public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, Comma
         if (dish == null)
             return notification.WithNotFoundError("Dish with id not found.");
 
-        setPropertiesFromRequest(dish, request);
+        SetPropertiesFromRequest(dish, request);
         _repository.Update(dish);
 
         try
@@ -58,7 +58,7 @@ public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, Comma
         return notification;
     }
 
-    private static void setPropertiesFromRequest(Dish dish, UpdateDishCommand request)
+    private static void SetPropertiesFromRequest(Dish dish, UpdateDishCommand request)
     {
         dish.Version.Set(request.Version);
         dish.Name = request.Dto.Name;
