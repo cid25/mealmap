@@ -14,30 +14,33 @@ public class UpdateMealCommandHandler : IRequestHandler<UpdateMealCommand, Comma
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
     private readonly ILogger<UpdateMealCommandHandler> _logger;
+    private readonly ICommandValidator<UpdateMealCommand> _validator;
 
     public UpdateMealCommandHandler(
         IMealRepository repository,
         IUnitOfWork unitOfWork,
         IOutputMapper<MealDTO, Meal> outputMapper,
-        ILogger<UpdateMealCommandHandler> logger)
+        ILogger<UpdateMealCommandHandler> logger,
+        ICommandValidator<UpdateMealCommand> validator)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
         _outputMapper = outputMapper;
         _logger = logger;
+        _validator = validator;
     }
 
     public async Task<CommandNotification<MealDTO>> Handle(UpdateMealCommand request, CancellationToken cancellationToken)
     {
-        CommandNotification<MealDTO> result = new();
+        CommandNotification<MealDTO> notification = new();
 
         var meal = _repository.GetSingleById(request.Id);
 
         if (meal == null)
-        {
-            result.Errors.Add(new CommandError(CommandErrorCodes.NotFound, "Meal with id not found."));
-            return result;
-        }
+            return notification.WithNotFoundError("Meal with id not found.");
+
+        if (_validator.Validate(request) is var validationErrors && validationErrors.Any())
+            return notification.WithErrors(validationErrors);
 
         updatePropertiesFromRequest(meal, request);
         _repository.Update(meal);
@@ -48,19 +51,17 @@ public class UpdateMealCommandHandler : IRequestHandler<UpdateMealCommand, Comma
         }
         catch (DomainValidationException ex)
         {
-            result.Errors.Add(new CommandError(CommandErrorCodes.NotValid, ex.Message));
-            return result;
+            return notification.WithValidationError(ex.Message);
         }
         catch (ConcurrentUpdateException)
         {
-            result.Errors.Add(new CommandError(CommandErrorCodes.EtagMismatch, "If-Match Header does not match existing version."));
-            return result;
+            return notification.WithVersionMismatchError();
         }
 
         _logger.LogInformation("Updated Meal with id {Id}", meal.Id);
-        result.Result = _outputMapper.FromEntity(meal);
+        notification.Result = _outputMapper.FromEntity(meal);
 
-        return result;
+        return notification;
     }
 
     private static void updatePropertiesFromRequest(Meal meal, UpdateMealCommand request)

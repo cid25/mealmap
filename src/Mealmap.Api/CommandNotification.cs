@@ -4,30 +4,42 @@ public class CommandNotification<TResponse>
 {
     public List<CommandError> Errors { get; } = new();
 
-    public bool Success
-    {
-        get => !Errors.Any();
-    }
+    public bool Succeeded { get => !Errors.Any(); }
+
+    public bool Failed { get => Errors.Any(); }
 
     public TResponse? Result { get; set; }
-}
 
-public class CommandError
-{
-    public CommandErrorCodes ErrorCode { get; }
+    public CommandNotification<TResponse> WithError(CommandError theError)
+    {
+        Errors.Add(theError);
+        return this;
+    }
 
-    public string Message { get; } = "";
+    public CommandNotification<TResponse> WithError(CommandErrorCodes errorcode, string message)
+    {
+        return WithError(new CommandError(errorcode, message));
+    }
 
-    public CommandError(CommandErrorCodes errorCode)
-        => ErrorCode = errorCode;
+    public CommandNotification<TResponse> WithErrors(IEnumerable<CommandError> theErrors)
+    {
+        Errors.AddRange(theErrors);
+        return this;
+    }
 
-    public CommandError(CommandErrorCodes errorCode, string message)
-        => (ErrorCode, Message) = (errorCode, message);
-}
+    public CommandNotification<TResponse> WithValidationError(string message)
+    {
+        return WithError(CommandErrorCodes.NotValid, message);
+    }
 
-public enum CommandErrorCodes
-{
-    NotFound,
-    NotValid,
-    EtagMismatch
+    public CommandNotification<TResponse> WithNotFoundError(string message)
+    {
+        return WithError(CommandErrorCodes.NotFound, message);
+    }
+
+    public CommandNotification<TResponse> WithVersionMismatchError(string message
+        = "If-Match Header does not match existing version.")
+    {
+        return WithError(CommandErrorCodes.VersionMismatch, message);
+    }
 }

@@ -144,7 +144,7 @@ public class DishesControllerTests
     public async void PutDish_WhenVersionDoesNotMatch_ReturnsPreconditionFailed()
     {
         CommandNotification<DishDTO> notification = new();
-        notification.Errors.Add(new CommandError(CommandErrorCodes.EtagMismatch));
+        notification.Errors.Add(new CommandError(CommandErrorCodes.VersionMismatch));
         var mediatorMock = new Mock<IMediator>();
         mediatorMock.Setup(m => m.Send(It.IsAny<UpdateDishCommand>(), It.IsAny<CancellationToken>()).Result)
             .Returns(notification);

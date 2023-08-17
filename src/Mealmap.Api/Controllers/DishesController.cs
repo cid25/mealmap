@@ -91,7 +91,7 @@ public class DishesController : ControllerBase
     {
         var result = await _mediator.Send(new CreateDishCommand(dto));
 
-        if (!result.Success && result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotValid))
+        if (!result.Succeeded && result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotValid))
             return BadRequest(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotValid).Select(er => er.Message)));
 
         return CreatedAtAction(nameof(GetDish), new { id = result.Result!.Id }, result.Result);
@@ -124,9 +124,9 @@ public class DishesController : ControllerBase
 
         var result = await _mediator.Send(new UpdateDishCommand(id, _context.IfMatchHeader, dto));
 
-        if (!result.Success)
+        if (!result.Succeeded)
         {
-            if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.EtagMismatch))
+            if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.VersionMismatch))
                 return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
 
             if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotFound))

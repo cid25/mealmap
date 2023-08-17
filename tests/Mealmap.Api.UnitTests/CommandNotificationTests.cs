@@ -9,6 +9,6 @@ public class CommandNotificationTests
 
         notification.Errors.Add(new CommandError(CommandErrorCodes.NotFound, ""));
 
-        notification.Success.Should().BeFalse();
+        notification.Succeeded.Should().BeFalse();
     }
 }

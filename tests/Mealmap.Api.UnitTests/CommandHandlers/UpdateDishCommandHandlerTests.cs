@@ -2,10 +2,9 @@
 using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
-using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
-using Microsoft.EntityFrameworkCore;
+using Mealmap.Domain.DishAggregate;
 using Microsoft.Extensions.Logging;
 
 namespace Mealmap.Api.UnitTests.CommandHandlers;
@@ -72,7 +71,7 @@ public class UpdateDishCommandHandlerTests
     }
 
     [Fact]
-    public async void Handle_WhenSavingThrowsConcurrencyException_ReturnsNotificationWithEtagMismatchError()
+    public async void Handle_WhenSavingThrowsConcurrentUpdateException_ReturnsNotificationWithEtagMismatchError()
     {
         // Arrange
         var aGuid = Guid.NewGuid();
@@ -84,7 +83,7 @@ public class UpdateDishCommandHandlerTests
         var mockRepository = new Mock<IDishRepository>();
         mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(dummyDish);
         var mockUnitOfWork = new Mock<IUnitOfWork>();
-        mockUnitOfWork.Setup(m => m.SaveTransactionAsync()).Throws(new DbUpdateConcurrencyException());
+        mockUnitOfWork.Setup(m => m.SaveTransactionAsync()).Throws(new ConcurrentUpdateException());
         var handler = new UpdateDishCommandHandler(
             mockRepository.Object,
             mockUnitOfWork.Object,
@@ -99,7 +98,7 @@ public class UpdateDishCommandHandlerTests
 
         // Assert
         result.Errors.Should().HaveCount(1);
-        result.Errors[0].ErrorCode.Should().Be(CommandErrorCodes.EtagMismatch);
+        result.Errors[0].ErrorCode.Should().Be(CommandErrorCodes.VersionMismatch);
     }
 
     [Fact]

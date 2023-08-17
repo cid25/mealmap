@@ -1,9 +1,9 @@
 ﻿using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
-using Mealmap.Domain.MealAggregate;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
+using Mealmap.Domain.MealAggregate;
 using MediatR;
 
 namespace Mealmap.Api.CommandHandlers;
@@ -14,35 +14,32 @@ public class CreateMealCommandHandler : IRequestHandler<CreateMealCommand, Comma
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
     private readonly ILogger<CreateMealCommandHandler> _logger;
+    private readonly ICommandValidator<CreateMealCommand> _validator;
 
     public CreateMealCommandHandler(
         IMealRepository repository,
         IUnitOfWork unitOfWork,
         IOutputMapper<MealDTO, Meal> outputMapper,
-        ILogger<CreateMealCommandHandler> logger)
+        ILogger<CreateMealCommandHandler> logger,
+        ICommandValidator<CreateMealCommand> validator)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
         _outputMapper = outputMapper;
         _logger = logger;
+        _validator = validator;
     }
 
     public async Task<CommandNotification<MealDTO>> Handle(CreateMealCommand request, CancellationToken cancellationToken)
     {
-        CommandNotification<MealDTO> result = new();
+        CommandNotification<MealDTO> notification = new();
 
         Meal meal = new(request.Dto.DiningDate);
 
-        try
-        {
-            SetPropertiesFromRequest(meal, request);
-        }
-        catch (DomainValidationException ex)
-        {
-            result.Errors.Add(new CommandError(CommandErrorCodes.NotValid, ex.Message));
-            return result;
-        }
+        if (_validator.Validate(request) is var validationErrors && validationErrors.Any())
+            return notification.WithErrors(validationErrors);
 
+        SetPropertiesFromRequest(meal, request);
         _repository.Add(meal);
 
         try
@@ -51,17 +48,15 @@ public class CreateMealCommandHandler : IRequestHandler<CreateMealCommand, Comma
         }
         catch (DomainValidationException ex)
         {
-            result.Errors.Add(new CommandError(CommandErrorCodes.NotValid, ex.Message));
-            return result;
+            return notification.WithValidationError(ex.Message);
         }
 
         _logger.LogInformation("Created Meal with id {Id}", meal.Id);
-        result.Result = _outputMapper.FromEntity(meal);
+        notification.Result = _outputMapper.FromEntity(meal);
 
-        return result;
+        return notification;
     }
 
-    /// <exception cref="DomainValidationException"/>
     private static void SetPropertiesFromRequest(Meal meal, CreateMealCommand request)
     {
         if (request.Dto.Courses != null)

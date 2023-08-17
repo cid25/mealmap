@@ -32,7 +32,7 @@ public class CreateDishCommandHandlerTests
 
         repository.Verify(m => m.Add(It.IsAny<Dish>()), Times.Once);
         unitOfWork.Verify(m => m.SaveTransactionAsync(), Times.Once);
-        result.Success.Should().BeTrue();
+        result.Succeeded.Should().BeTrue();
         result.Result.Should().NotBeNull();
     }
 
@@ -56,7 +56,7 @@ public class CreateDishCommandHandlerTests
             new CancellationTokenSource().Token
         );
 
-        result.Success.Should().BeFalse();
+        result.Succeeded.Should().BeFalse();
         result.Errors[0].ErrorCode.Should().Be(CommandErrorCodes.NotValid);
     }
 }

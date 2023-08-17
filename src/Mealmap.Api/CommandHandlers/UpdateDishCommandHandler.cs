@@ -29,15 +29,12 @@ public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, Comma
 
     public async Task<CommandNotification<DishDTO>> Handle(UpdateDishCommand request, CancellationToken cancellationToken)
     {
-        CommandNotification<DishDTO> result = new();
+        CommandNotification<DishDTO> notification = new();
 
         var dish = _repository.GetSingleById(request.Id);
 
         if (dish == null)
-        {
-            result.Errors.Add(new CommandError(CommandErrorCodes.NotFound, "Dish with id not found."));
-            return result;
-        }
+            return notification.WithNotFoundError("Dish with id not found.");
 
         setPropertiesFromRequest(dish, request);
         _repository.Update(dish);
@@ -48,19 +45,17 @@ public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, Comma
         }
         catch (DomainValidationException ex)
         {
-            result.Errors.Add(new CommandError(CommandErrorCodes.NotValid, ex.Message));
-            return result;
+            return notification.WithValidationError(ex.Message);
         }
         catch (ConcurrentUpdateException)
         {
-            result.Errors.Add(new CommandError(CommandErrorCodes.EtagMismatch, "If-Match Header does not match existing version."));
-            return result;
+            return notification.WithVersionMismatchError();
         }
 
         _logger.LogInformation("Updated Dish with id {Id}", dish.Id);
-        result.Result = _outputMapper.FromEntity(dish);
+        notification.Result = _outputMapper.FromEntity(dish);
 
-        return result;
+        return notification;
     }
 
     private static void setPropertiesFromRequest(Dish dish, UpdateDishCommand request)

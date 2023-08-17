@@ -96,7 +96,7 @@ public class MealsController : ControllerBase
     {
         var result = await _mediator.Send(new CreateMealCommand(dto));
 
-        if (!result.Success && result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotValid))
+        if (!result.Succeeded && result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotValid))
             return BadRequest(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotValid).Select(er => er.Message)));
 
         return CreatedAtAction(nameof(GetMeal), new { id = result.Result!.Id }, result.Result);
@@ -129,9 +129,9 @@ public class MealsController : ControllerBase
 
         var result = await _mediator.Send(new UpdateMealCommand(id, _context.IfMatchHeader, dto));
 
-        if (!result.Success)
+        if (!result.Succeeded)
         {
-            if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.EtagMismatch))
+            if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.VersionMismatch))
                 return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
 
             if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotFound))

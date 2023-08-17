@@ -146,7 +146,7 @@ public class MealsControllerTests
     public async void PutMeal_WhenVersionDoesNotMatch_ReturnsPreconditionFailed()
     {
         CommandNotification<MealDTO> notification = new();
-        notification.Errors.Add(new CommandError(CommandErrorCodes.EtagMismatch));
+        notification.Errors.Add(new CommandError(CommandErrorCodes.VersionMismatch));
         var mediatorMock = new Mock<IMediator>();
         mediatorMock.Setup(m => m.Send(It.IsAny<UpdateMealCommand>(), It.IsAny<CancellationToken>()).Result)
             .Returns(notification);

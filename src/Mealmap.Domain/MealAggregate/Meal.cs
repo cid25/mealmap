@@ -33,13 +33,13 @@ public class Meal : EntityBase
     public void AddCourse(int index, bool mainCourse, Guid dishId)
     {
         if (mainCourse)
-            ValidateNoMainCourse();
+            ValidateNoExistingMainCourse();
 
         Course course = new(index, mainCourse, dishId);
         AddCourse(course);
     }
 
-    private void ValidateNoMainCourse()
+    private void ValidateNoExistingMainCourse()
     {
         if (_courses.Where(c => c.MainCourse).Any())
             throw new DomainValidationException("There may only be one main course.");

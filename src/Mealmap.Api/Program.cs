@@ -1,19 +1,19 @@
 ﻿using System.Reflection;
 using Mealmap.Api;
-using Mealmap.Api.Behaviors;
+using Mealmap.Api.CommandValidators;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.RequestFormatters;
 using Mealmap.Api.Swagger;
+using Mealmap.Domain.Common.DataAccess;
+using Mealmap.Domain.Common.Validation;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
-using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Infrastructure.DataAccess;
 using Mealmap.Infrastructure.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-using Mealmap.Domain.Common.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,16 +33,17 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IMealRepository, SqlMealRepository>();
 builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
 
+// Add Application Services
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-    cfg.RegisterApplicationBehaviors();
 });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IRequestContext, RequestContext>();
 builder.Services.AddAutoMapper(typeof(AutomapperProfile));
 builder.Services.AddScoped<IOutputMapper<DishDTO, Dish>, DishOutputMapper>();
 builder.Services.AddScoped<IOutputMapper<MealDTO, Meal>, MealOutputMapper>();
+builder.Services.RegisterCommandValidation();
 
 builder.Services.AddControllers(options =>
     options.InputFormatters.Insert(0, new ImageInputFormatter())

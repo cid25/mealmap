@@ -1,9 +1,9 @@
 ﻿using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
-using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
+using Mealmap.Domain.DishAggregate;
 using MediatR;
 
 namespace Mealmap.Api.CommandHandlers;
@@ -29,7 +29,7 @@ public class CreateDishCommandHandler : IRequestHandler<CreateDishCommand, Comma
 
     public async Task<CommandNotification<DishDTO>> Handle(CreateDishCommand request, CancellationToken cancellationToken)
     {
-        CommandNotification<DishDTO> result = new();
+        CommandNotification<DishDTO> notification = new();
 
         Dish dish = new(request.Dto.Name);
 
@@ -39,8 +39,7 @@ public class CreateDishCommandHandler : IRequestHandler<CreateDishCommand, Comma
         }
         catch (DomainValidationException ex)
         {
-            result.Errors.Add(new CommandError(CommandErrorCodes.NotValid, ex.Message));
-            return result;
+            return notification.WithValidationError(ex.Message);
         }
 
         _repository.Add(dish);
@@ -51,14 +50,13 @@ public class CreateDishCommandHandler : IRequestHandler<CreateDishCommand, Comma
         }
         catch (DomainValidationException ex)
         {
-            result.Errors.Add(new CommandError(CommandErrorCodes.NotValid, ex.Message));
-            return result;
+            return notification.WithValidationError(ex.Message);
         }
 
         _logger.LogInformation("Created dish with id {Id}", dish.Id);
-        result.Result = _outputMapper.FromEntity(dish);
+        notification.Result = _outputMapper.FromEntity(dish);
 
-        return result;
+        return notification;
     }
 
     private static void SetPropertiesFromRequest(Dish dish, CreateDishCommand request)
