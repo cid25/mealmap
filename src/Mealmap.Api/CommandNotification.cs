@@ -21,7 +21,7 @@ public class CommandNotification<TResponse>
         return WithError(new CommandError(errorcode, message));
     }
 
-    public CommandNotification<TResponse> WithErrors(IEnumerable<CommandError> theErrors)
+    public CommandNotification<TResponse> WithErrors(IReadOnlyCollection<CommandError> theErrors)
     {
         Errors.AddRange(theErrors);
         return this;

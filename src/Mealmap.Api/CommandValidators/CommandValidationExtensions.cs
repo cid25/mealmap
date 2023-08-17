@@ -3,7 +3,7 @@
 public static class CommandValidationExtensions
 {
     public static List<CommandError> PotentiallyWithErrorsFrom(this List<CommandError> errors,
-        IEnumerable<CommandError> furtherErrors)
+        ICollection<CommandError> furtherErrors)
     {
         errors.AddRange(furtherErrors);
         return errors;

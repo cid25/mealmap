@@ -18,7 +18,7 @@ public class MealCommandValidations
         return null;
     }
 
-    public IEnumerable<CommandError> ValidateDishesExist(MealDTO dto)
+    public ICollection<CommandError> ValidateDishesExist(MealDTO dto)
     {
         List<CommandError> errors = new();
 

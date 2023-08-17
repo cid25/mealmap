@@ -119,7 +119,8 @@ public class UpdateMealCommandHandlerTests
             mockUnitOfWork.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            Mock.Of<ICommandValidator<UpdateMealCommand>>()
+            Mock.Of<ICommandValidator<UpdateMealCommand>>(m => m.Validate(It.IsAny<UpdateMealCommand>()) ==
+                new List<CommandError>())
         );
 
         // Act
@@ -149,7 +150,8 @@ public class UpdateMealCommandHandlerTests
             mockUnitOfWork.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            Mock.Of<ICommandValidator<UpdateMealCommand>>()
+            Mock.Of<ICommandValidator<UpdateMealCommand>>(m => m.Validate(It.IsAny<UpdateMealCommand>()) ==
+                new List<CommandError>())
         );
 
         // Act

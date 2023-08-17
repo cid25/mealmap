@@ -12,12 +12,13 @@ public class UpdateMealCommandValidator : ICommandValidator<UpdateMealCommand>
         _validations = validations;
     }
 
-    public virtual IEnumerable<CommandError> Validate(UpdateMealCommand command)
+    public virtual IReadOnlyCollection<CommandError> Validate(UpdateMealCommand command)
     {
         List<CommandError> errors = new();
 
         return errors
             .PotentiallyWithErrorFrom(_validations.ValidateSingleMainCourseOnly(command.Dto))
-            .PotentiallyWithErrorsFrom(_validations.ValidateDishesExist(command.Dto));
+            .PotentiallyWithErrorsFrom(_validations.ValidateDishesExist(command.Dto))
+            .AsReadOnly();
     }
 }
