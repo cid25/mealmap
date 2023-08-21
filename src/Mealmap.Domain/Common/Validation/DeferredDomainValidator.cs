@@ -1,5 +1,6 @@
 ﻿namespace Mealmap.Domain.Common.Validation;
 
+/// <inheritdoc cref="IDeferredDomainValidator" />
 public class DeferredDomainValidator : IDeferredDomainValidator
 {
     private readonly IServiceProvider _provider;

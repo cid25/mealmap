@@ -16,15 +16,20 @@ public class UnitOfWork : AbstractUnitOfWork
     }
 
     /// <exception cref="ConcurrentUpdateException"></exception>
+    /// <exception cref="DbUpdateException"></exception>
     protected override async Task SaveChangesAsync()
     {
         try
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException)
+        catch (DbUpdateConcurrencyException ex)
         {
-            throw new ConcurrentUpdateException("An entity has been modified concurrently.");
+            throw new ConcurrentUpdateException("An entity has been modified concurrently.", ex);
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new UpdateException("An issue has occured when trying to persist changes.", ex);
         }
     }
 
