@@ -13,85 +13,110 @@ using Mealmap.Infrastructure.DataAccess;
 using Mealmap.Infrastructure.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using Swashbuckle.AspNetCore.Filters;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateLogger();
 
-
-// Add Configuration
-builder.Services.Configure<HostingOptions>(
-    builder.Configuration.GetSection(HostingOptions.SectionName));
-
-// Add Domain Services
-builder.Services.RegisterDeferredDomainValidation();
-
-// Add Infrastructure Services
-builder.Services.AddDbContext<MealmapDbContext>(options
-    => options.UseSqlServer(
-        builder.Configuration.GetConnectionString("MealmapDb")));
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IMealRepository, SqlMealRepository>();
-builder.Services.AddScoped<IDishRepository, SqlDishRepository>();
-
-// Add Application Services
-builder.Services.AddMediatR(cfg =>
+try
 {
-    cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-});
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IRequestContext, RequestContext>();
-builder.Services.AddAutoMapper(typeof(AutomapperProfile));
-builder.Services.AddScoped<IOutputMapper<DishDTO, Dish>, DishOutputMapper>();
-builder.Services.AddScoped<IOutputMapper<MealDTO, Meal>, MealOutputMapper>();
-builder.Services.RegisterCommandValidation();
+    Log.Information("Starting web application");
 
-builder.Services.AddControllers(options =>
-    options.InputFormatters.Insert(0, new ImageInputFormatter())
-    )
-    .ConfigureApiBehaviorOptions(options =>
-        options.SuppressMapClientErrors = true
+    var builder = WebApplication.CreateBuilder(args);
+    builder.Host.UseSerilog();
+
+    // Add Configuration
+    builder.Services.Configure<HostingOptions>(
+        builder.Configuration.GetSection(HostingOptions.SectionName));
+
+    // Add Domain Services
+    builder.Services.RegisterDeferredDomainValidation();
+
+    // Add Infrastructure Services
+    builder.Services.AddDbContext<MealmapDbContext>(options
+        => options.UseSqlServer(
+            builder.Configuration.GetConnectionString("MealmapDb")));
+    builder.Services
+        .AddScoped<IUnitOfWork, UnitOfWork>()
+        .AddScoped<IMealRepository, SqlMealRepository>()
+        .AddScoped<IDishRepository, SqlDishRepository>();
+
+    // Add Application Services
+    builder.Services.AddMediatR(cfg =>
+    {
+        cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+    });
+    builder.Services
+        .AddHttpContextAccessor()
+        .AddScoped<IRequestContext, RequestContext>()
+        .AddAutoMapper(typeof(AutomapperProfile))
+        .AddScoped<IOutputMapper<DishDTO, Dish>, DishOutputMapper>()
+        .AddScoped<IOutputMapper<MealDTO, Meal>, MealOutputMapper>()
+        .RegisterCommandValidation();
+
+    builder.Services.AddControllers(options =>
+        options.InputFormatters.Insert(0, new ImageInputFormatter())
+        )
+        .ConfigureApiBehaviorOptions(options =>
+            options.SuppressMapClientErrors = true
+        );
+
+    // Add Swashbuckle
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerOperationExamples();
+    builder.Services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Mealmap API",
+                Description = "An API for managing dishes and meals."
+            });
+
+            options.DocumentFilter<ServersDocumentFilter>();
+            options.OperationFilter<IfMatchHeaderFilter>();
+            options.CustomSchemaIds(type => type.Name.Replace("DTO", string.Empty));
+            options.ExampleFilters();
+
+            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+        }
     );
 
-// Add Swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerOperationExamples();
-builder.Services.AddSwaggerGen(options =>
+    var app = builder.Build();
+
+    app.UseSerilogRequestLogging();
+
+    if (app.Environment.IsDevelopment())
     {
-        options.SwaggerDoc("v1", new OpenApiInfo
+        app.UseSwagger(c => c.RouteTemplate = "api/swagger/{documentname}/swagger.json");
+        app.UseSwaggerUI(c =>
         {
-            Version = "v1",
-            Title = "Mealmap API",
-            Description = "An API for managing dishes and meals."
+            c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "Mealmap API");
+            c.RoutePrefix = "api/swagger";
         });
-
-        options.DocumentFilter<ServersDocumentFilter>();
-        options.OperationFilter<IfMatchHeaderFilter>();
-        options.CustomSchemaIds(type => type.Name.Replace("DTO", string.Empty));
-        options.ExampleFilters();
-
-        var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
     }
-);
 
-var app = builder.Build();
+    app.UseHttpsRedirection();
 
-if (app.Environment.IsDevelopment())
+    app.MapControllers();
+
+    app.Run();
+}
+catch (Exception ex)
 {
-    app.UseSwagger(c => c.RouteTemplate = "api/swagger/{documentname}/swagger.json");
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "Mealmap API");
-        c.RoutePrefix = "api/swagger";
-    });
+    Log.Fatal(ex, "Application terminated unexpectedly.");
+}
+finally
+{
+    Log.CloseAndFlush();
 }
 
-app.UseHttpsRedirection();
 
-app.MapControllers();
-
-app.Run();
-
-
-
+// required for Boundary Tests
 public partial class Program { }

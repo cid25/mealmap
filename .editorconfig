@@ -26,6 +26,7 @@ charset = utf-8-bom
 dotnet_diagnostic.CA1824.severity = none
 dotnet_diagnostic.CA1848.severity = none
 dotnet_diagnostic.CA2254.severity = none
+dotnet_diagnostic.CA1305.severity = none
 ###############################
 # .NET Coding Conventions     #
 ###############################
@@ -142,6 +143,7 @@ csharp_style_prefer_method_group_conversion = true:silent
 csharp_style_prefer_top_level_statements = true:silent
 csharp_style_expression_bodied_lambdas = true:silent
 csharp_style_expression_bodied_local_functions = false:silent
+csharp_style_prefer_primary_constructors = true:suggestion
 ###############################
 # VB Coding Conventions       #
 ###############################
