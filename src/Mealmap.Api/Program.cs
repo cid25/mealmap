@@ -61,10 +61,8 @@ try
 
     builder.Services.AddControllers(options =>
         options.InputFormatters.Insert(0, new ImageInputFormatter())
-        )
-        .ConfigureApiBehaviorOptions(options =>
-            options.SuppressMapClientErrors = true
         );
+    builder.Services.AddProblemDetails();
 
     // Add Swashbuckle
     builder.Services.AddEndpointsApiExplorer();
@@ -105,6 +103,7 @@ try
     app.UseExceptionHandler("/api/error");
 
     app.UseHttpsRedirection();
+    app.UseStatusCodePages();
 
     app.MapControllers();
 
