@@ -102,6 +102,8 @@ try
         });
     }
 
+    app.UseExceptionHandler("/api/error");
+
     app.UseHttpsRedirection();
 
     app.MapControllers();
