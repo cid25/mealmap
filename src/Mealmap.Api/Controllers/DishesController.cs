@@ -90,7 +90,8 @@ public class DishesController : ControllerBase
     [SwaggerResponseExample(201, typeof(DishResponseExampleWithIdAndEtag))]
     public async Task<ActionResult<DishDTO>> PostDish([FromBody] DishDTO dto)
     {
-        var result = await _mediator.Send(new CreateDishCommand(dto));
+        var command = new CreateDishCommand(dto);
+        var result = await _mediator.Send(command);
 
         if (!result.Succeeded && result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotValid))
             return BadRequest(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotValid).Select(er => er.Message)));
@@ -123,7 +124,8 @@ public class DishesController : ControllerBase
         if (String.IsNullOrEmpty(_context.IfMatchHeader))
             return new StatusCodeResult(StatusCodes.Status428PreconditionRequired);
 
-        var result = await _mediator.Send(new UpdateDishCommand(id, _context.IfMatchHeader, dto));
+        var command = new UpdateDishCommand(id, _context.IfMatchHeader, dto);
+        var result = await _mediator.Send(command);
 
         if (!result.Succeeded)
         {

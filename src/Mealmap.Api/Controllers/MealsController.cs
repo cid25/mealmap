@@ -95,7 +95,8 @@ public class MealsController : ControllerBase
     [SwaggerResponseExample(201, typeof(MealResponseExampleWithIdAndEtag))]
     public async Task<ActionResult<MealDTO>> PostMeal([FromBody] MealDTO dto)
     {
-        var result = await _mediator.Send(new CreateMealCommand(dto));
+        var command = new CreateMealCommand(dto);
+        var result = await _mediator.Send(command);
 
         if (!result.Succeeded && result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.NotValid))
             return BadRequest(String.Join(", ", result.Errors.Where(e => e.ErrorCode == CommandErrorCodes.NotValid).Select(er => er.Message)));
@@ -128,7 +129,8 @@ public class MealsController : ControllerBase
         if (String.IsNullOrEmpty(_context.IfMatchHeader))
             return new StatusCodeResult(StatusCodes.Status428PreconditionRequired);
 
-        var result = await _mediator.Send(new UpdateMealCommand(id, _context.IfMatchHeader, dto));
+        var command = new UpdateMealCommand(id, _context.IfMatchHeader, dto);
+        var result = await _mediator.Send(command);
 
         if (!result.Succeeded)
         {

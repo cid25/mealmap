@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Mealmap.Api;
+using Mealmap.Api.CommandHandlers;
 using Mealmap.Api.CommandValidators;
-using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.RequestFormatters;
 using Mealmap.Api.Swagger;
@@ -47,17 +47,12 @@ try
         .AddScoped<IDishRepository, SqlDishRepository>();
 
     // Add Application Services
-    builder.Services.AddMediatR(cfg =>
-    {
-        cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-    });
     builder.Services
         .AddHttpContextAccessor()
         .AddScoped<IRequestContext, RequestContext>()
-        .AddAutoMapper(typeof(AutomapperProfile))
-        .AddScoped<IOutputMapper<DishDTO, Dish>, DishOutputMapper>()
-        .AddScoped<IOutputMapper<MealDTO, Meal>, MealOutputMapper>()
-        .RegisterCommandValidation();
+        .RegisterCommandValidation()
+        .AddCommandHandlers()
+        .AddOutputMappers();
 
     builder.Services.AddControllers(options =>
         options.InputFormatters.Insert(0, new ImageInputFormatter())
