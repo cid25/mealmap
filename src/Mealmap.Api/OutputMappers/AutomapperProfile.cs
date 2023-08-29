@@ -15,7 +15,6 @@ public class AutomapperProfile : Profile
         CreateMap<UnitOfMeasurement, string>()
             .ConvertUsing(unit => unit.Stringify());
         CreateMap<Ingredient, IngredientDTO>();
-        CreateMap<Dish, Guid>();
         CreateMap<Dish, DishDTO>()
             .ForMember(dto => dto.ImageUrl, opt => opt.Ignore())
             .ForMember(dto => dto.ETag, opt => { opt.MapFrom(dish => dish.Version); });
