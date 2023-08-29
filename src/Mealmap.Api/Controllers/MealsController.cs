@@ -11,6 +11,7 @@ namespace Mealmap.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
 public class MealsController : ControllerBase
 {
     private readonly ILogger<MealsController> _logger;
@@ -65,7 +66,7 @@ public class MealsController : ControllerBase
     [HttpGet("{id}", Name = nameof(GetMeal))]
     [Produces("application/json")]
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [SwaggerResponseExample(200, typeof(MealResponseExampleWithIdAndEtag))]
     public ActionResult<MealDTO> GetMeal([FromRoute] Guid id)
     {
@@ -89,7 +90,7 @@ public class MealsController : ControllerBase
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [SwaggerRequestExample(typeof(MealDTO), typeof(MealRequestExampleWithoutIdAndEtag))]
     [SwaggerResponseExample(201, typeof(MealResponseExampleWithIdAndEtag))]
     public async Task<ActionResult<MealDTO>> PostMeal([FromBody] MealDTO dto)
@@ -116,10 +117,10 @@ public class MealsController : ControllerBase
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status412PreconditionFailed)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status428PreconditionRequired)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status412PreconditionFailed)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status428PreconditionRequired)]
     [SwaggerRequestExample(typeof(MealDTO), typeof(MealRequestExampleWithIdWithoutEtag))]
     [SwaggerResponseExample(200, typeof(MealResponseExampleWithIdAndEtag))]
     public async Task<ActionResult<MealDTO>> PutMeal([FromRoute] Guid id, [FromBody] MealDTO dto)
@@ -153,7 +154,7 @@ public class MealsController : ControllerBase
     [HttpDelete("{id}", Name = nameof(DeleteMeal))]
     [Produces("application/json")]
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [SwaggerResponseExample(200, typeof(MealResponseExampleWithIdAndEtag))]
     public ActionResult<MealDTO> DeleteMeal([FromRoute] Guid id)
     {

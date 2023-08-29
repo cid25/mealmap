@@ -12,6 +12,7 @@ namespace Mealmap.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
 public class DishesController : ControllerBase
 {
     private readonly ILogger<DishesController> _logger;
@@ -58,7 +59,7 @@ public class DishesController : ControllerBase
     [HttpGet("{id}", Name = nameof(GetDish))]
     [Produces("application/json")]
     [ProducesResponseType(typeof(DishDTO), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [SwaggerResponseExample(200, typeof(DishResponseExampleWithIdAndEtag))]
     public ActionResult<DishDTO> GetDish([FromRoute] Guid id)
     {
@@ -84,7 +85,7 @@ public class DishesController : ControllerBase
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(DishDTO), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [SwaggerRequestExample(typeof(DishDTO), typeof(DishRequestExampleWithoutIdAndEtag))]
     [SwaggerResponseExample(201, typeof(DishResponseExampleWithIdAndEtag))]
     public async Task<ActionResult<DishDTO>> PostDish([FromBody] DishDTO dto)
@@ -111,10 +112,10 @@ public class DishesController : ControllerBase
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(DishDTO), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status412PreconditionFailed)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status428PreconditionRequired)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status412PreconditionFailed)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status428PreconditionRequired)]
     [SwaggerRequestExample(typeof(DishDTO), typeof(DishRequestExampleWithIdWithoutEtag))]
     [SwaggerResponseExample(200, typeof(DishResponseExampleWithIdAndEtag))]
     public async Task<ActionResult<DishDTO>> PutDish([FromRoute] Guid id, [FromBody] DishDTO dto)
@@ -148,7 +149,7 @@ public class DishesController : ControllerBase
     [HttpDelete("{id}", Name = nameof(DeleteDish))]
     [Produces("application/json")]
     [ProducesResponseType(typeof(DishDTO), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [SwaggerResponseExample(200, typeof(DishResponseExampleWithIdAndEtag))]
     public ActionResult<DishDTO> DeleteDish([FromRoute] Guid id)
     {
@@ -175,9 +176,9 @@ public class DishesController : ControllerBase
     [HttpPut("{id}/image", Name = nameof(PutDishImage))]
     [Consumes("image/jpeg", "image/png")]
     [ProducesResponseType(typeof(void), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status415UnsupportedMediaType)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status415UnsupportedMediaType)]
     [SwaggerResponseExample(201, typeof(DishResponseExampleWithIdAndEtag))]
     public ActionResult PutDishImage([FromRoute] Guid id, [FromBody] Image image)
     {
@@ -199,14 +200,14 @@ public class DishesController : ControllerBase
     /// Retrieves the image of a specific dish.
     /// </summary>
     /// <param name="id">The id of the dish to retrieve the image from.</param>
-    /// <response code="201">Image Set</response>
+    /// <response code="200">Image Set</response>
     /// <response code="204">No Image</response>
     /// <response code="404">Dish Not Found</response>
     [HttpGet("{id}/image", Name = nameof(GetDishImage))]
     [Produces("image/jpeg", "image/png")]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public ActionResult GetDishImage([FromRoute] Guid id)
     {
         var dish = _repository.GetSingleById(id);
@@ -229,7 +230,7 @@ public class DishesController : ControllerBase
     [HttpDelete("{id}/image")]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public ActionResult DeleteDishImage([FromRoute] Guid id)
     {
         var dish = _repository.GetSingleById(id);
