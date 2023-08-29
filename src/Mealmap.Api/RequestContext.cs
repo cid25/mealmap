@@ -15,5 +15,5 @@ public class RequestContext : IRequestContext
 
     public string Method => _context != null ? _context.Request.Method : string.Empty;
 
-    public string? IfMatchHeader => _context?.Request.Headers.IfMatch.First();
+    public string? IfMatchHeader => _context != null && _context.Request.Headers.IfMatch.Any() ? _context?.Request.Headers.IfMatch.First() : null;
 }
