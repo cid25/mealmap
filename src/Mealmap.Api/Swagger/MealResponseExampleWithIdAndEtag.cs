@@ -11,6 +11,7 @@ public class MealResponseExampleWithIdAndEtag : IExamplesProvider<MealDTO>
         return new MealDTO()
         {
             Id = Guid.NewGuid(),
+            ETag = "AAAAAAAAB9E=",
             DiningDate = DateOnly.FromDateTime(DateTime.Now),
             Courses = new[] {
                 new CourseDTO()

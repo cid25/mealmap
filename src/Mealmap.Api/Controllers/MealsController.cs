@@ -43,7 +43,7 @@ public class MealsController : ControllerBase
     /// <param name="toDate">Date until which to include meals.</param>
     [HttpGet(Name = nameof(GetMeals))]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<MealDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
     public ActionResult<IEnumerable<MealDTO>> GetMeals([FromQuery] DateOnly? fromDate, [FromQuery] DateOnly? toDate)
     {
