@@ -11,11 +11,11 @@ public class DishDataTransferObjectValidator : AbstractValidator<DishDTO>
         RuleForEach(dto => dto.Ingredients).ChildRules(ingredient =>
         {
             ingredient.RuleFor(i => i.Quantity).GreaterThan(0m)
-                .WithMessage($"The quantity of an ingredient must be greater than zero.");
+                .WithMessage("The quantity of an ingredient must be greater than zero, but is {PropertyValue}.");
 
             ingredient.RuleFor(i => i.UnitOfMeasurement).Must(unitOfMeasurement =>
                 Enum.IsDefined(typeof(UnitOfMeasurementCodes), unitOfMeasurement))
-                .WithMessage("The unit of measurement does not match one of the predefined ones.");
+                .WithMessage("The unit of measurement '{PropertyValue}' does not match one of the predefined ones.");
         });
     }
 }

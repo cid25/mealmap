@@ -21,7 +21,7 @@ public class MealDataTransferObjectValidator : AbstractValidator<MealDTO>
             .ChildRules(course =>
                 course.RuleFor(c => c.DishId)
                     .Must(id => _dishRepository.GetSingleById(id) != null)
-                    .WithMessage("A given dish of a course does not exist."))
+                    .WithMessage("The dish with id '{PropertyValue}' does not exist."))
             .When(dto => dto.Courses != null);
     }
 }
