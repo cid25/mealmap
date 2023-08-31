@@ -36,7 +36,10 @@ public record UnitOfMeasurement
     internal UnitOfMeasurement(UnitOfMeasurementCodes unitOfMeasurementCode)
     {
         var unit = _units.First(u => u.UnitOfMeasurementCode == unitOfMeasurementCode);
-        (UnitOfMeasurementCode, Symbol, Measure) = (unitOfMeasurementCode, unit.Symbol, unit.Measure);
+
+        UnitOfMeasurementCode = unitOfMeasurementCode;
+        Symbol = unit.Symbol;
+        Measure = unit.Measure;
     }
 
     /// <exception cref="DomainValidationException"></exception>

@@ -41,8 +41,8 @@ public class Ingredient : IEquatable<Ingredient>
     {
         if (other is null)
             return false;
-        return (Quantity, UnitOfMeasurement.UnitOfMeasurementCode, Description)
-            == (other.Quantity, other.UnitOfMeasurement.UnitOfMeasurementCode, other.Description);
+        return (Quantity, UnitOfMeasurement, Description)
+            == (other.Quantity, other.UnitOfMeasurement, other.Description);
     }
 
     public override bool Equals(object? obj)
