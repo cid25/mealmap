@@ -5,11 +5,11 @@ namespace Mealmap.Api;
 
 public class CreateMealCommandValidator : ICommandValidator<CreateMealCommand>
 {
-    private readonly MealCommandValidations _validations;
+    private readonly MealCommandValidator _mealValidator;
 
-    public CreateMealCommandValidator(MealCommandValidations validations)
+    public CreateMealCommandValidator(MealCommandValidator validations)
     {
-        _validations = validations;
+        _mealValidator = validations;
     }
 
     public virtual IReadOnlyCollection<CommandError> Validate(CreateMealCommand command)
@@ -17,8 +17,8 @@ public class CreateMealCommandValidator : ICommandValidator<CreateMealCommand>
         List<CommandError> errors = new();
 
         return errors
-            .PotentiallyWithErrorFrom(_validations.ValidateSingleMainCourseOnly(command.Dto))
-            .PotentiallyWithErrorsFrom(_validations.ValidateDishesExist(command.Dto))
+            .PotentiallyWithErrorFrom(_mealValidator.ValidateSingleMainCourseOnly(command.Dto))
+            .PotentiallyWithErrorsFrom(_mealValidator.ValidateDishesExist(command.Dto))
             .AsReadOnly();
     }
 }

@@ -5,9 +5,9 @@ namespace Mealmap.Api;
 
 public class UpdateMealCommandValidator : ICommandValidator<UpdateMealCommand>
 {
-    private readonly MealCommandValidations _validations;
+    private readonly MealCommandValidator _validations;
 
-    public UpdateMealCommandValidator(MealCommandValidations validations)
+    public UpdateMealCommandValidator(MealCommandValidator validations)
     {
         _validations = validations;
     }

@@ -3,11 +3,11 @@ using Mealmap.Domain.DishAggregate;
 
 namespace Mealmap.Api.CommandValidators;
 
-public class MealCommandValidations
+public class MealCommandValidator
 {
     private readonly IDishRepository _repository;
 
-    public MealCommandValidations(IDishRepository repository)
+    public MealCommandValidator(IDishRepository repository)
         => _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
     public CommandError? ValidateSingleMainCourseOnly(MealDTO dto)

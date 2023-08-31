@@ -19,7 +19,7 @@ public class MealCommandValidationsTests
             }
         };
 
-        var validations = new MealCommandValidations(Mock.Of<IDishRepository>());
+        var validations = new MealCommandValidator(Mock.Of<IDishRepository>());
 
         // Act
         var result = validations.ValidateSingleMainCourseOnly(dto);
@@ -41,7 +41,7 @@ public class MealCommandValidationsTests
             }
         };
 
-        var validations = new MealCommandValidations(Mock.Of<IDishRepository>());
+        var validations = new MealCommandValidator(Mock.Of<IDishRepository>());
 
         // Act
         var result = validations.ValidateSingleMainCourseOnly(dto);
@@ -63,7 +63,7 @@ public class MealCommandValidationsTests
         };
         var mockDishRepository = Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>())
             == new Dish("fakeName"));
-        var validations = new MealCommandValidations(mockDishRepository);
+        var validations = new MealCommandValidator(mockDishRepository);
 
         // Act
         var result = validations.ValidateDishesExist(dto);
@@ -84,7 +84,7 @@ public class MealCommandValidationsTests
             }
         };
         var mockDishRepository = Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == null);
-        var validations = new MealCommandValidations(mockDishRepository);
+        var validations = new MealCommandValidator(mockDishRepository);
 
         // Act
         var result = validations.ValidateDishesExist(dto);

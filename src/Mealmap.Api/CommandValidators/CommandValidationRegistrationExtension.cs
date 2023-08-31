@@ -7,7 +7,7 @@ public static class CommandValidationRegistrationExtension
     public static IServiceCollection RegisterCommandValidation(this IServiceCollection services)
     {
         return services
-            .AddScoped(typeof(MealCommandValidations))
+            .AddScoped(typeof(MealCommandValidator))
             .AddScoped<ICommandValidator<UpdateMealCommand>, UpdateMealCommandValidator>()
             .AddScoped<ICommandValidator<CreateMealCommand>, CreateMealCommandValidator>();
     }
