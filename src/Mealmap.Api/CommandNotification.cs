@@ -1,4 +1,6 @@
-﻿namespace Mealmap.Api;
+﻿using FluentValidation.Results;
+
+namespace Mealmap.Api;
 
 public class CommandNotification<TResponse>
 {
@@ -24,6 +26,13 @@ public class CommandNotification<TResponse>
     public CommandNotification<TResponse> WithErrors(IReadOnlyCollection<CommandError> theErrors)
     {
         Errors.AddRange(theErrors);
+        return this;
+    }
+
+    public CommandNotification<TResponse> WithValidationErrorsFrom(ValidationResult validationResult)
+    {
+        validationResult.Errors.ForEach(e => Errors.Add(
+            new CommandError(CommandErrorCodes.NotValid, e.ErrorMessage)));
         return this;
     }
 

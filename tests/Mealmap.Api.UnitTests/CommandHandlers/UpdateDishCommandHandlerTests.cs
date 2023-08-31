@@ -1,5 +1,6 @@
 ﻿using Mealmap.Api.CommandHandlers;
 using Mealmap.Api.Commands;
+using Mealmap.Api.CommandValidators;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Domain.Common.DataAccess;
@@ -29,7 +30,8 @@ public class UpdateDishCommandHandlerTests
             mockRepository.Object,
             mockUnitOfWork.Object,
             Mock.Of<IOutputMapper<DishDTO, Dish>>(m => m.FromEntity(dummyDish) == dto),
-            Mock.Of<ILogger<UpdateDishCommandHandler>>()
+            Mock.Of<ILogger<UpdateDishCommandHandler>>(),
+            new DishDataTransferObjectValidator()
         );
 
         // Act
@@ -57,7 +59,8 @@ public class UpdateDishCommandHandlerTests
             mockRepository.Object,
             Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
-            Mock.Of<ILogger<UpdateDishCommandHandler>>()
+            Mock.Of<ILogger<UpdateDishCommandHandler>>(),
+            new DishDataTransferObjectValidator()
         );
 
         // Act
@@ -88,7 +91,8 @@ public class UpdateDishCommandHandlerTests
             mockRepository.Object,
             mockUnitOfWork.Object,
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
-            Mock.Of<ILogger<UpdateDishCommandHandler>>()
+            Mock.Of<ILogger<UpdateDishCommandHandler>>(),
+            new DishDataTransferObjectValidator()
         );
 
         // Act
@@ -119,7 +123,8 @@ public class UpdateDishCommandHandlerTests
             mockRepository.Object,
             mockUnitOfWork.Object,
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
-            Mock.Of<ILogger<UpdateDishCommandHandler>>()
+            Mock.Of<ILogger<UpdateDishCommandHandler>>(),
+            new DishDataTransferObjectValidator()
         );
 
         // Act

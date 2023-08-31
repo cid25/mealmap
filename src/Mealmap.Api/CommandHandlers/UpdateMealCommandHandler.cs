@@ -1,5 +1,6 @@
 ﻿using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
+using Mealmap.Api.DataTransferObjectValidators;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
@@ -14,14 +15,14 @@ public class UpdateMealCommandHandler : IRequestHandler<UpdateMealCommand, Comma
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
     private readonly ILogger<UpdateMealCommandHandler> _logger;
-    private readonly ICommandValidator<UpdateMealCommand> _validator;
+    private readonly MealDataTransferObjectValidator _validator;
 
     public UpdateMealCommandHandler(
         IMealRepository repository,
         IUnitOfWork unitOfWork,
         IOutputMapper<MealDTO, Meal> outputMapper,
         ILogger<UpdateMealCommandHandler> logger,
-        ICommandValidator<UpdateMealCommand> validator)
+        MealDataTransferObjectValidator validator)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
@@ -39,8 +40,8 @@ public class UpdateMealCommandHandler : IRequestHandler<UpdateMealCommand, Comma
         if (meal == null)
             return notification.WithNotFoundError("Meal with id not found.");
 
-        if (_validator.Validate(request) is var validationErrors && validationErrors.Any())
-            return notification.WithErrors(validationErrors);
+        if (_validator.Validate(request.Dto) is var validationResult && validationResult.Errors.Any())
+            return notification.WithValidationErrorsFrom(validationResult);
 
         UpdatePropertiesFromRequest(meal, request);
         _repository.Update(meal);

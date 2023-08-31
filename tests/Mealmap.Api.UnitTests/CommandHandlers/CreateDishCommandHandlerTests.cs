@@ -1,10 +1,11 @@
 ﻿using Mealmap.Api.CommandHandlers;
 using Mealmap.Api.Commands;
+using Mealmap.Api.CommandValidators;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
-using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
+using Mealmap.Domain.DishAggregate;
 using Microsoft.Extensions.Logging;
 
 namespace Mealmap.Api.UnitTests.CommandHandlers;
@@ -20,7 +21,8 @@ public class CreateDishCommandHandlerTests
             repository.Object,
             unitOfWork.Object,
             Mock.Of<IOutputMapper<DishDTO, Dish>>(m => m.FromEntity(It.IsAny<Dish>()) == new DishDTO("fakeName")),
-            Mock.Of<ILogger<CreateDishCommandHandler>>()
+            Mock.Of<ILogger<CreateDishCommandHandler>>(),
+            new DishDataTransferObjectValidator()
         );
 
         DishDTO dto = new("fakeName");
@@ -46,7 +48,8 @@ public class CreateDishCommandHandlerTests
             repository.Object,
             unitOfWork.Object,
             Mock.Of<IOutputMapper<DishDTO, Dish>>(m => m.FromEntity(It.IsAny<Dish>()) == new DishDTO("fakeName")),
-            Mock.Of<ILogger<CreateDishCommandHandler>>()
+            Mock.Of<ILogger<CreateDishCommandHandler>>(),
+            new DishDataTransferObjectValidator()
         );
 
         DishDTO dto = new("fakeName");

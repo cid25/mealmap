@@ -1,5 +1,6 @@
 ﻿using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
+using Mealmap.Api.DataTransferObjectValidators;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
@@ -14,14 +15,14 @@ public class CreateMealCommandHandler : IRequestHandler<CreateMealCommand, Comma
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
     private readonly ILogger<CreateMealCommandHandler> _logger;
-    private readonly ICommandValidator<CreateMealCommand> _validator;
+    private readonly MealDataTransferObjectValidator _validator;
 
     public CreateMealCommandHandler(
         IMealRepository repository,
         IUnitOfWork unitOfWork,
         IOutputMapper<MealDTO, Meal> outputMapper,
         ILogger<CreateMealCommandHandler> logger,
-        ICommandValidator<CreateMealCommand> validator)
+        MealDataTransferObjectValidator validator)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
@@ -34,10 +35,10 @@ public class CreateMealCommandHandler : IRequestHandler<CreateMealCommand, Comma
     {
         CommandNotification<MealDTO> notification = new();
 
-        Meal meal = new(request.Dto.DiningDate);
+        if (_validator.Validate(request.Dto) is var validationResult && validationResult.Errors.Any())
+            return notification.WithValidationErrorsFrom(validationResult);
 
-        if (_validator.Validate(request) is var validationErrors && validationErrors.Any())
-            return notification.WithErrors(validationErrors);
+        Meal meal = new(request.Dto.DiningDate);
 
         SetPropertiesFromRequest(meal, request);
         _repository.Add(meal);

@@ -50,7 +50,7 @@ try
     builder.Services
         .AddHttpContextAccessor()
         .AddScoped<IRequestContext, RequestContext>()
-        .RegisterCommandValidation()
+        .AddDataTransferObjectValidators()
         .AddCommandHandlers()
         .AddOutputMappers();
 

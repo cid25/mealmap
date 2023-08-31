@@ -1,4 +1,5 @@
 ﻿using Mealmap.Api.Commands;
+using Mealmap.Api.CommandValidators;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Domain.Common.DataAccess;
@@ -14,17 +15,20 @@ public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, Comma
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<UpdateDishCommandHandler> _logger;
     private readonly IOutputMapper<DishDTO, Dish> _outputMapper;
+    private readonly DishDataTransferObjectValidator _validator;
 
     public UpdateDishCommandHandler(
         IDishRepository repository,
         IUnitOfWork unitOfWork,
         IOutputMapper<DishDTO, Dish> outputMapper,
-        ILogger<UpdateDishCommandHandler> logger)
+        ILogger<UpdateDishCommandHandler> logger,
+        DishDataTransferObjectValidator validator)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
         _outputMapper = outputMapper;
         _logger = logger;
+        _validator = validator;
     }
 
     public async Task<CommandNotification<DishDTO>> Handle(UpdateDishCommand request, CancellationToken cancellationToken)
@@ -35,6 +39,9 @@ public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, Comma
 
         if (dish == null)
             return notification.WithNotFoundError("Dish with id not found.");
+
+        if (_validator.Validate(request.Dto) is var validationResult && validationResult.Errors.Any())
+            return notification.WithValidationErrorsFrom(validationResult);
 
         SetPropertiesFromRequest(dish, request);
         _repository.Update(dish);

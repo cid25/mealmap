@@ -1,9 +1,11 @@
 ﻿using Mealmap.Api.CommandHandlers;
 using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
+using Mealmap.Api.DataTransferObjectValidators;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
+using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
 using Microsoft.Extensions.Logging;
 
@@ -22,11 +24,11 @@ public class CreateMealCommandHandlerTests
             unitOfWork.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(m => m.FromEntity(It.IsAny<Meal>()) == new MealDTO()),
             Mock.Of<ILogger<CreateMealCommandHandler>>(),
-            Mock.Of<ICommandValidator<CreateMealCommand>>(m => m.Validate(It.IsAny<CreateMealCommand>())
-                == new List<CommandError>())
+            new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(repo
+                => repo.GetSingleById(It.IsAny<Guid>()) == new Dish("fake")))
         );
 
-        MealDTO dto = new() { DiningDate = new DateOnly(2020, 1, 2) };
+        MealDTO dto = new() { DiningDate = DateOnly.FromDateTime(DateTime.Now) };
 
         var result = await handler.Handle(
             new CreateMealCommand(dto),
@@ -47,11 +49,15 @@ public class CreateMealCommandHandlerTests
             Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(m => m.FromEntity(It.IsAny<Meal>()) == new MealDTO()),
             Mock.Of<ILogger<CreateMealCommandHandler>>(),
-            Mock.Of<ICommandValidator<CreateMealCommand>>(m => m.Validate(It.IsAny<CreateMealCommand>()) ==
-                new List<CommandError>() { new CommandError(CommandErrorCodes.NotValid) })
+            new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(repo
+                => repo.GetSingleById(It.IsAny<Guid>()) == null))
         );
 
-        MealDTO dto = new() { DiningDate = new DateOnly(2020, 1, 2) };
+        MealDTO dto = new()
+        {
+            DiningDate = DateOnly.FromDateTime(DateTime.Now),
+            Courses = new[] { new CourseDTO() { Index = 1, DishId = Guid.NewGuid(), MainCourse = true } }
+        };
 
         var result = await handler.Handle(
             new CreateMealCommand(dto),
@@ -73,11 +79,11 @@ public class CreateMealCommandHandlerTests
             unitOfWork.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(m => m.FromEntity(It.IsAny<Meal>()) == new MealDTO()),
             Mock.Of<ILogger<CreateMealCommandHandler>>(),
-            Mock.Of<ICommandValidator<CreateMealCommand>>(m => m.Validate(It.IsAny<CreateMealCommand>())
-                == new List<CommandError>())
+            new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(repo
+                => repo.GetSingleById(It.IsAny<Guid>()) == new Dish("fake")))
         );
 
-        MealDTO dto = new() { DiningDate = new DateOnly(2020, 1, 2) };
+        MealDTO dto = new() { DiningDate = DateOnly.FromDateTime(DateTime.Now) };
 
         var result = await handler.Handle(
             new CreateMealCommand(dto),

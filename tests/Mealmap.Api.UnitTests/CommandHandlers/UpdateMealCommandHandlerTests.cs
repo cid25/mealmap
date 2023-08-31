@@ -1,9 +1,11 @@
 ﻿using Mealmap.Api.CommandHandlers;
 using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
+using Mealmap.Api.DataTransferObjectValidators;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
+using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
 using Microsoft.Extensions.Logging;
 
@@ -30,8 +32,8 @@ public class UpdateMealCommandHandlerTests
             mockUnitOfWork.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(m => m.FromEntity(dummyMeal) == dto),
             Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            Mock.Of<ICommandValidator<UpdateMealCommand>>(m => m.Validate(It.IsAny<UpdateMealCommand>())
-                == new List<CommandError>())
+            new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(repo
+                => repo.GetSingleById(It.IsAny<Guid>()) == new Dish("fake")))
         );
 
         // Act
@@ -60,7 +62,8 @@ public class UpdateMealCommandHandlerTests
             Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            Mock.Of<ICommandValidator<UpdateMealCommand>>()
+            new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(repo
+                => repo.GetSingleById(It.IsAny<Guid>()) == new Dish("fake")))
         );
 
         // Act
@@ -79,7 +82,6 @@ public class UpdateMealCommandHandlerTests
         // Arrange
         var aGuid = Guid.NewGuid();
         const string aVersion = "AAAAAAAA";
-        MealDTO dto = new();
 
         Meal dummyMeal = new(aGuid, DateOnly.FromDateTime(DateTime.Now));
 
@@ -88,9 +90,15 @@ public class UpdateMealCommandHandlerTests
             Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            Mock.Of<ICommandValidator<UpdateMealCommand>>(m => m.Validate(It.IsAny<UpdateMealCommand>()) ==
-                new List<CommandError>() { new CommandError(CommandErrorCodes.NotValid) })
+            new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(repo
+                => repo.GetSingleById(It.IsAny<Guid>()) == null))
         );
+
+        MealDTO dto = new()
+        {
+            DiningDate = DateOnly.FromDateTime(DateTime.Now),
+            Courses = new[] { new CourseDTO() { Index = 1, DishId = Guid.NewGuid(), MainCourse = true } }
+        };
 
         // Act
         var result = await handler.Handle(
@@ -119,8 +127,8 @@ public class UpdateMealCommandHandlerTests
             mockUnitOfWork.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            Mock.Of<ICommandValidator<UpdateMealCommand>>(m => m.Validate(It.IsAny<UpdateMealCommand>()) ==
-                new List<CommandError>())
+            new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(repo
+                => repo.GetSingleById(It.IsAny<Guid>()) == new Dish("fake")))
         );
 
         // Act
@@ -150,8 +158,8 @@ public class UpdateMealCommandHandlerTests
             mockUnitOfWork.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            Mock.Of<ICommandValidator<UpdateMealCommand>>(m => m.Validate(It.IsAny<UpdateMealCommand>()) ==
-                new List<CommandError>())
+            new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(repo
+                => repo.GetSingleById(It.IsAny<Guid>()) == new Dish("fake")))
         );
 
         // Act

@@ -1,4 +1,5 @@
 ﻿using Mealmap.Api.Commands;
+using Mealmap.Api.CommandValidators;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Domain.Common.DataAccess;
@@ -14,22 +15,28 @@ public class CreateDishCommandHandler : IRequestHandler<CreateDishCommand, Comma
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOutputMapper<DishDTO, Dish> _outputMapper;
     private readonly ILogger<CreateDishCommandHandler> _logger;
+    private readonly DishDataTransferObjectValidator _validator;
 
     public CreateDishCommandHandler(
         IDishRepository repository,
         IUnitOfWork unitOfWork,
         IOutputMapper<DishDTO, Dish> outputMapper,
-        ILogger<CreateDishCommandHandler> logger)
+        ILogger<CreateDishCommandHandler> logger,
+        DishDataTransferObjectValidator validator)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
         _outputMapper = outputMapper;
         _logger = logger;
+        _validator = validator;
     }
 
     public async Task<CommandNotification<DishDTO>> Handle(CreateDishCommand request, CancellationToken cancellationToken)
     {
         CommandNotification<DishDTO> notification = new();
+
+        if (_validator.Validate(request.Dto) is var validationResult && validationResult.Errors.Any())
+            return notification.WithValidationErrorsFrom(validationResult);
 
         Dish dish = new(request.Dto.Name);
 
