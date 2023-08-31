@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Mealmap.Domain.Common.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Domain.DishAggregate;
@@ -23,6 +24,9 @@ public class Ingredient : IEquatable<Ingredient>
 
     internal Ingredient(decimal quantity, UnitOfMeasurementCodes unitOfMeasurementCode, string description)
     {
+        if (quantity <= 0)
+            throw new DomainValidationException("The quantity of an ingredient must be larger than 0.");
+
         Id = Guid.NewGuid();
 
         Quantity = quantity;
