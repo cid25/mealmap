@@ -1,0 +1,22 @@
+<header>
+  <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow">
+    <div class="container">
+      <a class="navbar-brand" [routerLink]="['/']">Mealmap</a>
+        <ul class="navbar-nav flex-grow-1 justify-content-center mb-2 mb-lg-0">
+          <li
+            class="nav-item mx-3"
+            [routerLinkActive]="['link-active']"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <a class="nav-link text-dark" [routerLink]="['/']">Meals</a>
+          </li>
+          <li
+            class="nav-item mx-5"
+            [routerLinkActive]="['link-active']"
+          >
+            <a class="nav-link text-dark" [routerLink]="['/dishes']">Dishes</a>
+          </li>
+        </ul>
+    </div>
+  </nav>
+</header>

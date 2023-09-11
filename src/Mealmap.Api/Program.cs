@@ -98,9 +98,12 @@ try
     app.UseExceptionHandler("/api/error");
 
     app.UseHttpsRedirection();
+    app.UseStaticFiles();
     app.UseStatusCodePages();
 
     app.MapControllers();
+
+    app.MapFallbackToFile("index.html");
 
     app.Run();
 }
