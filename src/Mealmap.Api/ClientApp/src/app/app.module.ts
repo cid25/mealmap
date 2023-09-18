@@ -9,6 +9,7 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MealScheduleComponent } from './meal-schedule/meal-schedule.component';
 import { DishOverviewComponent } from './dish-overview/dish-overview.component';
+import { MealCardComponent } from './meal-card/meal-card.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { DishOverviewComponent } from './dish-overview/dish-overview.component';
     NavMenuComponent,
     MealScheduleComponent,
     DishOverviewComponent,
+    MealCardComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -28,7 +30,6 @@ import { DishOverviewComponent } from './dish-overview/dish-overview.component';
     ]),
     NgbModule
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
