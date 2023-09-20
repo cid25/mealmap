@@ -7,4 +7,6 @@ export interface Dish {
   description: string;
   servings: number;
   ingredients: Ingredient[];
+  image: Blob;
+  imageContentType: string;
 }
