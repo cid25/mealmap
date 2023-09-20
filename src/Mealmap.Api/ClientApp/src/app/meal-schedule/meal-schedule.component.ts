@@ -32,12 +32,26 @@ export class MealScheduleComponent implements OnInit {
     );
   }
 
-  timerangeIsWeekly() {
+  weeklyRange(): boolean {
     return this.timerange == Timerange.Weekly;
   }
 
-  timerangeIsMonthly() {
+  monthlyRange(): boolean {
     return this.timerange == Timerange.Monthly;
+  }
+
+  viewWeeklyRange(): void {
+    console.log('weekly');
+    if (this.timerange != Timerange.Weekly) {
+      this.timerange = Timerange.Monthly;
+    }
+  }
+
+  viewMonthlyRange(): void {
+    console.log('monthly');
+    if (this.timerange != Timerange.Monthly) {
+      this.timerange = Timerange.Weekly;
+    }
   }
 
   private async retrieveMeals(from: Date, to: Date): Promise<void> {

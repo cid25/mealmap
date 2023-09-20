@@ -1,9 +1,9 @@
 <div class="d-flex justify-content-end">
     <div class="btn-group" role="group" aria-label="Timerange selection toggle button group">
-        <input type="radio" class="btn-check" name="btnweekly" id="time-weekly" autocomplete="off" [checked]="timerangeIsWeekly()">
-        <label class="btn btn-outline-primary" for="btnweekly">Weekly</label>
-        <input type="radio" class="btn-check" name="btnmonthly" id="time-monthly" autocomplete="off" [checked]="timerangeIsMonthly()">
-        <label class="btn btn-outline-primary" for="btnmonthly">Monthly</label>
+        <input type="radio" class="btn-check" name="btntimerange" id="time-weekly" autocomplete="off" [checked]="weeklyRange()" (change)="viewWeeklyRange()">
+        <label class="btn btn-outline-primary" for="time-weekly">Weekly</label>
+        <input type="radio" class="btn-check" name="btntimerange" id="time-monthly" autocomplete="off" [checked]="monthlyRange()" (change)="viewMonthlyRange()">
+        <label class="btn btn-outline-primary" for="time-monthly">Monthly</label>
     </div>
 </div>
 <div class="d-flex">
