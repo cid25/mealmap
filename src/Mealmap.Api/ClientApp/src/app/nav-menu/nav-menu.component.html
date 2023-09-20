@@ -1,20 +1,20 @@
 <header>
-  <nav class="navbar navbar-expand-sm navbar-dark bg-secondary border-bottom box-shadow">
+  <nav class="navbar navbar-expand-sm navbar-dark bg-primary border-bottom">
     <div class="container-fluid d-flex flex-row justify-content-start">
-      <a class="navbar-brand" [routerLink]="['/']">Mealmap</a>
+      <a class="navbar-brand fs-4" [routerLink]="['/']">Mealmap</a>
         <ul class="navbar-nav flex-grow-1 d-flex flex-row justify-content-start mb-lg-0">
           <li
             class="nav-item mx-3"
             [routerLinkActive]="['link-active']"
             [routerLinkActiveOptions]="{ exact: true }"
           >
-            <a class="nav-link text-light" [routerLink]="['/']">Meals</a>
+            <a class="nav-link text-light fs-5" [routerLink]="['/']">Meals</a>
           </li>
           <li
             class="nav-item mx-3"
             [routerLinkActive]="['link-active']"
           >
-            <a class="nav-link text-light" [routerLink]="['/dishes']">Dishes</a>
+            <a class="nav-link text-light fs-5" [routerLink]="['/dishes']">Dishes</a>
           </li>
         </ul>
     </div>
