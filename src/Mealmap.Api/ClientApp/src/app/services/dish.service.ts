@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
-import { Dish } from './dish';
+import { Dish } from '../interfaces/dish';
 
 @Injectable({
   providedIn: 'root'

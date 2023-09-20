@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { Meal } from '../meal';
-import { Course } from '../course';
+import { Meal } from '../interfaces/meal';
+import { Course } from '../interfaces/course';
 
 @Component({
   selector: 'app-meal-card',

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { MealService } from '../meal.service';
-import { DishService } from '../dish.service';
-import { Meal } from '../meal';
+import { MealService } from '../services/meal.service';
+import { DishService } from '../services/dish.service';
+import { Meal } from '../interfaces/meal';
 
 @Component({
   selector: 'app-meal-schedule',
