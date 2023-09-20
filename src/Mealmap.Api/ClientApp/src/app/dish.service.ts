@@ -19,16 +19,18 @@ export class DishService {
   ) {}
 
   async getDishes(ids: string[]): Promise<Dish[]> {
-    const uniqueDishes = Array.from(new Set(ids));
+    const uniqueIds = Array.from(new Set(ids));
 
-    let fetchOperations: Promise<any>[] = [];
-    for (const id of uniqueDishes)
-      fetchOperations.push(this.fetchDishAndImage(id));
-    await Promise.all(fetchOperations);
+    const missingIds = uniqueIds.filter(id => !this.dishes.has(id));
+    if (missingIds.length > 0) {
+      let fetchOperations: Promise<any>[] = [];
+      for (const id of missingIds)
+        fetchOperations.push(this.fetchDishAndImage(id));
+      await Promise.all(fetchOperations);
+    }
 
-    const result = uniqueDishes.map<Dish|undefined>(id =>
+    const result = uniqueIds.map<Dish|undefined>(id =>
       this.dishes.get(id)).filter((dish): dish is Dish => !!dish) as Dish[];
-
     return result;
   }
 
