@@ -3,6 +3,8 @@ using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.RequestFormatters;
 using Mealmap.Api.Swagger;
+using Mealmap.Domain.Common.DataAccess;
+using Mealmap.Domain.Common.Validation;
 using Mealmap.Domain.DishAggregate;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +19,7 @@ public class DishesController : ControllerBase
 {
     private readonly ILogger<DishesController> _logger;
     private readonly IDishRepository _repository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IOutputMapper<DishDTO, Dish> _outputMapper;
     private readonly IRequestContext _context;
     private readonly IMediator _mediator;
@@ -24,12 +27,14 @@ public class DishesController : ControllerBase
     public DishesController(
         ILogger<DishesController> logger,
         IDishRepository repository,
+        IUnitOfWork unitOfWork,
         IOutputMapper<DishDTO, Dish> outputMapper,
         IRequestContext context,
         IMediator mediator)
     {
         _logger = logger;
         _repository = repository;
+        _unitOfWork = unitOfWork;
         _outputMapper = outputMapper;
         _context = context;
         _mediator = mediator;
@@ -182,7 +187,7 @@ public class DishesController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status415UnsupportedMediaType)]
     [SwaggerResponseExample(201, typeof(DishResponseExampleWithIdAndEtag))]
-    public ActionResult PutDishImage([FromRoute] Guid id, [FromBody] Image image)
+    public async Task<ActionResult> PutDishImage([FromRoute] Guid id, [FromBody] Image image)
     {
         var dish = _repository.GetSingleById(id);
         if (dish == null)
@@ -190,6 +195,15 @@ public class DishesController : ControllerBase
 
         dish.SetImage(image.Content, image.ContentType);
         _repository.Update(dish);
+
+        try
+        {
+            await _unitOfWork.SaveTransactionAsync();
+        }
+        catch (DomainValidationException)
+        {
+            BadRequest();
+        }
 
         var actionLink = ActionLink(action: nameof(GetDishImage), values: new { id });
         if (actionLink != null)
@@ -233,7 +247,7 @@ public class DishesController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public ActionResult DeleteDishImage([FromRoute] Guid id)
+    public async Task<ActionResult> DeleteDishImage([FromRoute] Guid id)
     {
         var dish = _repository.GetSingleById(id);
 
@@ -245,6 +259,15 @@ public class DishesController : ControllerBase
 
         dish.RemoveImage();
         _repository.Update(dish);
+
+        try
+        {
+            await _unitOfWork.SaveTransactionAsync();
+        }
+        catch (DomainValidationException)
+        {
+            BadRequest();
+        }
 
         return Ok();
     }
