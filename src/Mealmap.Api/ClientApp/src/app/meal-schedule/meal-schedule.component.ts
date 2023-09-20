@@ -13,6 +13,8 @@ export class MealScheduleComponent implements OnInit {
 
   private meals: Meal[] = [];
 
+  private timerange: Timerange = Timerange.Weekly;
+
   constructor(
     private mealService: MealService,
     private dishService: DishService) { }
@@ -24,6 +26,14 @@ export class MealScheduleComponent implements OnInit {
 
   mealsForDisplay() {
     return this.meals.sort((a: Meal, b: Meal) =>  a.diningDate.getTime() - b.diningDate.getTime());
+  }
+
+  timerangeIsWeekly() {
+    return this.timerange == Timerange.Weekly;
+  }
+
+  timerangeIsMonthly() {
+    return this.timerange == Timerange.Monthly;
   }
 
   private async retrieveMeals(from: Date, to: Date): Promise<void> {
@@ -52,4 +62,9 @@ export class MealScheduleComponent implements OnInit {
       meal.courses).reduce((accumulated, courses) =>
         accumulated.concat(courses), []).map(course => course.dishId);
   }
+}
+
+enum Timerange {
+  Weekly = 1,
+  Monthly = 2,
 }
