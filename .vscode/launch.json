@@ -6,18 +6,18 @@
     "configurations": [
         {
             "type": "firefox",
-            "name": "Launch Firefox",
+            "name": "Launch SPA in Firefox",
             "request": "launch",
             "firefoxArgs": ["-devtools"],
             "url": "http://localhost:4200",
-            "webRoot": "${workspaceFolder}"
+            "webRoot": "${workspaceFolder}/src/Mealmap.Api/ClientApp"
         },
         {
             "type": "msedge",
-            "name": "Launch Edge",
+            "name": "Launch SPA in Edge",
             "request": "launch",
             "url": "http://localhost:4200",
-            "webRoot": "${workspaceFolder}"
+            "webRoot": "${workspaceFolder}/src/Mealmap.Api/ClientApp"
         }
     ]
 }

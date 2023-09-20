@@ -1,5 +1,5 @@
-import { Ingredient } from "./ingredient";
-import { SafeUrl } from "@angular/platform-browser";
+import { Ingredient } from './ingredient';
+import { SafeUrl } from '@angular/platform-browser';
 
 export interface Dish {
   id: string;

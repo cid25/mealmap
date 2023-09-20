@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Meal } from "../meal";
-import { Dish } from "../dish";
+import { Meal } from '../meal';
 import { Course } from '../course';
 
 @Component({
@@ -16,9 +15,8 @@ export class MealCardComponent {
       return this.meal.courses[0];
     }
 
-    const mainCourse = this.meal?.courses.find(course => course.mainCourse);
-    if (mainCourse !== undefined)
-      return mainCourse;
+    const mainCourse = this.meal?.courses.find((course) => course.mainCourse);
+    if (mainCourse !== undefined) return mainCourse;
 
     return null;
   }

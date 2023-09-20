@@ -5,6 +5,4 @@ import { Component } from '@angular/core';
   templateUrl: './dish-overview.component.html',
   styleUrls: ['./dish-overview.component.css']
 })
-export class DishOverviewComponent {
-
-}
+export class DishOverviewComponent {}

@@ -2,6 +2,7 @@
   "name": "mealmap",
   "version": "0.0.0",
   "scripts": {
+    "lint": "eslint . --ext .ts",
     "ng": "ng",
     "prestart": "node aspnetcore-https",
     "start": "run-script-os",
@@ -43,7 +44,10 @@
     "@types/jasmine": "~4.3.1",
     "@types/jasminewd2": "~2.0.10",
     "@types/node": "^18.17.15",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
     "eslint": "^8.49.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.2",
     "karma-chrome-launcher": "~3.2.0",

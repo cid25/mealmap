@@ -151,6 +151,7 @@ csharp_style_prefer_primary_constructors = true:suggestion
 # TypeScript Coding Conventions #
 #################################
 [*.ts]
+end_of_line = crlf
 charset = utf-8
 indent_size = 2
 quote_type = single

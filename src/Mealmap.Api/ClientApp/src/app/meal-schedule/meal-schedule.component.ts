@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { MealService } from '../meal.service';
 import { DishService } from '../dish.service';
 import { Meal } from '../meal';
-import { Dish } from '../dish';
 
 @Component({
   selector: 'app-meal-schedule',
@@ -10,22 +9,27 @@ import { Dish } from '../dish';
   styleUrls: ['./meal-schedule.component.css']
 })
 export class MealScheduleComponent implements OnInit {
-
   private meals: Meal[] = [];
 
   private timerange: Timerange = Timerange.Weekly;
 
   constructor(
     private mealService: MealService,
-    private dishService: DishService) { }
+    private dishService: DishService
+  ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.retrieveMeals(new Date("2020-01-01T00:00:00.000Z"), new Date("2020-01-07T00:00:00.000Z"));
+    await this.retrieveMeals(
+      new Date('2020-01-01T00:00:00.000Z'),
+      new Date('2020-01-07T00:00:00.000Z')
+    );
     await this.retrieveDishesForMeals();
   }
 
   mealsForDisplay() {
-    return this.meals.sort((a: Meal, b: Meal) =>  a.diningDate.getTime() - b.diningDate.getTime());
+    return this.meals.sort(
+      (a: Meal, b: Meal) => a.diningDate.getTime() - b.diningDate.getTime()
+    );
   }
 
   timerangeIsWeekly() {
@@ -44,9 +48,9 @@ export class MealScheduleComponent implements OnInit {
     const ids = this.collectDishIds();
     const dishes = await this.dishService.getDishes(ids);
 
-    const meals = this.meals.map(meal => {
-      meal.courses.forEach(course => {
-        const dish = dishes.find(dish => dish.id === course.dishId);
+    const meals = this.meals.map((meal) => {
+      meal.courses.forEach((course) => {
+        const dish = dishes.find((dish) => dish.id === course.dishId);
         if (dish !== undefined) {
           course.dish = dish;
         }
@@ -58,13 +62,14 @@ export class MealScheduleComponent implements OnInit {
   }
 
   private collectDishIds(): string[] {
-    return this.meals.map(meal =>
-      meal.courses).reduce((accumulated, courses) =>
-        accumulated.concat(courses), []).map(course => course.dishId);
+    return this.meals
+      .map((meal) => meal.courses)
+      .reduce((accumulated, courses) => accumulated.concat(courses), [])
+      .map((course) => course.dishId);
   }
 }
 
 enum Timerange {
   Weekly = 1,
-  Monthly = 2,
+  Monthly = 2
 }

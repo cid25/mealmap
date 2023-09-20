@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { Dish } from './dish';
@@ -8,7 +8,6 @@ import { Dish } from './dish';
   providedIn: 'root'
 })
 export class DishService {
-
   private readonly base_url = 'api/dishes';
 
   private dishes: Map<string, Dish> = new Map<string, Dish>();
@@ -21,28 +20,27 @@ export class DishService {
   async getDishes(ids: string[]): Promise<Dish[]> {
     const uniqueIds = Array.from(new Set(ids));
 
-    const missingIds = uniqueIds.filter(id => !this.dishes.has(id));
+    const missingIds = uniqueIds.filter((id) => !this.dishes.has(id));
     if (missingIds.length > 0) {
-      let fetchOperations: Promise<any>[] = [];
+      const fetchOperations: Promise<unknown>[] = [];
       for (const id of missingIds)
         fetchOperations.push(this.fetchDishAndImage(id));
       await Promise.all(fetchOperations);
     }
 
-    const result = uniqueIds.map<Dish|undefined>(id =>
-      this.dishes.get(id)).filter((dish): dish is Dish => !!dish) as Dish[];
+    const result = uniqueIds
+      .map<Dish | undefined>((id) => this.dishes.get(id))
+      .filter((dish): dish is Dish => !!dish) as Dish[];
     return result;
   }
 
-  async getDish(id: string): Promise<Dish|null> {
+  async getDish(id: string): Promise<Dish | null> {
     if (!this.dishes.has(id)) {
       const dish = await this.fetchDishAndImage(id);
       return dish;
-    }
-    else {
+    } else {
       const dish = this.dishes.get(id);
-      if (dish !== undefined)
-      return dish;
+      if (dish !== undefined) return dish;
     }
 
     return null;
@@ -52,6 +50,7 @@ export class DishService {
     const dishRequest = this.requestDish(id);
     const imageRequest = this.requestImage(id);
 
+    // eslint-disable-next-line prefer-const
     let [dish, imageResponse] = await Promise.all([dishRequest, imageRequest]);
 
     dish = this.setImageFromResponse(dish, imageResponse);
@@ -67,12 +66,16 @@ export class DishService {
 
   private requestImage(id: string): Promise<HttpResponse<Blob>> {
     const image_url = `${this.base_url}/${id}/image`;
-    return firstValueFrom(this.http.get(image_url, {observe: 'response', responseType: 'blob'}));
+    return firstValueFrom(
+      this.http.get(image_url, { observe: 'response', responseType: 'blob' })
+    );
   }
 
   private setImageFromResponse(dish: Dish, response: HttpResponse<Blob>): Dish {
     if (response.status == 200 && response.body) {
-      dish.image = new Blob([response.body], {type: response.headers.get('Content-Type') ?? ''});
+      dish.image = new Blob([response.body], {
+        type: response.headers.get('Content-Type') ?? ''
+      });
       const url = URL.createObjectURL(dish.image);
       dish.localImageURL = this.sanitizer.bypassSecurityTrustUrl(url);
     }

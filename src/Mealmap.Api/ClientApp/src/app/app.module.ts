@@ -17,7 +17,7 @@ import { MealCardComponent } from './meal-card/meal-card.component';
     NavMenuComponent,
     MealScheduleComponent,
     DishOverviewComponent,
-    MealCardComponent,
+    MealCardComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -26,10 +26,10 @@ import { MealCardComponent } from './meal-card/meal-card.component';
     RouterModule.forRoot([
       { path: '', component: MealScheduleComponent, pathMatch: 'full' },
       { path: 'meals', component: MealScheduleComponent },
-      { path: 'dishes', component: DishOverviewComponent },
+      { path: 'dishes', component: DishOverviewComponent }
     ]),
     NgbModule
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
