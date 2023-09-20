@@ -9,7 +9,7 @@ import { Dish } from '../dish';
   templateUrl: './meal-schedule.component.html',
   styleUrls: ['./meal-schedule.component.css']
 })
-export class MealScheduleComponent {
+export class MealScheduleComponent implements OnInit {
 
   private meals: Meal[] = [];
 
@@ -19,7 +19,7 @@ export class MealScheduleComponent {
 
   async ngOnInit(): Promise<void> {
     await this.retrieveMeals(new Date("2020-01-01T00:00:00.000Z"), new Date("2020-01-07T00:00:00.000Z"));
-    this.retrieveDishesForMeals();
+    await this.retrieveDishesForMeals();
   }
 
   mealsForDisplay() {

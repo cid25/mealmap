@@ -22,11 +22,4 @@ export class MealCardComponent {
 
     return null;
   }
-
-  imageUrl(): string {
-    const image = this.mainCourse()?.dish.image;
-    if (image !== undefined)
-      return URL.createObjectURL(image);
-    return '';
-  }
 }

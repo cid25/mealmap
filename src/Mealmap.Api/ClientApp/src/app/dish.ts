@@ -1,4 +1,5 @@
 import { Ingredient } from "./ingredient";
+import { SafeUrl } from "@angular/platform-browser";
 
 export interface Dish {
   id: string;
@@ -8,5 +9,5 @@ export interface Dish {
   servings: number;
   ingredients: Ingredient[];
   image: Blob;
-  imageContentType: string;
+  localImageURL: SafeUrl;
 }

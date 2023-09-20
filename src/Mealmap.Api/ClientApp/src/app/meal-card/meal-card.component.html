@@ -1,6 +1,6 @@
 <div class="card m-2" style="width: 18rem;">
     <div class="text-center">{{ meal!.diningDate | date:'dd.MM.yyyy' }}</div>
-    <img [src]="imageUrl()" class="card-img-top" alt="...">
+    <img [src]="mainCourse()?.dish?.localImageURL" class="card-img-top" alt="No image">
     <div class="card-body">
       <h5 class="card-title text-center">{{ mainCourse()?.dish?.name }}</h5>
       <p class="card-text">{{ mainCourse()?.dish?.description }}</p>

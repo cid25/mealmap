@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { Observable, firstValueFrom } from 'rxjs';
+import { DomSanitizer } from '@angular/platform-browser';
+import { firstValueFrom } from 'rxjs';
 import { Dish } from './dish';
 
 @Injectable({
@@ -12,11 +13,13 @@ export class DishService {
 
   private dishes: Map<string, Dish> = new Map<string, Dish>();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private sanitizer: DomSanitizer
+  ) {}
 
   async getDishes(ids: string[]): Promise<Dish[]> {
     const uniqueDishes = Array.from(new Set(ids));
-
 
     let fetchOperations: Promise<any>[] = [];
     for (const id of uniqueDishes)
@@ -30,37 +33,47 @@ export class DishService {
   }
 
   async getDish(id: string): Promise<Dish|null> {
-    if (!this.dishes.has(id))
-      await this.fetchDishAndImage(id);
-
-    const dish = this.dishes.get(id);
-    if (dish !== undefined)
+    if (!this.dishes.has(id)) {
+      const dish = await this.fetchDishAndImage(id);
       return dish;
+    }
+    else {
+      const dish = this.dishes.get(id);
+      if (dish !== undefined)
+      return dish;
+    }
 
     return null;
   }
 
-  private async fetchDishAndImage(id: string): Promise<void> {
+  private async fetchDishAndImage(id: string): Promise<Dish> {
+    const dishRequest = this.requestDish(id);
+    const imageRequest = this.requestImage(id);
 
-    if (!this.dishes.has(id)) {
-      const dishRequest = this.fetchDish(id);
-      const imageRequest = this.fetchImage(id);
+    let [dish, imageResponse] = await Promise.all([dishRequest, imageRequest]);
 
-      const [dish, imageResponse] = await Promise.all([dishRequest, imageRequest]);
+    dish = this.setImageFromResponse(dish, imageResponse);
+    this.dishes.set(id, dish);
 
-      if (imageResponse.status == 200 && imageResponse.body)
-        dish.image = new Blob([imageResponse.body], {type: imageResponse.headers.get('Content-Type') ?? ''});
-      this.dishes.set(id, dish);
-    }
+    return dish;
   }
 
-  private async fetchDish(id: string): Promise<Dish> {
+  private async requestDish(id: string): Promise<Dish> {
     const dish_url = `${this.base_url}/${id}`;
     return firstValueFrom(this.http.get<Dish>(dish_url));
   }
 
-  private fetchImage(id: string): Promise<HttpResponse<Blob>> {
+  private requestImage(id: string): Promise<HttpResponse<Blob>> {
     const image_url = `${this.base_url}/${id}/image`;
     return firstValueFrom(this.http.get(image_url, {observe: 'response', responseType: 'blob'}));
+  }
+
+  private setImageFromResponse(dish: Dish, response: HttpResponse<Blob>): Dish {
+    if (response.status == 200 && response.body) {
+      dish.image = new Blob([response.body], {type: response.headers.get('Content-Type') ?? ''});
+      const url = URL.createObjectURL(dish.image);
+      dish.localImageURL = this.sanitizer.bypassSecurityTrustUrl(url);
+    }
+    return dish;
   }
 }
