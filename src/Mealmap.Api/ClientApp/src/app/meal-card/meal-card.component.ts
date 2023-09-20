@@ -10,6 +10,11 @@ import { Course } from '../interfaces/course';
 export class MealCardComponent {
   @Input() meal: Meal | undefined;
 
+  hasCourses(): boolean {
+    if (this.meal?.courses && this.meal?.courses?.length > 0) return true;
+    else return false;
+  }
+
   mainCourse(): Course | null {
     if (this.meal?.courses.length == 1) {
       return this.meal.courses[0];

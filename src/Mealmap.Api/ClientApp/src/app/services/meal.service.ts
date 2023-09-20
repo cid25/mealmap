@@ -14,10 +14,19 @@ export class MealService {
   async getMealsFor(from: Date, to: Date): Promise<Meal[]> {
     const dates: Date[] = this.datesForRange(from, to);
 
-    const datesWithoutMeal = this.datesWithoutMeal(dates);
+    const initiallyBlankDates = this.datesWithoutMeal(dates);
+    const [lowerBound, upperBound] = this.boundsForRange(initiallyBlankDates);
+    await this.fetchForRange(lowerBound, upperBound);
 
-    const bounds = this.boundsForRange(datesWithoutMeal);
-    await this.fetchForRange(bounds[0], bounds[1]);
+    const remainingBlankDates = this.datesWithoutMeal(dates);
+    remainingBlankDates.forEach((date) => {
+      const meal: Meal = {
+        id: '',
+        diningDate: date,
+        courses: []
+      };
+      this.meals.set(this.toIsoDateString(date), meal);
+    });
 
     const result: Meal[] = [];
     dates.forEach((date) => {

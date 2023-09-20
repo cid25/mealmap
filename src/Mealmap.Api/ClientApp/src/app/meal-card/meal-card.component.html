@@ -1,7 +1,8 @@
-<div class="card m-2" style="width: 18rem;">
+<div class="card m-2 h-100" style="width: 18rem;">
     <div class="py-2 rounded-top bg-secondary text-white text-center">{{ meal!.diningDate | date:'EEEE - dd.MM.yyyy' }}</div>
-    <img [src]="mainCourse()?.dish?.localImageURL" class="img-fluid" alt="No image">
-    <div class="card-body">
+    <div *ngIf="!hasCourses()" class="h-100 d-flex justify-content-center align-items-center text-primary"><img src="/assets/icons/plus-square-dotted.svg" alt="Bootstrap" width="30%" height="30%"></div>
+    <img *ngIf="hasCourses()" [src]="mainCourse()?.dish?.localImageURL" class="img-fluid text-center" alt="No image">
+    <div *ngIf="hasCourses()" class="card-body">
       <h5 class="card-title text-center">{{ mainCourse()?.dish?.name }}</h5>
       <p class="card-text">{{ mainCourse()?.dish?.description }}</p>
     </div>
