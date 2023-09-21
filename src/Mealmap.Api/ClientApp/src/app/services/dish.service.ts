@@ -23,8 +23,7 @@ export class DishService {
     const missingIds = uniqueIds.filter((id) => !this.dishes.has(id));
     if (missingIds.length > 0) {
       const fetchOperations: Promise<unknown>[] = [];
-      for (const id of missingIds)
-        fetchOperations.push(this.fetchDishAndImage(id));
+      for (const id of missingIds) fetchOperations.push(this.fetchDishAndImage(id));
       await Promise.all(fetchOperations);
     }
 
@@ -66,9 +65,7 @@ export class DishService {
 
   private requestImage(id: string): Promise<HttpResponse<Blob>> {
     const image_url = `${this.base_url}/${id}/image`;
-    return firstValueFrom(
-      this.http.get(image_url, { observe: 'response', responseType: 'blob' })
-    );
+    return firstValueFrom(this.http.get(image_url, { observe: 'response', responseType: 'blob' }));
   }
 
   private setImageFromResponse(dish: Dish, response: HttpResponse<Blob>): Dish {

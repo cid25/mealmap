@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Meal } from '../interfaces/meal';
 import { Course } from '../interfaces/course';
 
@@ -8,7 +8,16 @@ import { Course } from '../interfaces/course';
   styleUrls: ['./meal-card.component.css']
 })
 export class MealCardComponent {
-  @Input() meal: Meal | undefined;
+  @Input()
+  meal!: Meal;
+
+  private _underEdit: boolean = false;
+
+  @Output()
+  editStarted = new EventEmitter();
+
+  @Output()
+  editStopped = new EventEmitter();
 
   hasCourses(): boolean {
     if (this.meal?.courses && this.meal?.courses?.length > 0) return true;
@@ -16,13 +25,19 @@ export class MealCardComponent {
   }
 
   mainCourse(): Course | null {
-    if (this.meal?.courses.length == 1) {
-      return this.meal.courses[0];
-    }
+    if (this.meal?.courses.length == 1) return this.meal.courses[0];
 
     const mainCourse = this.meal?.courses.find((course) => course.mainCourse);
     if (mainCourse !== undefined) return mainCourse;
 
     return null;
+  }
+
+  startEdit(): void {
+    this._underEdit = true;
+  }
+
+  underEdit(): boolean {
+    return this._underEdit;
   }
 }

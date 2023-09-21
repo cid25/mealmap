@@ -15,8 +15,10 @@ export class MealService {
     const dates: Date[] = this.datesForRange(from, to);
 
     const initiallyBlankDates = this.datesWithoutMeal(dates);
-    const [lowerBound, upperBound] = this.boundsForRange(initiallyBlankDates);
-    await this.fetchForRange(lowerBound, upperBound);
+    if (initiallyBlankDates.length > 0) {
+      const [lowerBound, upperBound] = this.boundsForRange(initiallyBlankDates);
+      await this.fetchForRange(lowerBound, upperBound);
+    }
 
     const remainingBlankDates = this.datesWithoutMeal(dates);
     remainingBlankDates.forEach((date) => {
@@ -81,9 +83,13 @@ export class MealService {
   }
 
   private toIsoDateString(date: Date): string {
-    return `
-      ${date.getUTCFullYear()}-
-      ${('0' + (date.getUTCMonth().toString() + 1)).slice(-2)}-
-      ${('0' + date.getUTCDate().toString()).slice(-2)}`;
+    const dateString =
+      date.getUTCFullYear() +
+      '-' +
+      ('0' + (date.getUTCMonth() + 1).toString()).slice(-2) +
+      '-' +
+      ('0' + date.getUTCDate().toString()).slice(-2);
+
+    return dateString;
   }
 }
