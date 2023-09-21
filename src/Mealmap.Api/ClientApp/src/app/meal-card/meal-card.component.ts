@@ -17,7 +17,7 @@ export class MealCardComponent {
   editStarted = new EventEmitter();
 
   @Output()
-  editStopped = new EventEmitter();
+  deleted = new EventEmitter();
 
   hasCourses(): boolean {
     if (this.meal?.courses && this.meal?.courses?.length > 0) return true;

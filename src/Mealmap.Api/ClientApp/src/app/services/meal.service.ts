@@ -20,15 +20,7 @@ export class MealService {
       await this.fetchForRange(lowerBound, upperBound);
     }
 
-    const remainingBlankDates = this.datesWithoutMeal(dates);
-    remainingBlankDates.forEach((date) => {
-      const meal: Meal = {
-        id: '',
-        diningDate: date,
-        courses: []
-      };
-      this.meals.set(this.toIsoDateString(date), meal);
-    });
+    this.fillBlanksWithStubs(dates);
 
     const result: Meal[] = [];
     dates.forEach((date) => {
@@ -39,8 +31,21 @@ export class MealService {
     return result;
   }
 
+  async deleteMeal(date: Date): Promise<void> {
+    const dateString = this.toIsoDateString(date);
+
+    const url = `api/meals/${this.meals.get(dateString)?.id}`;
+    await firstValueFrom(this.http.delete(url));
+
+    this.meals.delete(dateString);
+  }
+
   private datesWithoutMeal(dates: Date[]): Date[] {
-    return dates.filter((date) => !this.meals.has(this.toIsoDateString(date)));
+    return dates.filter((date) => {
+      const key = this.toIsoDateString(date);
+      if (!this.meals.has(key) || this.meals.get(key)?.id == '') return true;
+      else return false;
+    });
   }
 
   private datesForRange(from: Date, to: Date): Date[] {
@@ -58,6 +63,18 @@ export class MealService {
   private boundsForRange(dates: Date[]): [Date, Date] {
     const sorted = dates.sort((a, b) => a.getTime() - b.getTime());
     return [sorted[0], sorted[sorted.length - 1]];
+  }
+
+  private fillBlanksWithStubs(dates: Date[]): void {
+    const remainingBlankDates = this.datesWithoutMeal(dates);
+    remainingBlankDates.forEach((date) => {
+      const meal: Meal = {
+        id: '',
+        diningDate: date,
+        courses: []
+      };
+      this.meals.set(this.toIsoDateString(date), meal);
+    });
   }
 
   private async fetchForRange(from: Date, to: Date): Promise<void> {

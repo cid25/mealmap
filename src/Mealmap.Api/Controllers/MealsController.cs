@@ -2,6 +2,7 @@
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.Swagger;
+using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.MealAggregate;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ public class MealsController : ControllerBase
 {
     private readonly ILogger<MealsController> _logger;
     private readonly IMealRepository _repository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
     private readonly IRequestContext _context;
     private readonly IMediator _mediator;
@@ -23,12 +25,14 @@ public class MealsController : ControllerBase
     public MealsController(
         ILogger<MealsController> logger,
         IMealRepository mealRepository,
+        IUnitOfWork unitOfWork,
         IOutputMapper<MealDTO, Meal> outputMapper,
         IRequestContext context,
         IMediator mediator)
     {
         _logger = logger;
         _repository = mealRepository;
+        _unitOfWork = unitOfWork;
         _outputMapper = outputMapper;
         _context = context;
         _mediator = mediator;
@@ -158,7 +162,7 @@ public class MealsController : ControllerBase
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [SwaggerResponseExample(200, typeof(MealResponseExampleWithIdAndEtag))]
-    public ActionResult<MealDTO> DeleteMeal([FromRoute] Guid id)
+    async public Task<ActionResult<MealDTO>> DeleteMeal([FromRoute] Guid id)
     {
         var meal = _repository.GetSingleById(id);
 
@@ -166,6 +170,7 @@ public class MealsController : ControllerBase
             return NotFound($"Meal with id does not exist");
 
         _repository.Remove(meal);
+        await _unitOfWork.SaveTransactionAsync();
 
         var dto = _outputMapper.FromEntity(meal);
         return Ok(dto);

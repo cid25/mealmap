@@ -32,8 +32,7 @@ export class MealScheduleComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    await this.retrieveMeals(this.start, this.end);
-    await this.retrieveDishesForMeals();
+    await this.retrieveMealsWithDishes();
   }
 
   mealsForDisplay(): Meal[] {
@@ -64,8 +63,14 @@ export class MealScheduleComponent implements OnInit {
     this.editStarted.emit(date);
   }
 
-  private async retrieveMeals(from: Date, to: Date): Promise<void> {
-    this.meals = await this.mealService.getMealsFor(from, to);
+  async deleteMeal(date: Date): Promise<void> {
+    await this.mealService.deleteMeal(date);
+    await this.retrieveMealsWithDishes();
+  }
+
+  private async retrieveMealsWithDishes(): Promise<void> {
+    this.meals = await this.mealService.getMealsFor(this.start, this.end);
+    await this.retrieveDishesForMeals();
   }
 
   private async retrieveDishesForMeals(): Promise<void> {

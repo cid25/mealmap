@@ -7,7 +7,7 @@
     <img [src]="mainCourse()?.dish?.localImageURL" class="img-fluid text-center" alt="No image">
     <div class="d-flex text-white">
       <button id="btnedit" class="btn btn-success flex-grow-1 rounded-0 d-flex justify-content-center align-content-center" (click)="startEdit();editStarted.emit(meal.diningDate)"><img src="/assets/icons/pencil-square.svg" class="me-1">Edit</button>
-      <button id="btndelete" class="btn btn-danger flex-grow-1 rounded-0 d-flex justify-content-center align-content-center"><img src="/assets/icons/trash3-fill.svg" class="me-1">Delete</button>
+      <button id="btndelete" class="btn btn-danger flex-grow-1 rounded-0 d-flex justify-content-center align-content-center" (click)="deleted.emit(meal.diningDate)"><img src="/assets/icons/trash3-fill.svg" class="me-1">Delete</button>
     </div>
     <div class="card-body">
       <h5 class="card-title text-center">{{ mainCourse()?.dish?.name }}</h5>
