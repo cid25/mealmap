@@ -1,4 +1,4 @@
 <div class="modal-split">
     <app-meal-schedule (editStarted)="startEdit($event)" [ngClass]="{'left-split': underEdit(), 'full-width': !underEdit()}"></app-meal-schedule>
-    <app-meal-editor *ngIf="underEdit()" [diningDate]="editableDate()" class="right-split">Alakablam</app-meal-editor >
+    <app-meal-editor *ngIf="underEdit()" [diningDate]="editableDate()" (editStopped)="stopEdit()" class="right-split">Alakablam</app-meal-editor >
 </div>

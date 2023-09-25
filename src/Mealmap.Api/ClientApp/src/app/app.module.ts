@@ -12,6 +12,7 @@ import { DishOverviewComponent } from './dish-overview/dish-overview.component';
 import { MealCardComponent } from './meal-card/meal-card.component';
 import { MealPageComponent } from './meal-page/meal-page.component';
 import { MealEditorComponent } from './meal-editor/meal-editor.component';
+import { DishPickerComponent } from './dish-picker/dish-picker.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { MealEditorComponent } from './meal-editor/meal-editor.component';
     DishOverviewComponent,
     MealCardComponent,
     MealPageComponent,
-    MealEditorComponent
+    MealEditorComponent,
+    DishPickerComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

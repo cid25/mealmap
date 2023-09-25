@@ -1,6 +1,34 @@
-<div class="border border-secondary rounded-2 mx-2">
-    <div class="py-2 rounded-top bg-info text-white text-center">
-        {{ diningDate | date:'EEEE - dd.MM.yyyy' }}
+<div class="mx-2">
+    <div class="rounded-top-2 d-flex bg-info text-white text-center">
+        <div class="py-2 flex-grow-1">
+            {{ diningDate | date:'EEEE - dd.MM.yyyy' }}
+        </div>
+        <button type="button" class="btn" (click)="stopEdit()"><img src="/assets/icons/x-square.svg" class="d-block"></button>
     </div>
-
+    <div class="d-flex gap-1 flex-column border-start border-end border-bottom border-info">
+        <div class="m-1 p-2 bg-secondary text-white d-inline-flex justify-content-center"><span class="d-block">Courses</span></div>
+        <div role="group" class="d-flex gap-2 mx-1">
+            <ng-container *ngFor="let course of coursesForDisplay()">
+                <div class="w-25 border border-primary rounded d-flex flex-column editor-card">
+                    <div class="text-primary d-inline-flex justify-content-center text-primary"><span class="d-block fw-bold">{{ course.index }}</span></div>
+                    <img [src]="course.dish.localImageURL" class="img-fluid text-center flex-grow-1" alt="No image">
+                    <span class="card-title bg-white text-center my-2">{{ course.dish.name }}</span>
+                    <input type="radio" [id]="'course-' + course.index" name="btnmaincourse" [value]="course.index" autocomplete="off" [checked]="course.mainCourse" class="btn-check">
+                    <label [for]="'course-' + course.index" (click)="makeMainCourse(course.index)" class="btn btn-outline-primary">Main Course</label>
+                </div>
+            </ng-container>
+                <div class="w-25 border border-primary rounded d-flex flex-column align-items-center editor-card">
+                    <div class="w-100 border-bottom border-primary text-primary text-center fw-bold">{{ nextIndex() }}</div>
+                    <div class="d-flex flex-grow-1 flex-column justify-content-center">
+                        <input type="image" src="/assets/icons/plus-square-dotted.svg" alt="Add Meal" height="50em" width="50em" (click)="activatePicker()">
+                    </div>
+                </div>
+        </div>
+        <div class="d-flex justify-content-end gap-2 m-1">
+            <button type="button" [disabled]="!mealEdited()" class="btn btn-success">Save</button>
+            <button type="button" [disabled]="!mealEdited()" class="btn btn-warning">Discard</button>
+            <button type="button" (click)="stopEdit()" class="btn btn-primary">Close</button>
+        </div>
+    </div>
+    <app-dish-picker *ngIf="dishPickerActive"></app-dish-picker>
 </div>

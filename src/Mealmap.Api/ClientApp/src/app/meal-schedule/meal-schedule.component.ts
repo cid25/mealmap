@@ -103,7 +103,7 @@ export class MealScheduleComponent implements OnInit {
   }
 
   dateUnderEdit(date: Date): boolean {
-    return this._dateUnderEdit == date;
+    return this._dateUnderEdit?.toISOString() == date.toISOString();
   }
 
   async deleteMeal(date: Date): Promise<void> {

@@ -31,6 +31,16 @@ export class MealService {
     return result;
   }
 
+  async getMealFor(date: Date): Promise<Meal> {
+    const dateAsString = this.toIsoDateString(date);
+    if (!this.meals.has(dateAsString)) await this.fetchForRange(date, date);
+
+    const meal = this.meals.get(dateAsString);
+    if (meal == undefined) throw new Error(`meal for ${dateAsString} not found`);
+
+    return meal;
+  }
+
   async deleteMeal(date: Date): Promise<void> {
     const dateString = this.toIsoDateString(date);
 
@@ -70,6 +80,7 @@ export class MealService {
     remainingBlankDates.forEach((date) => {
       const meal: Meal = {
         id: '',
+        eTag: '',
         diningDate: date,
         courses: []
       };

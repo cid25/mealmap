@@ -7,11 +7,16 @@ import { Component } from '@angular/core';
 })
 export class MealPageComponent {
   private inEditMode: boolean = false;
-  private dateEditable!: Date;
+  private dateEditable!: Date | undefined;
 
   startEdit(date: Date): void {
     this.inEditMode = true;
     this.dateEditable = date;
+  }
+
+  stopEdit(): void {
+    this.inEditMode = false;
+    this.dateEditable = undefined;
   }
 
   underEdit(): boolean {
@@ -19,6 +24,7 @@ export class MealPageComponent {
   }
 
   editableDate(): Date {
-    return this.dateEditable;
+    if (this.dateEditable !== undefined) return this.dateEditable;
+    else return new Date();
   }
 }
