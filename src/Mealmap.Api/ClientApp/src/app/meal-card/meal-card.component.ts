@@ -11,7 +11,8 @@ export class MealCardComponent {
   @Input()
   meal!: Meal;
 
-  private _underEdit: boolean = false;
+  @Input()
+  underEdit: boolean = false;
 
   @Output()
   editStarted = new EventEmitter();
@@ -34,10 +35,11 @@ export class MealCardComponent {
   }
 
   startEdit(): void {
-    this._underEdit = true;
+    this.underEdit = true;
+    this.editStarted.emit(this.meal.diningDate);
   }
 
-  underEdit(): boolean {
-    return this._underEdit;
+  stopEdit(): void {
+    this.underEdit = false;
   }
 }

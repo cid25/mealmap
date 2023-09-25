@@ -1,12 +1,12 @@
 <div class="card h-100" style="width: 18rem;">
-  <div class="py-2 rounded-top text-white text-center" [ngClass]="{'bg-secondary': !underEdit(), 'bg-info': underEdit()}">{{ meal!.diningDate | date:'EEEE - dd.MM.yyyy' }}</div>
+  <div class="py-2 rounded-top text-white text-center" [ngClass]="{'bg-secondary': !underEdit, 'bg-info': underEdit}">{{ meal!.diningDate | date:'EEEE - dd.MM.yyyy' }}</div>
   <div *ngIf="!hasCourses()" class="h-100 d-flex justify-content-center align-items-center text-primary">
-    <input type="image" src="/assets/icons/plus-square-dotted.svg" alt="Add Meal" width="30%" height="30%" (click)="startEdit();editStarted.emit(meal.diningDate)">
+    <input type="image" src="/assets/icons/plus-square-dotted.svg" alt="Add Meal" width="30%" height="30%" (click)="startEdit()">
   </div>
   <ng-container *ngIf="hasCourses()">
     <img [src]="mainCourse()?.dish?.localImageURL" class="img-fluid text-center" alt="No image">
     <div class="d-flex text-white">
-      <button id="btnedit" class="btn btn-success flex-grow-1 rounded-0 d-flex justify-content-center align-content-center" (click)="startEdit();editStarted.emit(meal.diningDate)"><img src="/assets/icons/pencil-square.svg" class="me-1">Edit</button>
+      <button id="btnedit" class="btn btn-success flex-grow-1 rounded-0 d-flex justify-content-center align-content-center" (click)="startEdit()"><img src="/assets/icons/pencil-square.svg" class="me-1">Edit</button>
       <button id="btndelete" class="btn btn-danger flex-grow-1 rounded-0 d-flex justify-content-center align-content-center" (click)="deleted.emit(meal.diningDate)"><img src="/assets/icons/trash3-fill.svg" class="me-1">Delete</button>
     </div>
     <div class="card-body">

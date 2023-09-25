@@ -5,7 +5,10 @@
         <input type="radio" class="btn-check" name="btntimerange" id="time-monthly" autocomplete="off" [checked]="monthlyRange()" (change)="viewMonthlyRange()">
         <label class="btn btn-outline-primary" for="time-monthly">Monthly</label>
     </div>
+    <button type="button" id="btnperiodprior" class="btn bg-primary ms-2" (click)="shiftTimeperiodPrior()"><img src="/assets/icons/chevron-double-left.svg" class="d-block"></button>
+    <div class="bg-primary text-white px-4 d-flex"><p class="m-auto">{{ timeLabel() }}</p></div>
+    <button type="button" id="btnperiodnext" class="btn bg-primary" (click)="shiftTimeperiodAfter()"><img src="/assets/icons/chevron-double-right.svg" class="d-block"></button>
 </div>
 <div class="d-flex flex-wrap gap-3">
-    <app-meal-card *ngFor="let meal of mealsForDisplay()" [meal]="meal" (editStarted)="startEdit($event)" (deleted)="deleteMeal($event)"></app-meal-card>
+    <app-meal-card *ngFor="let meal of mealsForDisplay()" [meal]="meal" [underEdit]="dateUnderEdit(meal.diningDate)" (editStarted)="startEdit($event)" (deleted)="deleteMeal($event)"></app-meal-card>
 </div>

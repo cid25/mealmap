@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { MealService } from '../services/meal.service';
 import { DishService } from '../services/dish.service';
 import { Meal } from '../interfaces/meal';
+import { DateTime } from 'luxon';
 
 @Component({
   selector: 'app-meal-schedule',
@@ -11,10 +12,12 @@ import { Meal } from '../interfaces/meal';
 export class MealScheduleComponent implements OnInit {
   private meals: Meal[] = [];
 
-  private timerange: Timerange;
-
+  private timeperiodType: Timeperiod;
+  private reference: Date;
   private start: Date;
   private end: Date;
+
+  private _dateUnderEdit: Date | undefined = undefined;
 
   @Output()
   editStarted = new EventEmitter();
@@ -23,12 +26,12 @@ export class MealScheduleComponent implements OnInit {
     private mealService: MealService,
     private dishService: DishService
   ) {
-    this.timerange = Timerange.Weekly;
+    this.timeperiodType = Timeperiod.Weekly;
 
-    const now = new Date(Date.now());
-    now.setUTCHours(0, 0, 0, 0);
-    this.start = this.startOfWeek(now);
-    this.end = this.endOfWeek(now);
+    this.reference = new Date(Date.now());
+    this.reference.setUTCHours(0, 0, 0, 0);
+
+    [this.start, this.end] = this.calcTimerange();
   }
 
   async ngOnInit(): Promise<void> {
@@ -40,27 +43,67 @@ export class MealScheduleComponent implements OnInit {
   }
 
   weeklyRange(): boolean {
-    return this.timerange == Timerange.Weekly;
+    return this.timeperiodType == Timeperiod.Weekly;
   }
 
   monthlyRange(): boolean {
-    return this.timerange == Timerange.Monthly;
+    return this.timeperiodType == Timeperiod.Monthly;
   }
 
-  viewWeeklyRange(): void {
-    if (this.timerange != Timerange.Weekly) {
-      this.timerange = Timerange.Monthly;
-    }
+  timeLabel(): string {
+    const datetime = DateTime.fromJSDate(this.reference);
+    if (this.timeperiodType == Timeperiod.Weekly)
+      return `CW ${datetime.weekNumber} ${datetime.weekYear}`;
+    else return `${datetime.monthShort} ${datetime.year}`;
   }
 
-  viewMonthlyRange(): void {
-    if (this.timerange != Timerange.Monthly) {
-      this.timerange = Timerange.Weekly;
+  async viewWeeklyRange(): Promise<void> {
+    if (this.timeperiodType != Timeperiod.Weekly) {
+      this.timeperiodType = Timeperiod.Weekly;
     }
+    [this.start, this.end] = this.calcTimerange();
+    await this.retrieveMealsWithDishes();
+  }
+
+  async viewMonthlyRange(): Promise<void> {
+    if (this.timeperiodType != Timeperiod.Monthly) {
+      this.timeperiodType = Timeperiod.Monthly;
+    }
+    [this.start, this.end] = this.calcTimerange();
+    await this.retrieveMealsWithDishes();
+  }
+
+  async shiftTimeperiodPrior(): Promise<void> {
+    let reference = DateTime.fromJSDate(this.reference);
+    if (this.timeperiodType == Timeperiod.Weekly) reference = reference.minus({ week: 1 });
+    else reference = reference.minus({ month: 1 });
+    this.reference = reference.toJSDate();
+
+    [this.start, this.end] = this.calcTimerange();
+    await this.retrieveMealsWithDishes();
+  }
+
+  async shiftTimeperiodAfter(): Promise<void> {
+    let reference = DateTime.fromJSDate(this.reference);
+    if (this.timeperiodType == Timeperiod.Weekly) reference = reference.plus({ week: 1 });
+    if (this.timeperiodType == Timeperiod.Monthly) reference = reference.plus({ month: 1 });
+    this.reference = reference.toJSDate();
+
+    [this.start, this.end] = this.calcTimerange();
+    await this.retrieveMealsWithDishes();
   }
 
   startEdit(date: Date): void {
+    this._dateUnderEdit = date;
     this.editStarted.emit(date);
+  }
+
+  stopEdit(): void {
+    this._dateUnderEdit = undefined;
+  }
+
+  dateUnderEdit(date: Date): boolean {
+    return this._dateUnderEdit == date;
   }
 
   async deleteMeal(date: Date): Promise<void> {
@@ -97,18 +140,20 @@ export class MealScheduleComponent implements OnInit {
       .map((course) => course.dishId);
   }
 
-  private startOfWeek(date: Date): Date {
-    const diff = date.getDate() - date.getDay() + (date.getDay() === 0 ? -6 : 1);
-    return new Date(date.setDate(diff));
-  }
-
-  private endOfWeek(date: Date): Date {
-    const diff = date.getDate() - date.getDay() + (date.getDay() === 0 ? 1 : 7);
-    return new Date(date.setDate(diff));
+  private calcTimerange(): [Date, Date] {
+    if (this.timeperiodType == Timeperiod.Weekly) {
+      const start = DateTime.fromJSDate(this.reference).startOf('week').toJSDate();
+      const end = DateTime.fromJSDate(this.reference).endOf('week').toJSDate();
+      return [start, end];
+    } else {
+      const start = DateTime.fromJSDate(this.reference).startOf('month').toJSDate();
+      const end = DateTime.fromJSDate(this.reference).endOf('month').toJSDate();
+      return [start, end];
+    }
   }
 }
 
-enum Timerange {
+enum Timeperiod {
   Weekly = 1,
   Monthly = 2
 }
