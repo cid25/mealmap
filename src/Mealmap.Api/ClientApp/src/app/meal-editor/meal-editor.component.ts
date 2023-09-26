@@ -12,8 +12,9 @@ export class MealEditorComponent implements OnInit, OnChanges {
   private intialMealFlattened: string = '';
 
   meal: Meal | undefined;
+
   dishPickerActive: boolean = false;
-  indexPicking: number = 0;
+  courseIndexPicking: number = 0;
 
   @Input()
   diningDate!: Date;
@@ -31,6 +32,7 @@ export class MealEditorComponent implements OnInit, OnChanges {
   async ngOnChanges(): Promise<void> {
     this.meal = await this.mealService.getMealFor(this.diningDate);
     this.intialMealFlattened = JSON.stringify(this.meal);
+    this.deactivatePicker();
   }
 
   stopEdit(): void {
@@ -57,14 +59,34 @@ export class MealEditorComponent implements OnInit, OnChanges {
     return this.intialMealFlattened != JSON.stringify(this.meal);
   }
 
-  nextIndex(): number {
+  nextCourseIndex(): number {
     const indices = this.meal?.courses.map<number>((course) => course.index);
     if (indices != undefined && indices.length > 0) return Math.max(...indices) + 1;
     else return 1;
   }
 
-  activatePicker(): void {
+  deleteCourse(index: number): void {
+    const remainingCourses = this.meal?.courses.filter((course) => course.index != index);
+    if (remainingCourses == undefined) this.meal!.courses = [];
+    else this.meal!.courses = remainingCourses;
+
+    this.shiftCourses(index);
+
+    if (this.meal?.courses.length == 1) this.meal.courses[0].mainCourse = true;
+  }
+
+  activatePicker(courseIndex: number): void {
     this.dishPickerActive = true;
-    this.indexPicking = this.nextIndex();
+    this.courseIndexPicking = courseIndex;
+  }
+
+  private deactivatePicker(): void {
+    this.dishPickerActive = false;
+  }
+
+  private shiftCourses(indexRemoved: number): void {
+    this.meal?.courses.forEach(
+      (course) => (course.index = course.index > indexRemoved ? --course.index : course.index)
+    );
   }
 }

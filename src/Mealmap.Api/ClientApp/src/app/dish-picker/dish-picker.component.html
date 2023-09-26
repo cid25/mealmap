@@ -1,2 +1,8 @@
-<!-- <div *ngFor="let dish of getDishes() | async">{{ dish.name }}</div> -->
-<div>picker works</div>
+<div class="border border-info mt-2">
+    <div class="d-flex m-2 gap-2">
+        <div *ngFor="let dish of dishes" class="d-flex flex-column align-items-center">
+            <div>{{ dish.name }}</div>
+            <img [src]="dish.localImageURL" class="img-fluid text-center picker-card flex-grow-1" alt="No image">
+        </div>
+    </div>
+</div>

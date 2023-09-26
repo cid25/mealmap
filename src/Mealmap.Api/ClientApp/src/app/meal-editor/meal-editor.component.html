@@ -12,15 +12,19 @@
                 <div class="w-25 border border-primary rounded d-flex flex-column editor-card">
                     <div class="text-primary d-inline-flex justify-content-center text-primary"><span class="d-block fw-bold">{{ course.index }}</span></div>
                     <img [src]="course.dish.localImageURL" class="img-fluid text-center flex-grow-1" alt="No image">
-                    <span class="card-title bg-white text-center my-2">{{ course.dish.name }}</span>
+                    <div class="card-title bg-white text-center my-2">{{ course.dish.name }}</div>
+                    <div class="d-flex">
+                        <button id="btnedit" class="btn btn-success rounded-0 flex-grow-1 d-flex justify-content-center align-items-center" (click)="activatePicker(course.index)"><img src="/assets/icons/arrow-left-right.svg" class="me-2">Swap</button>
+                        <button id="btndelete" class="btn btn-danger rounded-0 flex-grow-1 d-flex justify-content-center align-content-center" (click)="deleteCourse(course.index)"><img src="/assets/icons/trash3-fill.svg" class="me-2">Delete</button>
+                    </div>
                     <input type="radio" [id]="'course-' + course.index" name="btnmaincourse" [value]="course.index" autocomplete="off" [checked]="course.mainCourse" class="btn-check">
                     <label [for]="'course-' + course.index" (click)="makeMainCourse(course.index)" class="btn btn-outline-primary">Main Course</label>
                 </div>
             </ng-container>
                 <div class="w-25 border border-primary rounded d-flex flex-column align-items-center editor-card">
-                    <div class="w-100 border-bottom border-primary text-primary text-center fw-bold">{{ nextIndex() }}</div>
+                    <div class="w-100 border-bottom border-primary text-primary text-center fw-bold">{{ nextCourseIndex() }}</div>
                     <div class="d-flex flex-grow-1 flex-column justify-content-center">
-                        <input type="image" src="/assets/icons/plus-square-dotted.svg" alt="Add Meal" height="50em" width="50em" (click)="activatePicker()">
+                        <input type="image" src="/assets/icons/plus-square-dotted.svg" alt="Add Meal" height="50em" width="50em" (click)="activatePicker(nextCourseIndex())">
                     </div>
                 </div>
         </div>
@@ -30,5 +34,5 @@
             <button type="button" (click)="stopEdit()" class="btn btn-primary">Close</button>
         </div>
     </div>
-    <app-dish-picker *ngIf="dishPickerActive"></app-dish-picker>
+    <app-dish-picker *ngIf="dishPickerActive" [index]="courseIndexPicking"></app-dish-picker>
 </div>
