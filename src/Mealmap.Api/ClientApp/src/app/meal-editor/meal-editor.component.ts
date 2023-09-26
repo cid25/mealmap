@@ -1,7 +1,8 @@
 import { Component, Input, Output, EventEmitter, OnChanges, OnInit } from '@angular/core';
 import { MealService } from '../services/meal.service';
-import { Meal } from '../interfaces/meal';
-import { Course } from '../interfaces/course';
+import { Meal } from '../classes/Meal';
+import { Course } from '../classes/Course';
+import { DishPickedEvent } from '../interfaces/DishPickedEvent';
 
 @Component({
   selector: 'app-meal-editor',
@@ -9,7 +10,7 @@ import { Course } from '../interfaces/course';
   styleUrls: ['./meal-editor.component.css']
 })
 export class MealEditorComponent implements OnInit, OnChanges {
-  private intialMealFlattened: string = '';
+  private uneditedMeal: Meal | undefined;
 
   meal: Meal | undefined;
 
@@ -25,17 +26,15 @@ export class MealEditorComponent implements OnInit, OnChanges {
   constructor(private mealService: MealService) {}
 
   async ngOnInit(): Promise<void> {
-    this.meal = await this.mealService.getMealFor(this.diningDate);
-    this.intialMealFlattened = JSON.stringify(this.meal);
+    await this.setMeal();
   }
 
   async ngOnChanges(): Promise<void> {
-    this.meal = await this.mealService.getMealFor(this.diningDate);
-    this.intialMealFlattened = JSON.stringify(this.meal);
     this.deactivatePicker();
+    await this.setMeal();
   }
 
-  stopEdit(): void {
+  cancel(): void {
     this.editStopped.emit(this.diningDate);
   }
 
@@ -56,7 +55,7 @@ export class MealEditorComponent implements OnInit, OnChanges {
   }
 
   mealEdited(): boolean {
-    return this.intialMealFlattened != JSON.stringify(this.meal);
+    return JSON.stringify(this.uneditedMeal) != JSON.stringify(this.meal);
   }
 
   nextCourseIndex(): number {
@@ -75,9 +74,38 @@ export class MealEditorComponent implements OnInit, OnChanges {
     if (this.meal?.courses.length == 1) this.meal.courses[0].mainCourse = true;
   }
 
+  discardChanges(): void {
+    this.meal = this.uneditedMeal?.clone();
+    this.deactivatePicker();
+  }
+
   activatePicker(courseIndex: number): void {
     this.dishPickerActive = true;
     this.courseIndexPicking = courseIndex;
+  }
+
+  cancelPicking(): void {
+    this.deactivatePicker();
+  }
+
+  pickDish(event: DishPickedEvent): void {
+    this.deactivatePicker();
+    const existingCourse = this.meal?.courses.filter((course) => course.index == event.index);
+    if (existingCourse?.length === 1) {
+      existingCourse[0].dish = event.dish;
+      existingCourse[0].dishId = event.dish.id;
+    } else {
+      const course = new Course(event.index, event.dish.id);
+      course.dish = event.dish;
+      if (this.meal?.courses.length === 0) course.mainCourse = true;
+      this.meal?.courses.push(course);
+    }
+  }
+
+  private async setMeal(): Promise<void> {
+    const meal = await this.mealService.getMealFor(this.diningDate);
+    this.meal = meal.clone();
+    this.uneditedMeal = meal.clone();
   }
 
   private deactivatePicker(): void {

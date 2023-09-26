@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { DishService } from '../services/dish.service';
-import { Dish } from '../interfaces/dish';
+import { IDish } from '../interfaces/IDish';
+import { DishPickedEvent } from '../interfaces/DishPickedEvent';
 
 @Component({
   selector: 'app-dish-picker',
@@ -10,15 +11,39 @@ import { Dish } from '../interfaces/dish';
 export class DishPickerComponent implements OnInit {
   constructor(private dishService: DishService) {}
 
-  dishes: Dish[] = [];
+  dishes: IDish[] = [];
+
+  dishPicked: IDish | null = null;
 
   @Input()
   index: number = 0;
+
+  @Output()
+  picked = new EventEmitter<DishPickedEvent>();
+
+  @Output()
+  cancelled = new EventEmitter();
 
   async ngOnInit(): Promise<void> {
     this.dishes = await this.dishService.getDishes([
       'da7e7a58-4b29-4e26-80ee-35dd9f13a97d',
       '66334f32-78d6-4d72-a03f-b8e3403fe690'
     ]);
+  }
+
+  async select(id: string): Promise<void> {
+    this.dishPicked = await this.dishService.getDish(id);
+  }
+
+  selected(): boolean {
+    return !(this.dishPicked === null);
+  }
+
+  cancel(): void {
+    this.cancelled.emit();
+  }
+
+  confirm(): void {
+    this.picked.emit({ index: this.index, dish: this.dishPicked! });
   }
 }

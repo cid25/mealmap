@@ -2,3 +2,8 @@
     width: 12em;
     max-height: 12em;
 }
+
+#btnselect {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}

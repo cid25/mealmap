@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { Meal } from '../interfaces/meal';
+import { DateTime } from 'luxon';
+import { IMeal } from '../interfaces/IMeal';
+import { Meal } from '../classes/Meal';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +26,8 @@ export class MealService {
 
     const result: Meal[] = [];
     dates.forEach((date) => {
-      const meal = this.meals.get(this.toIsoDateString(date));
+      const key = Meal.keyFor(date);
+      const meal = this.meals.get(key);
       if (meal !== undefined) result.push(meal);
     });
 
@@ -32,7 +35,7 @@ export class MealService {
   }
 
   async getMealFor(date: Date): Promise<Meal> {
-    const dateAsString = this.toIsoDateString(date);
+    const dateAsString = Meal.keyFor(date);
     if (!this.meals.has(dateAsString)) await this.fetchForRange(date, date);
 
     const meal = this.meals.get(dateAsString);
@@ -42,17 +45,17 @@ export class MealService {
   }
 
   async deleteMeal(date: Date): Promise<void> {
-    const dateString = this.toIsoDateString(date);
+    const dateKey = Meal.keyFor(date);
 
-    const url = `api/meals/${this.meals.get(dateString)?.id}`;
+    const url = `api/meals/${this.meals.get(dateKey)?.id}`;
     await firstValueFrom(this.http.delete(url));
 
-    this.meals.delete(dateString);
+    this.meals.delete(dateKey);
   }
 
   private datesWithoutMeal(dates: Date[]): Date[] {
     return dates.filter((date) => {
-      const key = this.toIsoDateString(date);
+      const key = Meal.keyFor(date);
       if (!this.meals.has(key) || this.meals.get(key)?.id == '') return true;
       else return false;
     });
@@ -61,10 +64,10 @@ export class MealService {
   private datesForRange(from: Date, to: Date): Date[] {
     const result: Date[] = [];
 
-    let dateMilliseconds = from.getTime();
-    while (dateMilliseconds <= to.getTime()) {
-      result.push(new Date(dateMilliseconds));
-      dateMilliseconds = dateMilliseconds + 24 * 60 * 60 * 1000;
+    let dateIterator = DateTime.fromJSDate(from);
+    while (dateIterator.diff(DateTime.fromJSDate(to)).milliseconds <= 0) {
+      result.push(dateIterator.toJSDate());
+      dateIterator = dateIterator.plus({ day: 1 });
     }
 
     return result;
@@ -78,46 +81,21 @@ export class MealService {
   private fillBlanksWithStubs(dates: Date[]): void {
     const remainingBlankDates = this.datesWithoutMeal(dates);
     remainingBlankDates.forEach((date) => {
-      const meal: Meal = {
-        id: '',
-        eTag: '',
-        diningDate: date,
-        courses: []
-      };
-      this.meals.set(this.toIsoDateString(date), meal);
+      const meal = new Meal(date);
+      this.meals.set(meal.key(), meal);
     });
   }
 
   private async fetchForRange(from: Date, to: Date): Promise<void> {
     const url = 'api/meals';
     const options = {
-      params: new HttpParams()
-        .set('fromDate', this.toIsoDateString(from))
-        .set('toDate', this.toIsoDateString(to))
+      params: new HttpParams().set('fromDate', Meal.keyFor(from)).set('toDate', Meal.keyFor(to))
     };
-    const mealsRaw = await firstValueFrom(this.http.get<Meal[]>(url, options));
+    const mealData = await firstValueFrom(this.http.get<IMeal[]>(url, options));
 
-    if (mealsRaw) {
-      const mealsTypeCorrected = mealsRaw.map((meal) => {
-        const dateFromString = new Date(meal.diningDate);
-        dateFromString.setUTCHours(0);
-        meal.diningDate = dateFromString;
-        return meal;
-      });
-      mealsTypeCorrected.forEach((meal) =>
-        this.meals.set(this.toIsoDateString(meal.diningDate), meal)
-      );
+    if (mealData) {
+      const meals = mealData.map((rawMeal) => Meal.from(rawMeal));
+      meals.forEach((meal) => this.meals.set(meal.key(), meal));
     }
-  }
-
-  private toIsoDateString(date: Date): string {
-    const dateString =
-      date.getUTCFullYear() +
-      '-' +
-      ('0' + (date.getUTCMonth() + 1).toString()).slice(-2) +
-      '-' +
-      ('0' + date.getUTCDate().toString()).slice(-2);
-
-    return dateString;
   }
 }

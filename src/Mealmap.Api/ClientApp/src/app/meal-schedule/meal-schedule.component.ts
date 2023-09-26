@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { MealService } from '../services/meal.service';
 import { DishService } from '../services/dish.service';
-import { Meal } from '../interfaces/meal';
+import { Meal } from '../classes/Meal';
 import { DateTime } from 'luxon';
 
 @Component({
@@ -143,11 +143,17 @@ export class MealScheduleComponent implements OnInit {
   private calcTimerange(): [Date, Date] {
     if (this.timeperiodType == Timeperiod.Weekly) {
       const start = DateTime.fromJSDate(this.reference).startOf('week').toJSDate();
-      const end = DateTime.fromJSDate(this.reference).endOf('week').toJSDate();
+      const end = DateTime.fromJSDate(this.reference)
+        .endOf('week')
+        .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+        .toJSDate();
       return [start, end];
     } else {
       const start = DateTime.fromJSDate(this.reference).startOf('month').toJSDate();
-      const end = DateTime.fromJSDate(this.reference).endOf('month').toJSDate();
+      const end = DateTime.fromJSDate(this.reference)
+        .endOf('month')
+        .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+        .toJSDate();
       return [start, end];
     }
   }

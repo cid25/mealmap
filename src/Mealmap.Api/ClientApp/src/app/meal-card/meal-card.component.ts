@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Meal } from '../interfaces/meal';
-import { Course } from '../interfaces/course';
+import { Meal } from '../classes/Meal';
+import { Course } from '../classes/Course';
 
 @Component({
   selector: 'app-meal-card',
