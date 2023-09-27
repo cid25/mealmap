@@ -9,6 +9,8 @@ import { Meal } from '../classes/Meal';
   providedIn: 'root'
 })
 export class MealService {
+  private readonly base_url = 'api/meals';
+
   private meals: Map<string, Meal> = new Map<string, Meal>();
 
   constructor(private http: HttpClient) {}
@@ -47,7 +49,7 @@ export class MealService {
   async deleteMeal(date: Date): Promise<void> {
     const dateKey = Meal.keyFor(date);
 
-    const url = `api/meals/${this.meals.get(dateKey)?.id}`;
+    const url = `${this.base_url}/${this.meals.get(dateKey)?.id}`;
     await firstValueFrom(this.http.delete(url));
 
     this.meals.delete(dateKey);
@@ -87,11 +89,10 @@ export class MealService {
   }
 
   private async fetchForRange(from: Date, to: Date): Promise<void> {
-    const url = 'api/meals';
     const options = {
       params: new HttpParams().set('fromDate', Meal.keyFor(from)).set('toDate', Meal.keyFor(to))
     };
-    const mealData = await firstValueFrom(this.http.get<IMeal[]>(url, options));
+    const mealData = await firstValueFrom(this.http.get<IMeal[]>(this.base_url, options));
 
     if (mealData) {
       const meals = mealData.map((rawMeal) => Meal.from(rawMeal));
