@@ -3,7 +3,6 @@
         <div class="py-2 flex-grow-1">
             {{ diningDate | date:'EEEE - dd.MM.yyyy' }}
         </div>
-        <button type="button" class="btn" (click)="cancel()"><img src="/assets/icons/x-square.svg" class="d-block"></button>
     </div>
     <div class="d-flex gap-1 flex-column border-start border-end border-bottom border-info">
         <div class="m-1 p-2 bg-secondary text-white d-flex justify-content-center"><div>Courses</div></div>
@@ -30,7 +29,7 @@
         </div>
         <div class="d-flex justify-content-end gap-2 m-1">
             <button type="button" [disabled]="!mealEdited()" class="btn btn-success">Save</button>
-            <button type="button" [disabled]="!mealEdited()" (click)="discardChanges()" class="btn btn-warning">Discard</button>
+            <button type="button" [disabled]="!mealEdited()" (click)="discardChanges()" class="btn btn-warning">Reset</button>
             <button type="button" (click)="cancel()" class="btn" [ngClass]="{'btn-primary': !mealEdited(), 'btn-warning': mealEdited()}">Cancel</button>
         </div>
     </div>

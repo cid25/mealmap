@@ -11,12 +11,6 @@ export class MealCardComponent {
   @Input()
   meal!: Meal;
 
-  @Input()
-  underEdit: boolean = false;
-
-  @Output()
-  editStarted = new EventEmitter();
-
   @Output()
   deleted = new EventEmitter();
 
@@ -32,14 +26,5 @@ export class MealCardComponent {
     if (mainCourse !== undefined) return mainCourse;
 
     return null;
-  }
-
-  startEdit(): void {
-    this.underEdit = true;
-    this.editStarted.emit(this.meal.diningDate);
-  }
-
-  stopEdit(): void {
-    this.underEdit = false;
   }
 }

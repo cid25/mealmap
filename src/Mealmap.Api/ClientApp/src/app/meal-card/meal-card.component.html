@@ -1,13 +1,13 @@
 <div class="card h-100 schedule-card">
-  <div class="py-2 rounded-top text-white text-center" [ngClass]="{'bg-secondary': !underEdit, 'bg-info': underEdit}">{{ meal!.diningDate | date:'EEEE - dd.MM.yyyy' }}</div>
+  <div class="py-2 rounded-top text-white text-center bg-secondary">{{ meal!.diningDate | date:'EEEE - dd.MM.yyyy' }}</div>
   <div *ngIf="!hasCourses()" class="h-100 d-flex justify-content-center align-items-center text-primary">
-    <input type="image" src="/assets/icons/plus-square-dotted.svg" alt="Add Meal" width="30%" height="30%" (click)="startEdit()">
+    <a [routerLink]="['/meals', meal.key()]" class="w-25 h-25"><img src="/assets/icons/plus-square-dotted.svg" alt="Add Meal" class="w-100 h-100"></a>
   </div>
   <ng-container *ngIf="hasCourses()">
-    <button type="button" class="btn d-block p-0 border-0" (click)="startEdit()"><img [src]="mainCourse()?.dish?.localImageURL" class="img-fluid text-center" alt="No image"></button>
+    <div class="p-0 border-0"><a [routerLink]="['/meals', meal.key()]"><img [src]="mainCourse()?.dish?.localImageURL" class="img-fluid text-center" alt="No image"></a></div>
     <div class="d-flex text-white">
-      <button id="btnedit" class="btn btn-success flex-grow-1 rounded-0 d-flex justify-content-center align-content-center" (click)="startEdit()"><img src="/assets/icons/pencil-square.svg" class="me-1">Edit</button>
-      <button id="btndelete" class="btn btn-danger flex-grow-1 rounded-0 d-flex justify-content-center align-content-center" (click)="deleted.emit(meal.diningDate)"><img src="/assets/icons/trash3-fill.svg" class="me-1">Delete</button>
+      <a [routerLink]="['/meals', meal.key()]" class=" flex-grow-1 btn btn-success rounded-0" role="button"><div class="d-flex justify-content-center align-items-center"><img src="/assets/icons/pencil-square.svg" class="me-1">Edit</div></a>
+      <button id="btndelete" class="btn btn-danger flex-grow-1 rounded-0 d-flex justify-content-center align-items-center" (click)="deleted.emit(meal.diningDate)"><img src="/assets/icons/trash3-fill.svg" class="me-1">Delete</button>
     </div>
     <div class="card-body">
       <h5 class="card-title text-center">{{ mainCourse()?.dish?.name }}</h5>

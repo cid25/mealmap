@@ -1,8 +1,10 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnInit } from '@angular/core';
+import { Component, OnChanges, OnInit } from '@angular/core';
 import { MealService } from '../services/meal.service';
+import { DishPickedEvent } from '../interfaces/DishPickedEvent';
+import { ActivatedRoute } from '@angular/router';
+import { DateTime } from 'luxon';
 import { Meal } from '../classes/Meal';
 import { Course } from '../classes/Course';
-import { DishPickedEvent } from '../interfaces/DishPickedEvent';
 
 @Component({
   selector: 'app-meal-editor',
@@ -17,13 +19,14 @@ export class MealEditorComponent implements OnInit, OnChanges {
   dishPickerActive: boolean = false;
   courseIndexPicking: number = 0;
 
-  @Input()
   diningDate!: Date;
 
-  @Output()
-  editStopped = new EventEmitter();
-
-  constructor(private mealService: MealService) {}
+  constructor(
+    private mealService: MealService,
+    private route: ActivatedRoute
+  ) {
+    this.diningDate = DateTime.fromISO(this.route.snapshot.params['date']).toJSDate();
+  }
 
   async ngOnInit(): Promise<void> {
     await this.setMeal();
@@ -35,7 +38,7 @@ export class MealEditorComponent implements OnInit, OnChanges {
   }
 
   cancel(): void {
-    this.editStopped.emit(this.diningDate);
+    return;
   }
 
   coursesForDisplay(): Course[] {

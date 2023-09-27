@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MealService } from '../services/meal.service';
 import { DishService } from '../services/dish.service';
 import { Meal } from '../classes/Meal';
@@ -16,11 +16,6 @@ export class MealScheduleComponent implements OnInit {
   private reference: Date;
   private start: Date;
   private end: Date;
-
-  private _dateUnderEdit: Date | undefined = undefined;
-
-  @Output()
-  editStarted = new EventEmitter();
 
   constructor(
     private mealService: MealService,
@@ -91,19 +86,6 @@ export class MealScheduleComponent implements OnInit {
 
     [this.start, this.end] = this.calcTimerange();
     await this.retrieveMealsWithDishes();
-  }
-
-  startEdit(date: Date): void {
-    this._dateUnderEdit = date;
-    this.editStarted.emit(date);
-  }
-
-  stopEdit(): void {
-    this._dateUnderEdit = undefined;
-  }
-
-  dateUnderEdit(date: Date): boolean {
-    return this._dateUnderEdit?.toISOString() == date.toISOString();
   }
 
   async deleteMeal(date: Date): Promise<void> {
