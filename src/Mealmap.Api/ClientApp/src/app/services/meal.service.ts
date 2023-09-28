@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { DateTime } from 'luxon';
 import { IMeal } from '../interfaces/IMeal';
 import { Meal } from '../classes/Meal';
+import { DishService } from './dish.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,10 @@ export class MealService {
 
   private meals: Map<string, Meal> = new Map<string, Meal>();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private dishService: DishService
+  ) {}
 
   async getMealsFor(from: Date, to: Date): Promise<Meal[]> {
     const dates: Date[] = this.datesForRange(from, to);
@@ -23,6 +27,8 @@ export class MealService {
       const [lowerBound, upperBound] = this.boundsForRange(initiallyBlankDates);
       await this.fetchForRange(lowerBound, upperBound);
     }
+
+    await this.retrieveDishesForMeals();
 
     this.fillBlanksWithStubs(dates);
 
@@ -37,13 +43,20 @@ export class MealService {
   }
 
   async getMealFor(date: Date): Promise<Meal> {
-    const dateAsString = Meal.keyFor(date);
-    if (!this.meals.has(dateAsString)) await this.fetchForRange(date, date);
+    let result: Meal = new Meal(date);
 
-    const meal = this.meals.get(dateAsString);
-    if (meal == undefined) throw new Error(`meal for ${dateAsString} not found`);
+    const dateKey = Meal.keyFor(date);
+    if (this.meals.has(dateKey)) {
+      result = this.meals.get(dateKey) as Meal;
+    } else {
+      const meal = (await this.fetchForRange(date, date))[0];
 
-    return meal;
+      if (meal !== undefined) result = meal;
+    }
+
+    this.meals.set(result.key(), result);
+    await this.retrieveDishesForMeals();
+    return result;
   }
 
   async deleteMeal(date: Date): Promise<void> {
@@ -53,6 +66,29 @@ export class MealService {
     await firstValueFrom(this.http.delete(url));
 
     this.meals.delete(dateKey);
+  }
+
+  async saveMeal(meal: Meal): Promise<void> {
+    let returned: IMeal | undefined = undefined;
+    if (meal.id) {
+      const url = `${this.base_url}/${meal.id}`;
+      const options = {
+        headers: new HttpHeaders()
+          .set('If-Match', meal.eTag!)
+          .set('Content-Type', 'application/json')
+      };
+      returned = await firstValueFrom(this.http.put<IMeal>(url, meal.toJSON(), options));
+    } else {
+      const options = {
+        headers: new HttpHeaders().set('Content-Type', 'application/json')
+      };
+      returned = await firstValueFrom(this.http.post<IMeal>(this.base_url, meal.toJSON(), options));
+    }
+
+    if (returned !== undefined) {
+      const received = Meal.from(returned);
+      this.meals.set(received.key(), received);
+    }
   }
 
   private datesWithoutMeal(dates: Date[]): Date[] {
@@ -88,7 +124,7 @@ export class MealService {
     });
   }
 
-  private async fetchForRange(from: Date, to: Date): Promise<void> {
+  private async fetchForRange(from: Date, to: Date): Promise<Meal[]> {
     const options = {
       params: new HttpParams().set('fromDate', Meal.keyFor(from)).set('toDate', Meal.keyFor(to))
     };
@@ -97,6 +133,30 @@ export class MealService {
     if (mealData) {
       const meals = mealData.map((rawMeal) => Meal.from(rawMeal));
       meals.forEach((meal) => this.meals.set(meal.key(), meal));
+      return meals;
     }
+    return [];
+  }
+
+  private async retrieveDishesForMeals(): Promise<void> {
+    const ids = this.collectMissingDishIds();
+    const dishes = await this.dishService.getDishes(ids);
+
+    this.meals.forEach((value) =>
+      value.courses.forEach((course) => {
+        if (!course.dish) {
+          const dish = dishes.find((dish) => dish.id === course.dishId);
+          if (dish !== undefined) course.dish = dish;
+        }
+      })
+    );
+  }
+
+  private collectMissingDishIds(): string[] {
+    const result: string[] = [];
+    this.meals.forEach((value) =>
+      value.courses.filter((course) => !course.dish).forEach((course) => result.push(course.dishId))
+    );
+    return result;
   }
 }

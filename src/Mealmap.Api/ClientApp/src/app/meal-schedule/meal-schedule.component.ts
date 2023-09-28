@@ -30,7 +30,7 @@ export class MealScheduleComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    await this.retrieveMealsWithDishes();
+    await this.retrieveMeals();
   }
 
   mealsForDisplay(): Meal[] {
@@ -57,7 +57,7 @@ export class MealScheduleComponent implements OnInit {
       this.timeperiodType = Timeperiod.Weekly;
     }
     [this.start, this.end] = this.calcTimerange();
-    await this.retrieveMealsWithDishes();
+    await this.retrieveMeals();
   }
 
   async viewMonthlyRange(): Promise<void> {
@@ -65,7 +65,7 @@ export class MealScheduleComponent implements OnInit {
       this.timeperiodType = Timeperiod.Monthly;
     }
     [this.start, this.end] = this.calcTimerange();
-    await this.retrieveMealsWithDishes();
+    await this.retrieveMeals();
   }
 
   async shiftTimeperiodPrior(): Promise<void> {
@@ -75,7 +75,7 @@ export class MealScheduleComponent implements OnInit {
     this.reference = reference.toJSDate();
 
     [this.start, this.end] = this.calcTimerange();
-    await this.retrieveMealsWithDishes();
+    await this.retrieveMeals();
   }
 
   async shiftTimeperiodAfter(): Promise<void> {
@@ -85,41 +85,16 @@ export class MealScheduleComponent implements OnInit {
     this.reference = reference.toJSDate();
 
     [this.start, this.end] = this.calcTimerange();
-    await this.retrieveMealsWithDishes();
+    await this.retrieveMeals();
   }
 
   async deleteMeal(date: Date): Promise<void> {
     await this.mealService.deleteMeal(date);
-    await this.retrieveMealsWithDishes();
+    await this.retrieveMeals();
   }
 
-  private async retrieveMealsWithDishes(): Promise<void> {
+  private async retrieveMeals(): Promise<void> {
     this.meals = await this.mealService.getMealsFor(this.start, this.end);
-    await this.retrieveDishesForMeals();
-  }
-
-  private async retrieveDishesForMeals(): Promise<void> {
-    const ids = this.collectDishIds();
-    const dishes = await this.dishService.getDishes(ids);
-
-    const meals = this.meals.map((meal) => {
-      meal.courses.forEach((course) => {
-        const dish = dishes.find((dish) => dish.id === course.dishId);
-        if (dish !== undefined) {
-          course.dish = dish;
-        }
-      });
-      return meal;
-    });
-
-    this.meals = meals;
-  }
-
-  private collectDishIds(): string[] {
-    return this.meals
-      .map((meal) => meal.courses)
-      .reduce((accumulated, courses) => accumulated.concat(courses), [])
-      .map((course) => course.dishId);
   }
 
   private calcTimerange(): [Date, Date] {

@@ -1,18 +1,19 @@
-<div class="mx-2">
-    <div class="rounded-top-2 d-flex bg-info text-white text-center">
-        <div class="py-2 flex-grow-1">
-            {{ diningDate | date:'EEEE - dd.MM.yyyy' }}
+<div class="d-flex flex-wrap gap-2">
+    <div class="border border-primary rounded-top-2">
+        <div class="rounded-top-2 bg-primary text-white text-center py-2">{{ diningDate | date:'EEEE - dd.MM.yyyy' }}</div>
+        <div class="d-flex gap-2 justify-content-start m-1">
+            <button type="button" (click)="back()" class="btn btn-primary">Back</button>
+            <button type="button" [disabled]="!mealEdited()" (click)="saveChanges()" class="btn btn-success">Save</button>
+            <button type="button" [disabled]="!mealEdited()" (click)="discardChanges()" class="btn btn-warning">Undo</button>
         </div>
-    </div>
-    <div class="d-flex gap-1 flex-column border-start border-end border-bottom border-info">
-        <div class="m-1 p-2 bg-secondary text-white d-flex justify-content-center"><div>Courses</div></div>
-        <div role="group" class="d-flex flex-wrap gap-2 mx-1">
+        <div class="p-2 bg-secondary text-white text-center"><span>Courses</span></div>
+        <div role="group" class="d-flex flex-wrap align-items-center gap-2 m-1">
             <ng-container *ngFor="let course of coursesForDisplay()">
                 <div class="card border-primary editor-card">
                     <div class="text-primary d-inline-flex justify-content-center border-bottom border-primary"><div class="fw-bold">{{ course.index }}</div></div>
-                    <div class="card-title bg-white text-center my-2">{{ course.dish?.name }}</div>
-                    <button type="button" class="btn d-block p-0 border-0 flex-grow-1" (click)="activatePicker(course.index)"><img [src]="course.dish?.localImageURL" class="img-fluid text-center" alt="No image"></button>
-                    <div class="d-flex">
+                    <div class="card-title bg-white text-center my-2 flex-grow-1">{{ course.dish?.name }}</div>
+                    <button type="button" class="btn d-block p-0 border-0 rounded-0" (click)="activatePicker(course.index)"><img [src]="course.dish?.localImageURL" class="img-fluid" alt="No image"></button>
+                    <div class="d-flex border-0">
                         <button id="btnedit" class="btn btn-success rounded-0 flex-grow-1 d-flex justify-content-center align-items-center" (click)="activatePicker(course.index)"><img src="/assets/icons/pencil-square.svg" class="me-2">Edit</button>
                         <button id="btndelete" class="btn btn-danger rounded-0 flex-grow-1 d-flex justify-content-center align-content-center" (click)="deleteCourse(course.index)"><img src="/assets/icons/trash3-fill.svg" class="me-2">Delete</button>
                     </div>
@@ -26,11 +27,6 @@
                         <input type="image" src="/assets/icons/plus-square-dotted.svg" alt="Add Meal" height="50em" width="50em" (click)="activatePicker(nextCourseIndex())">
                     </div>
                 </div>
-        </div>
-        <div class="d-flex justify-content-end gap-2 m-1">
-            <button type="button" [disabled]="!mealEdited()" class="btn btn-success">Save</button>
-            <button type="button" [disabled]="!mealEdited()" (click)="discardChanges()" class="btn btn-warning">Reset</button>
-            <button type="button" (click)="cancel()" class="btn" [ngClass]="{'btn-primary': !mealEdited(), 'btn-warning': mealEdited()}">Cancel</button>
         </div>
     </div>
     <app-dish-picker *ngIf="dishPickerActive" [index]="courseIndexPicking" (cancelled)="cancelPicking()" (picked)="pickDish($event)"></app-dish-picker>

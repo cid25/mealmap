@@ -1,8 +1,9 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { DateTime } from 'luxon';
 import { MealService } from '../services/meal.service';
 import { DishPickedEvent } from '../interfaces/DishPickedEvent';
-import { ActivatedRoute } from '@angular/router';
-import { DateTime } from 'luxon';
 import { Meal } from '../classes/Meal';
 import { Course } from '../classes/Course';
 
@@ -23,7 +24,9 @@ export class MealEditorComponent implements OnInit, OnChanges {
 
   constructor(
     private mealService: MealService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router,
+    private location: Location
   ) {
     this.diningDate = DateTime.fromISO(this.route.snapshot.params['date']).toJSDate();
   }
@@ -37,8 +40,8 @@ export class MealEditorComponent implements OnInit, OnChanges {
     await this.setMeal();
   }
 
-  cancel(): void {
-    return;
+  back(): void {
+    this.location.back();
   }
 
   coursesForDisplay(): Course[] {
@@ -75,6 +78,11 @@ export class MealEditorComponent implements OnInit, OnChanges {
     this.shiftCourses(index);
 
     if (this.meal?.courses.length == 1) this.meal.courses[0].mainCourse = true;
+  }
+
+  async saveChanges(): Promise<void> {
+    await this.mealService.saveMeal(this.meal!);
+    this.setMeal();
   }
 
   discardChanges(): void {

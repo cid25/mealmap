@@ -24,6 +24,20 @@ export class Meal {
     return Meal.keyFor(this.diningDate);
   }
 
+  toJSON(): string {
+    const result = {
+      id: this.id ?? null,
+      diningDate: DateTime.fromJSDate(this.diningDate).toISODate(),
+      courses: this.courses.map((course: Course) => {
+        const clone = course.clone();
+        delete clone.dish;
+        return clone;
+      })
+    };
+
+    return JSON.stringify(result);
+  }
+
   static keyFor(date: Date): string {
     const dateString =
       date.getFullYear() +

@@ -13,8 +13,6 @@ export class DishPickerComponent implements OnInit {
 
   dishes: IDish[] = [];
 
-  dishPicked: IDish | null = null;
-
   @Input()
   index: number = 0;
 
@@ -32,18 +30,11 @@ export class DishPickerComponent implements OnInit {
   }
 
   async select(id: string): Promise<void> {
-    this.dishPicked = await this.dishService.getDish(id);
-  }
-
-  selected(): boolean {
-    return !(this.dishPicked === null);
+    const dishPicked = await this.dishService.getDish(id);
+    this.picked.emit({ index: this.index, dish: dishPicked! });
   }
 
   cancel(): void {
     this.cancelled.emit();
-  }
-
-  confirm(): void {
-    this.picked.emit({ index: this.index, dish: this.dishPicked! });
   }
 }
