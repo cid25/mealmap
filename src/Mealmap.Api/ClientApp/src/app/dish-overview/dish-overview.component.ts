@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IDish } from '../interfaces/IDish';
+import { Dish } from '../classes/dish';
 import { DishService } from '../services/dish.service';
 
 @Component({
@@ -8,7 +8,7 @@ import { DishService } from '../services/dish.service';
   styleUrls: ['./dish-overview.component.css']
 })
 export class DishOverviewComponent implements OnInit {
-  private _dishes: IDish[] = [];
+  private _dishes: Dish[] = [];
 
   constructor(private dishService: DishService) {}
 
@@ -19,7 +19,7 @@ export class DishOverviewComponent implements OnInit {
     ]);
   }
 
-  dishesForDisplay(): IDish[] {
+  dishesForDisplay(): Dish[] {
     return this._dishes;
   }
 }

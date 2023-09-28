@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { DateTime } from 'luxon';
-import { IMeal } from '../interfaces/IMeal';
-import { Meal } from '../classes/Meal';
+import { MealDTO } from '../interfaces/meal.dto';
+import { Meal } from '../classes/meal';
 import { DishService } from './dish.service';
 
 @Injectable({
@@ -69,7 +69,7 @@ export class MealService {
   }
 
   async saveMeal(meal: Meal): Promise<void> {
-    let returned: IMeal | undefined = undefined;
+    let returned: MealDTO | undefined = undefined;
     if (meal.id) {
       const url = `${this.base_url}/${meal.id}`;
       const options = {
@@ -77,12 +77,14 @@ export class MealService {
           .set('If-Match', meal.eTag!)
           .set('Content-Type', 'application/json')
       };
-      returned = await firstValueFrom(this.http.put<IMeal>(url, meal.toJSON(), options));
+      returned = await firstValueFrom(this.http.put<MealDTO>(url, meal.toJSON(), options));
     } else {
       const options = {
         headers: new HttpHeaders().set('Content-Type', 'application/json')
       };
-      returned = await firstValueFrom(this.http.post<IMeal>(this.base_url, meal.toJSON(), options));
+      returned = await firstValueFrom(
+        this.http.post<MealDTO>(this.base_url, meal.toJSON(), options)
+      );
     }
 
     if (returned !== undefined) {
@@ -128,7 +130,7 @@ export class MealService {
     const options = {
       params: new HttpParams().set('fromDate', Meal.keyFor(from)).set('toDate', Meal.keyFor(to))
     };
-    const mealData = await firstValueFrom(this.http.get<IMeal[]>(this.base_url, options));
+    const mealData = await firstValueFrom(this.http.get<MealDTO[]>(this.base_url, options));
 
     if (mealData) {
       const meals = mealData.map((rawMeal) => Meal.from(rawMeal));

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MealService } from '../services/meal.service';
 import { DishService } from '../services/dish.service';
-import { Meal } from '../classes/Meal';
+import { Meal } from '../classes/meal';
 import { DateTime } from 'luxon';
 
 @Component({

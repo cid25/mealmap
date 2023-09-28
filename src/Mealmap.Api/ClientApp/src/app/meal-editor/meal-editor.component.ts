@@ -3,9 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { DateTime } from 'luxon';
 import { MealService } from '../services/meal.service';
-import { DishPickedEvent } from '../interfaces/DishPickedEvent';
-import { Meal } from '../classes/Meal';
-import { Course } from '../classes/Course';
+import { DishPickedEvent } from '../interfaces/dish-picked.event';
+import { Meal } from '../classes/meal';
+import { Course } from '../classes/course';
 
 @Component({
   selector: 'app-meal-editor',
@@ -104,9 +104,9 @@ export class MealEditorComponent implements OnInit, OnChanges {
     const existingCourse = this.meal?.courses.filter((course) => course.index == event.index);
     if (existingCourse?.length === 1) {
       existingCourse[0].dish = event.dish;
-      existingCourse[0].dishId = event.dish.id;
+      existingCourse[0].dishId = event.dish.id!;
     } else {
-      const course = new Course(event.index, event.dish.id);
+      const course = new Course(event.index, event.dish.id!);
       course.dish = event.dish;
       if (this.meal?.courses.length === 0) course.mainCourse = true;
       this.meal?.courses.push(course);

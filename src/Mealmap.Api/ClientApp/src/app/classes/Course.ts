@@ -1,10 +1,10 @@
-import { ICourse } from '../interfaces/ICourse';
-import { IDish } from '../interfaces/IDish';
+import { CourseDTO } from '../interfaces/course.dto';
+import { Dish } from './dish';
 
 export class Course {
   index: number;
   dishId: string;
-  dish?: IDish;
+  dish?: Dish;
   mainCourse: boolean = false;
 
   constructor(index: number, dishId: string) {
@@ -12,11 +12,10 @@ export class Course {
     this.dishId = dishId;
   }
 
-  copy(original: ICourse): Course {
-    this.index = original.index;
-    this.dishId = original.dishId;
-    this.mainCourse = original.mainCourse;
-    if (original.dish) this.dish = original.dish;
+  copy(dto: CourseDTO): Course {
+    this.index = dto.index;
+    this.dishId = dto.dishId;
+    this.mainCourse = dto.mainCourse;
     return this;
   }
 

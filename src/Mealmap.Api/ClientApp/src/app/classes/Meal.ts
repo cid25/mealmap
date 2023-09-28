@@ -1,5 +1,5 @@
-import { IMeal } from '../interfaces/IMeal';
-import { Course } from './Course';
+import { MealDTO } from '../interfaces/meal.dto';
+import { Course } from './course';
 import { DateTime } from 'luxon';
 
 export class Meal {
@@ -49,18 +49,18 @@ export class Meal {
     return dateString;
   }
 
-  static from(data: IMeal) {
-    const dateFromString = DateTime.fromISO(data.diningDate).toJSDate();
-    const meal = new Meal(dateFromString);
-    return meal.copy(data);
+  static from(dto: MealDTO) {
+    const dateFromString = DateTime.fromISO(dto.diningDate).toJSDate();
+    const result = new Meal(dateFromString);
+    return result.copy(dto);
   }
 
-  private copy(original: IMeal): Meal {
-    this.id = original.id;
-    this.eTag = original.eTag;
-    this.courses = original.courses.map((orig) => {
-      const courseCopy = new Course(orig.index, orig.dishId);
-      courseCopy.copy(orig);
+  private copy(dto: MealDTO): Meal {
+    this.id = dto.id;
+    this.eTag = dto.eTag;
+    this.courses = dto.courses.map((data) => {
+      const courseCopy = new Course(data.index, data.dishId);
+      courseCopy.copy(data);
       return courseCopy;
     });
     return this;

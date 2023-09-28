@@ -1,6 +1,6 @@
-import { IDish } from './IDish';
+import { Dish } from '../classes/dish';
 
 export interface DishPickedEvent {
   index: number;
-  dish: IDish;
+  dish: Dish;
 }

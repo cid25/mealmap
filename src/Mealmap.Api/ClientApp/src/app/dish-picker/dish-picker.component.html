@@ -4,8 +4,8 @@
     <div class="d-flex flex-wrap m-2 gap-2">
         <div *ngFor="let dish of dishes" class="card picker-card border-primary">
             <div class="text-center">{{ dish.name }}</div>
-            <button type="button" class="btn d-block p-0 border-0 flex-grow-1" (click)="select(dish.id)"><img [src]="dish.localImageURL" class="img-fluid text-center" alt="No image"></button>
-            <button id="btnselect" class="btn btn-primary" (click)="select(dish.id)">Select</button>
+            <button type="button" class="btn d-block p-0 border-0 flex-grow-1" (click)="select(dish.id!)"><img [src]="dish.localImageURL" class="img-fluid text-center" alt="No image"></button>
+            <button id="btnselect" class="btn btn-primary" (click)="select(dish.id!)">Select</button>
         </div>
     </div>
 </div>

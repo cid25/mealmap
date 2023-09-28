@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { IDish } from '../interfaces/IDish';
+import { Dish } from '../classes/dish';
 
 @Component({
   selector: 'app-dish-card',
@@ -8,5 +8,5 @@ import { IDish } from '../interfaces/IDish';
 })
 export class DishCardComponent {
   @Input()
-  dish!: IDish;
+  dish!: Dish;
 }

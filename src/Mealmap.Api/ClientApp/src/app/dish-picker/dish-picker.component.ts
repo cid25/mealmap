@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { DishService } from '../services/dish.service';
-import { IDish } from '../interfaces/IDish';
-import { DishPickedEvent } from '../interfaces/DishPickedEvent';
+import { Dish } from '../classes/dish';
+import { DishPickedEvent } from '../interfaces/dish-picked.event';
 
 @Component({
   selector: 'app-dish-picker',
@@ -11,7 +11,7 @@ import { DishPickedEvent } from '../interfaces/DishPickedEvent';
 export class DishPickerComponent implements OnInit {
   constructor(private dishService: DishService) {}
 
-  dishes: IDish[] = [];
+  dishes: Dish[] = [];
 
   @Input()
   index: number = 0;
