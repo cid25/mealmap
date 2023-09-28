@@ -13,6 +13,8 @@ import { DishOverviewComponent } from './dish-overview/dish-overview.component';
 import { MealCardComponent } from './meal-card/meal-card.component';
 import { MealEditorComponent } from './meal-editor/meal-editor.component';
 import { DishPickerComponent } from './dish-picker/dish-picker.component';
+import { DishCardComponent } from './dish-card/dish-card.component';
+import { DishDetailsComponent } from './dish-details/dish-details.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,9 @@ import { DishPickerComponent } from './dish-picker/dish-picker.component';
     MealCardComponent,
     MealEditorComponent,
     DishPickerComponent,
-    DishOverviewComponent
+    DishOverviewComponent,
+    DishCardComponent,
+    DishDetailsComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

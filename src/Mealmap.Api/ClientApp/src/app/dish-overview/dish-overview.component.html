@@ -1,1 +1,6 @@
-<p>dish-overview works!</p>
+<div>
+    <a class="btn btn-primary" role="button" [routerLink]="['new']"><div class="d-flex justify-content-center align-items-center"><img src="/assets/icons/plus-square-fill.svg" class="me-1"><span class="px-2">Create New</span></div></a>
+</div>
+<div class="d-flex flex-wrap mt-2 gap-2">
+    <app-dish-card *ngFor="let dish of dishesForDisplay()" [dish]="dish"></app-dish-card>
+</div>

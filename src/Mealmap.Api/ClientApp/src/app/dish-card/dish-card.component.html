@@ -1,0 +1,13 @@
+<div class="card h-100 dish-card">
+    <a [routerLink]="[dish.id]" class="p-0 border-0"><img [src]="dish.localImageURL" class="img-fluid text-center rounded-top-1" alt="No image"></a>
+    <div class="d-flex text-white">
+        <a class="flex-grow-1 btn btn-success rounded-0" role="button" [routerLink]="[dish.id]">
+            <div class="d-flex justify-content-center align-items-center"><img src="/assets/icons/pencil-square.svg" class="me-1">Edit</div>
+        </a>
+        <button id="btndelete" class="btn btn-danger flex-grow-1 rounded-0 d-flex justify-content-center align-items-center"><img src="/assets/icons/trash3-fill.svg" class="me-1">Delete</button>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title text-center">{{ dish.name }}</h5>
+        <p class="card-text">{{ dish.description }}</p>
+    </div>
+</div>
