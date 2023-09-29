@@ -15,4 +15,8 @@ export class Ingredient {
     const result = new Ingredient(dto.quantity, dto.unitOfMeasurement, dto.description);
     return result;
   }
+
+  clone(): Ingredient {
+    return new Ingredient(this.quantity, this.unitOfMeasurement, this.description);
+  }
 }

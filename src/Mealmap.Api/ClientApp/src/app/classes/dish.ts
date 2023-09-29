@@ -18,14 +18,28 @@ export class Dish {
     return result.copy(dto);
   }
 
+  clone(): Dish {
+    const result = new Dish();
+    result.id = this.id;
+    result.eTag = this.eTag;
+    result.name = this.name;
+    result.description = this.description;
+    result.servings = this.servings;
+    result.ingredients = this.ingredients?.map((original) => original.clone());
+    result.imageUrl = this.imageUrl;
+    result.image = this.image;
+    result.localImageURL = this.localImageURL;
+    return result;
+  }
+
   private copy(dto: DishDTO): Dish {
     this.id = dto.id;
     this.eTag = dto.eTag;
     this.name = dto.name;
     this.description = dto.description;
     this.servings = dto.servings;
-    this.imageUrl = dto.imageUrl;
     this.ingredients = dto.ingredients.map((data) => Ingredient.from(data));
+    this.imageUrl = dto.imageUrl;
     return this;
   }
 }

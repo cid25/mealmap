@@ -1,1 +1,65 @@
-<p>dish-details works!</p>
+<div class="d-flex gap-2 mb-2">
+    <button (click)="back()" class="btn btn-primary d-flex justify-content-center align-items-center"><img src="/assets/icons/box-arrow-left.svg" class="me-1">Back</button>
+    <ng-container *ngIf="!editable()">
+        <button (click)="enableEdit()" class="btn btn-success d-flex justify-content-center align-items-center"><img src="/assets/icons/pencil-square.svg" class="me-1">Edit</button>
+    </ng-container>
+    <ng-container *ngIf="editable() && edited()">
+        <button class="btn btn-success d-flex justify-content-center align-items-center"><img src="/assets/icons/save.svg" class="me-1">Save</button>
+        <button class="btn btn-warning d-flex justify-content-center align-items-center"><img src="/assets/icons/arrow-repeat.svg" class="me-1">Undo</button>
+    </ng-container>
+</div>
+<form [formGroup]="form" *ngIf="editable()" class="d-flex flex-wrap gap-3">
+    <div class="d-flex flex-column w-100" style="max-width: 25em;">
+        <div class="form-floating mb-3">
+            <input type="text" id="formName" formControlName="name" placeholder="Name" class="form-control">
+            <label for="dishName">Name</label>
+        </div>
+        <div class="form-floating mb-3">
+            <textarea id="formDescription" formControlName="description" placeholder="Description" class="form-control" style="min-height: 7em;"></textarea>
+            <label for="formDescription">Description</label>
+        </div>
+        <div class="mb-3">
+            <ng-container [ngSwitch]="hasImage()">
+                <div *ngSwitchCase="false" class="mb-2 d-flex align-items-center" style="background-color: lightgrey; min-height: 8em;">
+                    <span class="d-block flex-grow-1 text-center">No Image</span>
+                </div>
+                <img *ngSwitchCase="true" [src]="dish!.localImageURL" class="img-fluid mb-2" style="min-height: 8em;">
+            </ng-container>
+            <label for="formImageFile" class="form-label w-100 text-center fw-semibold">{{ hasImage() ? 'Replace Image' : 'Upload Image' }}</label>
+            <input type="file" id="formImageFile" accept=".png,.jpg,.jpeg" class="form-control">
+        </div>
+    </div>
+    <div class="border border-secondary rounded-2" style="min-width: 20em;">
+        <div class="w-100 bg-secondary text-white text-center py-2 rounded-top-2">Ingredients</div>
+        <div class="m-2 ms-3 mb-4 d-flex justify-content-start align-items-center">
+            <label for="formServings" class="form-label fw-semibold me-2">Servings</label>
+            <input type="number" id="formServings" formControlName="servings" class="form-control flex-grow-0 text-end" style="max-width: 5em;" min="1">
+        </div>
+        <div formArrayName="ingredients" class="container mb-2">
+            <div class="row g-2 mb-2">
+                <div class="col-3 col-sm-2 text-end pe-4 fw-semibold">Qty</div>
+                <div class="col-3 col-sm-2 text-start ps-4 fw-semibold">Unit</div>
+                <div class="col-6 col-sm-8 ps-2 fw-semibold">Description</div>
+            </div>
+            <div *ngFor="let ingredientFormGroup of ingredients.controls; index as i" class="row mb-2 g-2">
+                <ng-container [formGroupName]="i">
+                    <div class="col-3 col-sm-2">
+                        <input type="number" [id]="'formIngredient' + i" formControlName="quantity" class="form-control text-end">
+                    </div>
+                    <div class="col-3 col-sm-2">
+                        <input type="text" [id]="'formIngredient' + i" formControlName="unit" class="form-control">
+                    </div>
+                    <div class="col-6 col-sm-8">
+                        <input type="text" [id]="'formIngredient' + i" formControlName="description" class="form-control">
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="container align-item-start mx-0 px-0">
+        <div class="py-2 bg-secondary text-white text-center border-secondary rounded-top-2">Instructions</div>
+        <div class="form-floating">
+            <textarea id="formInstructions" placeholder="Instructions" class="form-control mb-2" style="min-height: 20em;">Lorem Ipsum</textarea>
+        </div>
+    </div>
+</form>
