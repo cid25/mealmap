@@ -1,3 +1,4 @@
+import { IngredientFormData } from '../interfaces/ingredient-form-data';
 import { IngredientDTO } from '../interfaces/ingredient.dto';
 
 export class Ingredient {
@@ -11,8 +12,13 @@ export class Ingredient {
     this.description = description;
   }
 
-  static from(dto: IngredientDTO): Ingredient {
+  static fromDTO(dto: IngredientDTO): Ingredient {
     const result = new Ingredient(dto.quantity, dto.unitOfMeasurement, dto.description);
+    return result;
+  }
+
+  static fromFormData(data: IngredientFormData) {
+    const result = new Ingredient(data.quantity, data.unit, data.description);
     return result;
   }
 

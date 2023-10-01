@@ -3,12 +3,13 @@
     <ng-container *ngIf="!editable()">
         <button (click)="enableEdit()" class="btn btn-success d-flex justify-content-center align-items-center"><img src="/assets/icons/pencil-square.svg" class="me-1">Edit</button>
     </ng-container>
-    <ng-container *ngIf="editable() && edited()">
-        <button class="btn btn-success d-flex justify-content-center align-items-center"><img src="/assets/icons/save.svg" class="me-1">Save</button>
-        <button class="btn btn-warning d-flex justify-content-center align-items-center"><img src="/assets/icons/arrow-repeat.svg" class="me-1">Undo</button>
+    <!-- <ng-container *ngIf="editable() && edited()"> -->
+    <ng-container *ngIf="editable()">
+        <button type="submit" form="dish-form" [disabled]="!valid()" class="btn btn-success d-flex justify-content-center align-items-center"><img src="/assets/icons/save.svg" class="me-1">Save</button>
+        <button [disabled]="!edited()" class="btn btn-warning d-flex justify-content-center align-items-center"><img src="/assets/icons/arrow-repeat.svg" class="me-1">Undo</button>
     </ng-container>
 </div>
-<form [formGroup]="form" *ngIf="editable()" class="d-flex flex-wrap gap-3">
+<form *ngIf="editable()" id="dish-form" [formGroup]="form" (ngSubmit)="submit()" class="d-flex flex-wrap gap-3">
     <div class="d-flex flex-column w-100" style="max-width: 25em;">
         <div class="form-floating mb-3">
             <input type="text" id="formName" formControlName="name" placeholder="Name" class="form-control">

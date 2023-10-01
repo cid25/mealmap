@@ -1,6 +1,7 @@
 import { SafeUrl } from '@angular/platform-browser';
 import { Ingredient } from './ingredient';
 import { DishDTO } from '../interfaces/dish.dto';
+import { DishFormData } from '../interfaces/dish-form-data';
 
 export class Dish {
   id?: string;
@@ -32,13 +33,21 @@ export class Dish {
     return result;
   }
 
+  map(data: DishFormData): Dish {
+    this.name = data.name!;
+    this.description = data.description;
+    this.servings = data.servings;
+    this.ingredients = data.ingredients.map((data) => Ingredient.fromFormData(data));
+    return this;
+  }
+
   private copy(dto: DishDTO): Dish {
     this.id = dto.id;
     this.eTag = dto.eTag;
     this.name = dto.name;
     this.description = dto.description;
     this.servings = dto.servings;
-    this.ingredients = dto.ingredients.map((data) => Ingredient.from(data));
+    this.ingredients = dto.ingredients.map((data) => Ingredient.fromDTO(data));
     this.imageUrl = dto.imageUrl;
     return this;
   }

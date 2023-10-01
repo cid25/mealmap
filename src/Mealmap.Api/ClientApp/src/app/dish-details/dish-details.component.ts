@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, FormArray } from '@angular/forms';
+import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { DishService } from '../services/dish.service';
 import { Dish } from '../classes/dish';
+import { IngredientFormData } from '../interfaces/ingredient-form-data';
+import { DishFormData } from '../interfaces/dish-form-data';
 
 type IngredientGroup = FormGroup<{
   quantity: FormControl<number | null>;
@@ -25,9 +27,9 @@ export class DishDetailsComponent implements OnInit {
   dish: Dish | undefined;
 
   form = new FormGroup({
-    name: new FormControl<string | null>(''),
-    description: new FormControl<string | null>(''),
-    servings: new FormControl<number | null>(DishDetailsComponent.default_servings),
+    name: new FormControl<string | null>(null, [Validators.required, Validators.minLength(3)]),
+    description: new FormControl<string | null>(null),
+    servings: new FormControl<number>(DishDetailsComponent.default_servings, Validators.min(1)),
     ingredients: new FormArray<IngredientGroup>([])
   });
 
@@ -36,6 +38,10 @@ export class DishDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location
   ) {}
+
+  get ingredients(): FormArray {
+    return this.form.controls['ingredients'] as FormArray<IngredientGroup>;
+  }
 
   async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.params['id'];
@@ -51,6 +57,14 @@ export class DishDetailsComponent implements OnInit {
     this._uneditedDish = this.dish!.clone();
 
     this.initializeFormValues();
+    this.ingredients.valueChanges.subscribe(() => {
+      const ingredients = this.ingredients.value as IngredientFormData[];
+      const emptyRowCount = ingredients.filter((ingredient) =>
+        this.blankIngredientFormData(ingredient)
+      ).length;
+      if (emptyRowCount == 0) this.addBlankIngredientFormGroup();
+      else if (emptyRowCount > 1) this.trimBlankIngredientFormGroup();
+    });
   }
 
   back(): void {
@@ -73,17 +87,30 @@ export class DishDetailsComponent implements OnInit {
     return JSON.stringify(this.dish) != JSON.stringify(this._uneditedDish);
   }
 
-  get ingredients(): FormArray {
-    return this.form.controls['ingredients'] as FormArray<IngredientGroup>;
-  }
-
   hasImage(): boolean {
     return typeof this.dish?.image != 'undefined';
   }
 
-  quantity(index: number): FormControl<number | null> {
-    const ingredientGroup = this.ingredients.controls[index] as IngredientGroup;
-    return ingredientGroup.controls.quantity;
+  valid(): boolean {
+    return this.form.valid;
+  }
+
+  submit(): void {
+    this.form.value;
+    const formData = this.form.getRawValue();
+
+    const dishData: DishFormData = {
+      name: formData.name!,
+      description: formData.description ?? undefined,
+      servings: formData.servings!,
+      ingredients: formData.ingredients.filter(
+        (ingredient) =>
+          ingredient.quantity != null && ingredient.unit != null && ingredient.description != null
+      ) as IngredientFormData[]
+    };
+
+    this.dish?.map(dishData);
+    console.log(this.dish);
   }
 
   private initializeFormValues(): void {
@@ -102,25 +129,45 @@ export class DishDetailsComponent implements OnInit {
     this.dish?.ingredients?.forEach((ingredient) =>
       ingredients.push(
         new FormGroup({
-          quantity: new FormControl<number | null>(ingredient.quantity),
+          quantity: new FormControl<number | null>(ingredient.quantity, Validators.min(0)),
           unit: new FormControl<string | null>(ingredient.unitOfMeasurement),
           description: new FormControl<string | null>(ingredient.description)
         })
       )
     );
-
-    this.addBlankIngredientFormGroup(ingredients);
-
     this.form.setControl('ingredients', ingredients);
+
+    this.addBlankIngredientFormGroup();
   }
 
-  private addBlankIngredientFormGroup(ingredientArray: FormArray<IngredientGroup>): void {
-    ingredientArray.push(
+  private addBlankIngredientFormGroup(): void {
+    this.ingredients.push(
       new FormGroup({
-        quantity: new FormControl<number | null>(null),
+        quantity: new FormControl<number | null>(null, Validators.min(0)),
         unit: new FormControl<string | null>(null),
         description: new FormControl<string | null>(null)
       })
     );
+  }
+
+  private blankIngredientFormData(data: IngredientFormData): boolean {
+    console.log(data.quantity);
+    return (
+      data.quantity == null &&
+      (data.unit == null || data.unit.trim() == '') &&
+      (data.description == null || data.description.trim() == '')
+    );
+  }
+
+  private trimBlankIngredientFormGroup(): void {
+    const ingredients = new FormArray<IngredientGroup>([]);
+
+    const ingredientControls = this.ingredients.controls;
+    ingredientControls.forEach((control) => {
+      if (!this.blankIngredientFormData(control.value))
+        ingredients.push(control as IngredientGroup);
+    });
+    this.form.setControl('ingredients', ingredients);
+    this.addBlankIngredientFormGroup();
   }
 }
