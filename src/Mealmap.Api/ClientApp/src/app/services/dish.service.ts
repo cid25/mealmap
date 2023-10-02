@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { DishDTO } from '../interfaces/dish.dto';
 import { Dish } from '../classes/dish';
@@ -46,6 +46,17 @@ export class DishService {
     return undefined;
   }
 
+  getURLforImage(image: Blob): SafeUrl {
+    const url = URL.createObjectURL(image);
+    return this.sanitizer.bypassSecurityTrustUrl(url);
+  }
+
+  setImageFromFile(dish: Dish, image: Blob): Dish {
+    dish.image = image;
+    dish.localImageURL = this.getURLforImage(image);
+    return dish;
+  }
+
   private async fetchDishAndImage(id: string): Promise<Dish> {
     const dishRequest = this.requestDish(id);
     const imageRequest = this.requestImage(id);
@@ -75,8 +86,7 @@ export class DishService {
       dish.image = new Blob([response.body], {
         type: response.headers.get('Content-Type') ?? ''
       });
-      const url = URL.createObjectURL(dish.image);
-      dish.localImageURL = this.sanitizer.bypassSecurityTrustUrl(url);
+      dish.localImageURL = this.getURLforImage(dish.image);
     }
     return dish;
   }

@@ -6,6 +6,7 @@ import { DishService } from '../services/dish.service';
 import { Dish } from '../classes/dish';
 import { IngredientFormData } from '../interfaces/ingredient-form-data';
 import { DishFormData } from '../interfaces/dish-form-data';
+import { SafeUrl } from '@angular/platform-browser';
 
 type IngredientGroup = FormGroup<{
   quantity: FormControl<number | null>;
@@ -23,6 +24,8 @@ export class DishDetailsComponent implements OnInit {
 
   private _editable: boolean = false;
   private _uneditedDish: Dish | undefined;
+  private _image: Blob | undefined;
+  private _localImageURL: SafeUrl | undefined;
 
   dish: Dish | undefined;
 
@@ -52,19 +55,13 @@ export class DishDetailsComponent implements OnInit {
     } else {
       this.dish = new Dish();
       this.enableEdit();
+      this.disableControlsExceptName();
     }
 
-    this._uneditedDish = this.dish!.clone();
+    this.InitializeValues();
 
-    this.initializeFormValues();
-    this.ingredients.valueChanges.subscribe(() => {
-      const ingredients = this.ingredients.value as IngredientFormData[];
-      const emptyRowCount = ingredients.filter((ingredient) =>
-        this.blankIngredientFormData(ingredient)
-      ).length;
-      if (emptyRowCount == 0) this.addBlankIngredientFormGroup();
-      else if (emptyRowCount > 1) this.trimBlankIngredientFormGroup();
-    });
+    this.addNameWatcher();
+    this.addIngredientWatcher();
   }
 
   back(): void {
@@ -84,11 +81,7 @@ export class DishDetailsComponent implements OnInit {
   }
 
   edited(): boolean {
-    return JSON.stringify(this.dish) != JSON.stringify(this._uneditedDish);
-  }
-
-  hasImage(): boolean {
-    return typeof this.dish?.image != 'undefined';
+    return this.form.dirty || this.dish?.image != this._image;
   }
 
   valid(): boolean {
@@ -110,7 +103,59 @@ export class DishDetailsComponent implements OnInit {
     };
 
     this.dish?.map(dishData);
-    console.log(this.dish);
+  }
+
+  reset(): void {
+    this.dish = this._uneditedDish;
+    this._image = this.dish?.image;
+    this._localImageURL = this.dish?.localImageURL;
+    this.initializeFormValues();
+  }
+
+  hasName(): boolean {
+    return this.form.get('name')!.valid;
+  }
+
+  hasImage(): boolean {
+    return !!this._image;
+  }
+
+  imageURL(): SafeUrl | null {
+    if (this._localImageURL) return this._localImageURL;
+    return null;
+  }
+
+  onImageSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target.files) {
+      this._image = target.files[0];
+      this._localImageURL = this.dishService.getURLforImage(this._image);
+    }
+  }
+
+  deleteImage(): void {
+    this._image = undefined;
+    this._localImageURL = undefined;
+  }
+
+  private disableControlsExceptName(): void {
+    this.form.controls.description.disable({ emitEvent: false });
+    this.form.controls.servings.disable({ emitEvent: false });
+    this.form.controls.ingredients.disable({ emitEvent: false });
+  }
+
+  private enableControls(): void {
+    const controls = this.form.controls;
+    controls.description.enable({ emitEvent: false });
+    controls.servings.enable({ emitEvent: false });
+    controls.ingredients.enable({ emitEvent: false });
+  }
+
+  private InitializeValues(): void {
+    this._image = this.dish?.image;
+    this._localImageURL = this.dish?.localImageURL;
+    this._uneditedDish = this.dish!.clone();
+    this.initializeFormValues();
   }
 
   private initializeFormValues(): void {
@@ -120,10 +165,10 @@ export class DishDetailsComponent implements OnInit {
       servings: this.dish?.servings ?? DishDetailsComponent.default_servings
     });
 
-    this.initializeFormIngredients();
+    this.initializeIngredientsForm();
   }
 
-  private initializeFormIngredients(): void {
+  private initializeIngredientsForm(): void {
     const ingredients = new FormArray<IngredientGroup>([]);
 
     this.dish?.ingredients?.forEach((ingredient) =>
@@ -136,7 +181,6 @@ export class DishDetailsComponent implements OnInit {
       )
     );
     this.form.setControl('ingredients', ingredients);
-
     this.addBlankIngredientFormGroup();
   }
 
@@ -150,8 +194,7 @@ export class DishDetailsComponent implements OnInit {
     );
   }
 
-  private blankIngredientFormData(data: IngredientFormData): boolean {
-    console.log(data.quantity);
+  private blank(data: IngredientFormData): boolean {
     return (
       data.quantity == null &&
       (data.unit == null || data.unit.trim() == '') &&
@@ -159,15 +202,26 @@ export class DishDetailsComponent implements OnInit {
     );
   }
 
-  private trimBlankIngredientFormGroup(): void {
-    const ingredients = new FormArray<IngredientGroup>([]);
-
-    const ingredientControls = this.ingredients.controls;
-    ingredientControls.forEach((control) => {
-      if (!this.blankIngredientFormData(control.value))
-        ingredients.push(control as IngredientGroup);
+  private addNameWatcher(): void {
+    this.form.valueChanges.subscribe(() => {
+      if (this.form.get('name')?.valid) this.enableControls();
+      else this.disableControlsExceptName();
     });
-    this.form.setControl('ingredients', ingredients);
-    this.addBlankIngredientFormGroup();
+  }
+
+  private addIngredientWatcher(): void {
+    this.ingredients.valueChanges.subscribe(() => {
+      const ingredients = this.ingredients.value as IngredientFormData[];
+      const emptyRowCount = ingredients.filter((ingredient) => this.blank(ingredient)).length;
+
+      if (emptyRowCount == 0) this.addBlankIngredientFormGroup();
+      else if (emptyRowCount > 1) this.trimBlankIngredientFormGroup();
+    });
+  }
+
+  private trimBlankIngredientFormGroup(): void {
+    for (let i: number = 0; i < this.ingredients.length; i++) {
+      if (this.blank(this.ingredients.at(i).value)) this.ingredients.removeAt(i);
+    }
   }
 }
