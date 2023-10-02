@@ -3,30 +3,35 @@
     <button type="button" *ngIf="mealEdited()" (click)="saveChanges()" class="btn btn-success d-flex justify-content-center align-items-center"><img src="/assets/icons/save.svg" class="me-1">Save</button>
     <button type="button" *ngIf="mealEdited()" (click)="discardChanges()" class="btn btn-warning d-flex justify-content-center align-items-center"><img src="/assets/icons/arrow-repeat.svg" class="me-1">Undo</button>
 </div>
-<div class="d-flex flex-wrap gap-2">
+<div class="d-flex flex-wrap gap-2 align-items-start">
     <div class="border border-primary rounded-top-2">
         <div class="rounded-top-2 bg-primary text-white text-center py-2">{{ diningDate | date:'EEEE - dd.MM.yyyy' }}</div>
         <div class="p-2 bg-secondary text-white text-center"><span>Courses</span></div>
         <div role="group" class="d-flex flex-wrap align-items-center gap-2 m-1">
             <ng-container *ngFor="let course of coursesForDisplay()">
-                <div class="card border-primary editor-card">
+                <div class="card border-primary">
                     <div class="border-bottom border-primary text-center text-primary fw-bold">{{ course.index }}</div>
                     <div class="card-title bg-white text-center my-2 flex-grow-1">{{ course.dish?.name }}</div>
-                    <button type="button" class="btn d-block p-0 border-0 rounded-0" (click)="activatePicker(course.index)"><img [src]="course.dish?.localImageURL" class="img-fluid" alt="No image"></button>
+                    <button type="button" class="btn d-block p-0 border-0 rounded-0" (click)="activatePicker(course.index)">
+                        <img [src]="course.dish?.localImageURL" onerror="this.src='/assets/no-image.png'" class="card-image-m" alt="No image">
+                    </button>
                     <div class="d-flex border-0">
-                        <button id="btnedit" class="btn btn-success rounded-0 flex-grow-1 d-flex justify-content-center align-items-center" (click)="activatePicker(course.index)"><img src="/assets/icons/pencil-square.svg" class="me-2">Edit</button>
-                        <button id="btndelete" class="btn btn-danger rounded-0 flex-grow-1 d-flex justify-content-center align-items-center" (click)="deleteCourse(course.index)"><img src="/assets/icons/trash3-fill.svg" class="me-2">Delete</button>
+                        <button id="btnedit" class="btn btn-success rounded-0 flex-grow-1 d-flex justify-content-center align-items-center" (click)="activatePicker(course.index)">
+                            <img src="/assets/icons/pencil-square.svg" class="me-1">
+                            <span>Edit</span>
+                        </button>
+                        <button id="btndelete" class="btn btn-danger rounded-0 flex-grow-1 d-flex justify-content-center align-items-center" (click)="deleteCourse(course.index)">
+                            <img src="/assets/icons/trash3-fill.svg" class="me-1">
+                            <span>Delete</span>
+                        </button>
                     </div>
                     <input type="radio" [id]="'course-' + course.index" name="btnmaincourse" [value]="course.index" autocomplete="off" [checked]="course.mainCourse" class="btn-check">
                     <label [for]="'course-' + course.index" (click)="makeMainCourse(course.index)" class="btn btn-outline-primary">Main Course</label>
                 </div>
             </ng-container>
-                <div class="card border-primary align-items-center editor-card">
-                    <div class="w-100 border-bottom border-primary text-primary text-center fw-bold">{{ nextCourseIndex() }}</div>
-                    <div class="d-flex flex-grow-1 flex-column justify-content-center">
-                        <input type="image" src="/assets/icons/plus-square-dotted.svg" alt="Add Meal" height="50em" width="50em" (click)="activatePicker(nextCourseIndex())">
-                    </div>
-                </div>
+            <div class="d-flex justify-content-center align-items-center empty-card-m">
+                <input type="image" src="/assets/icons/plus-square-dotted.svg" alt="Add Meal" height="50em" width="50em" (click)="activatePicker(nextCourseIndex())">
+            </div>
         </div>
     </div>
     <app-dish-picker *ngIf="dishPickerActive" [index]="courseIndexPicking" (cancelled)="cancelPicking()" (picked)="pickDish($event)"></app-dish-picker>

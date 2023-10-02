@@ -2,10 +2,12 @@
     <div class="p-2 bg-info rounded-top-2 text-white d-flex justify-content-center"><div>Course {{ index }}</div></div>
     <button type="button" class="btn btn-primary m-1" (click)="cancel()">Cancel</button>
     <div class="d-flex flex-wrap m-2 gap-2">
-        <div *ngFor="let dish of dishes" class="card picker-card border-primary">
-            <div class="text-center">{{ dish.name }}</div>
-            <button type="button" class="btn d-block p-0 border-0 flex-grow-1" (click)="select(dish.id!)"><img [src]="dish.localImageURL" class="img-fluid text-center" alt="No image"></button>
-            <button id="btnselect" class="btn btn-primary" (click)="select(dish.id!)">Select</button>
+        <div *ngFor="let dish of dishes" class="card border-primary">
+            <div class="text-center p-1">{{ dish.name }}</div>
+            <button type="button" class="btn d-block p-0 border-0" (click)="select(dish.id!)">
+                <img [src]="dish.localImageURL" onerror="this.src='/assets/no-image.png'" class="card-image-s" alt="No image">
+            </button>
+            <button id="btnselect" class="btn btn-primary border-top-0" (click)="select(dish.id!)">Select</button>
         </div>
     </div>
 </div>

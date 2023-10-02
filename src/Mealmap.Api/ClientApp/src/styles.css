@@ -18,3 +18,29 @@ code {
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
+
+.card-image-l {
+  aspect-ratio: 5 / 4;
+  width: min(300px, 80vw);
+  height: min(240px, 64vw);
+  object-fit: cover;
+}
+
+.card-image-m {
+  aspect-ratio: 5 / 4;
+  width: min(200px, 44vw);
+  height: min(160px, 35.2vw);
+  object-fit: cover;
+}
+
+.card-image-s {
+  aspect-ratio: 5 / 4;
+  width: min(150px, 40vw);
+  height: min(120px, 32vw);
+  object-fit: cover;
+}
+
+.empty-card-m {
+  width: min(200px, 44vw);
+  min-height: 160px;
+}

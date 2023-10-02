@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Meal } from '../classes/meal';
 import { Course } from '../classes/course';
+import { SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-meal-card',
@@ -26,5 +27,10 @@ export class MealCardComponent {
     if (mainCourse !== undefined) return mainCourse;
 
     return null;
+  }
+
+  hasImage(): boolean {
+    const mainCourse = this.mainCourse();
+    return !!mainCourse && !!mainCourse.dish?.localImageURL;
   }
 }

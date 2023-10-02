@@ -4,8 +4,15 @@
     <a [routerLink]="[meal.key()]" class="w-25 h-25"><img src="/assets/icons/plus-square-dotted.svg" alt="Add Meal" class="w-100 h-100"></a>
   </div>
   <ng-container *ngIf="hasCourses()">
-    <div class="p-0 border-0"><a [routerLink]="[meal.key()]"><img [src]="mainCourse()?.dish?.localImageURL" class="img-fluid text-center" alt="No image"></a></div>
-    <div class="d-flex text-white">
+    <a [routerLink]="[meal.key()]">
+      <ng-container [ngSwitch]="hasImage()">
+        <div *ngSwitchCase="true" class="p-0 border-0"><img [src]="mainCourse()!.dish!.localImageURL" class="img-fluid text-center" alt="No image"></div>
+        <div *ngSwitchCase="false" class="p-0 border-0 rounded-top-1 d-flex flex-column justify-content-center" style="background-color: lightgrey; min-height: 11em;">
+          <span class="d-block text-center">No Image</span>
+        </div>
+      </ng-container>
+    </a>
+      <div class="d-flex text-white">
       <a [routerLink]="[meal.key()]" class=" flex-grow-1 btn btn-success rounded-0" role="button"><div class="d-flex justify-content-center align-items-center"><img src="/assets/icons/pencil-square.svg" class="me-1">Edit</div></a>
       <button id="btndelete" class="btn btn-danger flex-grow-1 rounded-0 d-flex justify-content-center align-items-center" (click)="deleted.emit(meal.diningDate)"><img src="/assets/icons/trash3-fill.svg" class="me-1">Delete</button>
     </div>

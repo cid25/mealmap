@@ -23,10 +23,7 @@ export class DishPickerComponent implements OnInit {
   cancelled = new EventEmitter();
 
   async ngOnInit(): Promise<void> {
-    this.dishes = await this.dishService.getDishes([
-      'da7e7a58-4b29-4e26-80ee-35dd9f13a97d',
-      '66334f32-78d6-4d72-a03f-b8e3403fe690'
-    ]);
+    this.dishes = await this.dishService.listDishes();
   }
 
   async select(id: string): Promise<void> {

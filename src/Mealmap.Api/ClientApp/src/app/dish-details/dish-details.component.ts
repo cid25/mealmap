@@ -167,7 +167,6 @@ export class DishDetailsComponent implements OnInit {
       servings: this.dish?.servings ?? DishDetailsComponent.default_servings,
       instructions: this.dish?.instructions
     });
-    console.log(this.dish);
     this.initializeIngredientsForm();
   }
 
