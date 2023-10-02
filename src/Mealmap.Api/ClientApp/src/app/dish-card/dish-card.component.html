@@ -1,5 +1,12 @@
 <div class="card h-100 dish-card">
-    <a [routerLink]="[dish.id]" class="p-0 border-0"><img [src]="dish.localImageURL" class="img-fluid text-center rounded-top-1" alt="No image"></a>
+    <ng-container [ngSwitch]="hasImage()">
+        <a *ngSwitchCase="true" [routerLink]="[dish.id]" class="p-0 border-0"><img [src]="dish.localImageURL" class="rounded-top-1 img-fluid text-center" alt="No image"></a>
+        <a *ngSwitchCase="false" [routerLink]="[dish.id]">
+            <div class="rounded-top-1 d-flex flex-column justify-content-center" style="background-color: lightgrey; min-height: 11em;">
+                <span class="d-block text-center">No Image</span>
+            </div>
+        </a>
+    </ng-container>
     <div class="d-flex text-white">
         <a class="flex-grow-1 btn btn-success rounded-0" role="button" [routerLink]="[dish.id]" [queryParams]="{edit: true}">
             <div class="d-flex justify-content-center align-items-center"><img src="/assets/icons/pencil-square.svg" class="me-1">Edit</div>

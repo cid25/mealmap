@@ -52,6 +52,12 @@ public record DishDTO
     /// </summary>
     public IngredientDTO[]? Ingredients { get; set; }
 
+    /// <summary>
+    /// The instructions for preparing the dish.
+    /// </summary>
+    /// /// <example>Mix the ingredients together to form a firm dough.</example>
+    public string? Instructions { get; set; }
+
     public DishDTO(string name)
         => Name = name;
 }

@@ -9,4 +9,8 @@ import { Dish } from '../classes/dish';
 export class DishCardComponent {
   @Input()
   dish!: Dish;
+
+  hasImage(): boolean {
+    return !!this.dish.image;
+  }
 }

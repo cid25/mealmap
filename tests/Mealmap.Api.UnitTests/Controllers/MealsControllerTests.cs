@@ -3,6 +3,7 @@ using Mealmap.Api.Commands;
 using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
+using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
 using MediatR;
@@ -27,6 +28,7 @@ public class MealsControllerTests
         _controller = new MealsController(
             _logger,
             _mealRepository,
+            Mock.Of<IUnitOfWork>(),
             _outputMapper,
             Mock.Of<IRequestContext>(),
             Mock.Of<IMediator>()
@@ -87,6 +89,7 @@ public class MealsControllerTests
         var controller = new MealsController(
             _logger,
             _mealRepository,
+            Mock.Of<IUnitOfWork>(),
             _outputMapper,
             Mock.Of<IRequestContext>(),
             mediatorMock.Object
@@ -111,6 +114,7 @@ public class MealsControllerTests
         var controller = new MealsController(
             _logger,
             _mealRepository,
+            Mock.Of<IUnitOfWork>(),
             _outputMapper,
             Mock.Of<IRequestContext>(),
             mediatorMock.Object
@@ -130,6 +134,7 @@ public class MealsControllerTests
         var controller = new MealsController(
             _logger,
             Mock.Of<IMealRepository>(),
+            Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == header),
             Mock.Of<IMediator>()
@@ -153,6 +158,7 @@ public class MealsControllerTests
         var controller = new MealsController(
             _logger,
             Mock.Of<IMealRepository>(),
+            Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
             mediatorMock.Object
@@ -176,6 +182,7 @@ public class MealsControllerTests
         var controller = new MealsController(
             _logger,
             Mock.Of<IMealRepository>(),
+            Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
             mediatorMock.Object
@@ -198,6 +205,7 @@ public class MealsControllerTests
         var controller = new MealsController(
             _logger,
             Mock.Of<IMealRepository>(),
+            Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
             mediatorMock.Object
@@ -210,22 +218,22 @@ public class MealsControllerTests
     }
 
     [Fact]
-    public void DeleteMeal_WhenMealExists_ReturnsOkAndDish()
+    public async void DeleteMeal_WhenMealExists_ReturnsOkAndDish()
     {
         var dish = _mealRepository.GetAll().First();
 
-        var result = _controller.DeleteMeal(dish.Id);
+        var result = await _controller.DeleteMeal(dish.Id);
 
         result.Result.Should().BeOfType<OkObjectResult>();
         ((OkObjectResult)result.Result!).Value.Should().BeOfType<MealDTO>();
     }
 
     [Fact]
-    public void DeleteMeal_WhenMealDoesntExist_ReturnsNotFound()
+    public async void DeleteMeal_WhenMealDoesntExist_ReturnsNotFound()
     {
         var nonExistingMealGuid = new Guid("99999999-9999-9999-9999-999999999999");
 
-        var result = _controller.DeleteMeal(nonExistingMealGuid);
+        var result = await _controller.DeleteMeal(nonExistingMealGuid);
 
         result.Result.Should().BeOfType<NotFoundObjectResult>();
     }

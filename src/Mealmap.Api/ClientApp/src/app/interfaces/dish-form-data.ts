@@ -5,4 +5,5 @@ export interface DishFormData {
   description: string | undefined;
   servings: number;
   ingredients: IngredientFormData[];
+  instructions: string | undefined;
 }

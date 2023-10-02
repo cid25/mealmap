@@ -162,7 +162,7 @@ public class MealsController : ControllerBase
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [SwaggerResponseExample(200, typeof(MealResponseExampleWithIdAndEtag))]
-    async public Task<ActionResult<MealDTO>> DeleteMeal([FromRoute] Guid id)
+    public async Task<ActionResult<MealDTO>> DeleteMeal([FromRoute] Guid id)
     {
         var meal = _repository.GetSingleById(id);
 

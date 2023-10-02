@@ -6,6 +6,8 @@ namespace Mealmap.Domain.DishAggregate;
 
 public class Dish : EntityBase
 {
+    private List<Ingredient> _ingredients = new();
+
     [MaxLength(100)]
     public string Name { get; set; }
 
@@ -16,7 +18,7 @@ public class Dish : EntityBase
 
     public DishImage? Image { get; private set; }
 
-    private List<Ingredient> _ingredients = new();
+    public string? Instructions { get; set; }
 
     public IReadOnlyCollection<Ingredient> Ingredients
     {

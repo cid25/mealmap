@@ -36,12 +36,14 @@ static Dish[] GenerateDishes()
     dishes[0].AddIngredient(4, "Slice", "Old bread");
     dishes[0].AddIngredient(2, "Piece", "Unidentifiable meat");
     dishes[0].AddIngredient(20, "Mililiter", "Fishy sauce");
+    dishes[0].Instructions = "Slap it together like you mean it.";
 
-    dishes[1] = new Dish("KSailors Surprise", "The darkest, wettest dream of every boatsman.", 4);
+    dishes[1] = new Dish("Sailors Surprise", "The darkest, wettest dream of every boatsman.", 4);
     dishes[1].AddIngredient(800, "Mililiter", "Seawater");
     dishes[1].AddIngredient(6, "Piece", "Sea cucumber");
     dishes[1].AddIngredient(8, "Piece", "Crab meat");
     dishes[1].AddIngredient(1, "Pinch", "Salt");
+    dishes[1].Instructions = "Stir it until the nausea is gone.";
 
     return dishes;
 }

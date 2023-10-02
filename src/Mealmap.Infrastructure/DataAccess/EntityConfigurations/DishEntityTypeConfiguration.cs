@@ -20,6 +20,7 @@ public class DishEntityTypeConfiguration : IEntityTypeConfiguration<Dish>
         builder.Property(d => d.Name);
         builder.Property(d => d.Description);
         builder.Property(d => d.Servings);
+        builder.Property(d => d.Instructions);
 
         builder.OwnsOne(d => d.Image, image =>
         {

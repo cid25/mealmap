@@ -4,6 +4,7 @@ using Mealmap.Api.Controllers;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
 using Mealmap.Api.RequestFormatters;
+using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.DishAggregate;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,7 @@ public class DishesControllerTests
         _controller = new DishesController(
             _loggerMock,
             _repositoryFake,
+            Mock.Of<IUnitOfWork>(),
             new DishOutputMapper(baseMapper, contextMock),
             contextMock,
             Mock.Of<IMediator>()
@@ -86,6 +88,7 @@ public class DishesControllerTests
         var controller = new DishesController(
             Mock.Of<ILogger<DishesController>>(),
             _repositoryFake,
+            Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(),
             mediatorMock.Object
@@ -110,6 +113,7 @@ public class DishesControllerTests
         var controller = new DishesController(
             Mock.Of<ILogger<DishesController>>(),
             _repositoryFake,
+            Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(),
             mediatorMock.Object
@@ -128,6 +132,7 @@ public class DishesControllerTests
         var controller = new DishesController(
             _loggerMock,
             _repositoryFake,
+            Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == header),
             Mock.Of<IMediator>()
@@ -151,6 +156,7 @@ public class DishesControllerTests
         var controller = new DishesController(
             _loggerMock,
             _repositoryFake,
+            Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
             mediatorMock.Object
@@ -174,6 +180,7 @@ public class DishesControllerTests
         var controller = new DishesController(
             _loggerMock,
             _repositoryFake,
+            Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
             mediatorMock.Object
@@ -196,6 +203,7 @@ public class DishesControllerTests
         var controller = new DishesController(
             _loggerMock,
             _repositoryFake,
+            Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<DishDTO, Dish>>(),
             Mock.Of<IRequestContext>(m => m.IfMatchHeader == "fakeVersion"),
             mediatorMock.Object
@@ -231,7 +239,7 @@ public class DishesControllerTests
     [Theory]
     [InlineData("image/jpeg")]
     [InlineData("image/png")]
-    public void PutDishImage_WhenImageIsProper_ReturnsStatusCodeCreated(string contentType)
+    public async void PutDishImage_WhenImageIsProper_ReturnsStatusCodeCreated(string contentType)
     {
         var dishId = _repositoryFake.ElementAt(0).Key;
         var imageDummy = new Image(
@@ -239,14 +247,14 @@ public class DishesControllerTests
             contentType: contentType
         );
 
-        var result = _controller.PutDishImage(dishId, imageDummy);
+        var result = await _controller.PutDishImage(dishId, imageDummy);
 
         result.Should().BeOfType<StatusCodeResult>();
         ((StatusCodeResult)result).StatusCode.Should().Be(201);
     }
 
     [Fact]
-    public void PutDishImage_WhenImageIsProper_UpdatesDish()
+    public async void PutDishImage_WhenImageIsProper_UpdatesDish()
     {
         var idOfDishWithoutImage = _repositoryFake.ElementAt(0).Key;
         var imageDummy = new Image(
@@ -254,7 +262,7 @@ public class DishesControllerTests
             contentType: "image/jpeg"
         );
 
-        _controller.PutDishImage(idOfDishWithoutImage, imageDummy);
+        await _controller.PutDishImage(idOfDishWithoutImage, imageDummy);
 
         _repositoryFake.TryGetValue(idOfDishWithoutImage, out var result);
         if (result == null)
@@ -293,31 +301,31 @@ public class DishesControllerTests
     }
 
     [Fact]
-    public void DeleteDishImage_ReturnsOk()
+    public async void DeleteDishImage_ReturnsOk()
     {
         Guid dishWithImage = _dishes[1].Id;
 
-        var result = _controller.DeleteDishImage(dishWithImage);
+        var result = await _controller.DeleteDishImage(dishWithImage);
 
         result.Should().BeOfType<OkResult>();
     }
 
     [Fact]
-    public void DeleteDishImage_WhenDishDoesntExist_ReturnsBadRequest()
+    public async void DeleteDishImage_WhenDishDoesntExist_ReturnsBadRequest()
     {
         Guid nonExistingGuid = new("99999999-9999-9999-9999-999999999999");
 
-        var result = _controller.DeleteDishImage(nonExistingGuid);
+        var result = await _controller.DeleteDishImage(nonExistingGuid);
 
         result.Should().BeOfType<NotFoundResult>();
     }
 
     [Fact]
-    public void DeleteDishImage_WhenNoImage_ReturnsNoContent()
+    public async void DeleteDishImage_WhenNoImage_ReturnsNoContent()
     {
         Guid dishWithoutImage = _dishes[0].Id;
 
-        var result = _controller.DeleteDishImage(dishWithoutImage);
+        var result = await _controller.DeleteDishImage(dishWithoutImage);
 
         result.Should().BeOfType<NoContentResult>();
     }

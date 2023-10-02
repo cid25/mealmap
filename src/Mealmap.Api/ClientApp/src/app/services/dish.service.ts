@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, catchError, of } from 'rxjs';
 import { DishDTO } from '../interfaces/dish.dto';
 import { Dish } from '../classes/dish';
 
@@ -17,6 +17,14 @@ export class DishService {
     private http: HttpClient,
     private sanitizer: DomSanitizer
   ) {}
+
+  async listDishes(): Promise<Dish[]> {
+    const dishDTOs = await firstValueFrom(this.http.get<DishDTO[]>(this.base_url));
+    const dishes = dishDTOs.map((dto) => Dish.from(dto));
+    dishes.forEach((dish) => this.dishes.set(dish.id!, dish));
+    this.fetchImages(dishes);
+    return dishes;
+  }
 
   async getDishes(ids: string[]): Promise<Dish[]> {
     const uniqueIds = Array.from(new Set(ids));
@@ -57,6 +65,15 @@ export class DishService {
     return dish;
   }
 
+  private async fetchImages(dishes: Dish[]): Promise<void> {
+    dishes
+      .filter((dish) => !!dish.imageUrl)
+      .forEach(async (dish) => {
+        const imageResponse = await this.requestImage(dish.id!);
+        if (imageResponse !== null) this.setImageFromResponse(dish, imageResponse);
+      });
+  }
+
   private async fetchDishAndImage(id: string): Promise<Dish> {
     const dishRequest = this.requestDish(id);
     const imageRequest = this.requestImage(id);
@@ -64,7 +81,7 @@ export class DishService {
     // eslint-disable-next-line prefer-const
     let [dish, imageResponse] = await Promise.all([dishRequest, imageRequest]);
 
-    dish = this.setImageFromResponse(dish, imageResponse);
+    if (imageResponse) dish = this.setImageFromResponse(dish, imageResponse);
     this.dishes.set(id, dish);
 
     return dish;
@@ -76,9 +93,19 @@ export class DishService {
     return Dish.from(dto);
   }
 
-  private requestImage(id: string): Promise<HttpResponse<Blob>> {
+  private requestImage(id: string): Promise<HttpResponse<Blob> | null> {
     const image_url = `${this.base_url}/${id}/image`;
-    return firstValueFrom(this.http.get(image_url, { observe: 'response', responseType: 'blob' }));
+    return firstValueFrom(
+      this.http.get(image_url, { observe: 'response', responseType: 'blob' }).pipe(
+        catchError((err) => {
+          console.log(err);
+          return of(null);
+        })
+      ),
+      {
+        defaultValue: null
+      }
+    );
   }
 
   private setImageFromResponse(dish: Dish, response: HttpResponse<Blob>): Dish {

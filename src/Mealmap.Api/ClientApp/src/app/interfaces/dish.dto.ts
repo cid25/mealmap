@@ -8,4 +8,5 @@ export interface DishDTO {
   imageUrl: string;
   servings: number;
   ingredients: IngredientDTO[];
+  instructions?: string;
 }

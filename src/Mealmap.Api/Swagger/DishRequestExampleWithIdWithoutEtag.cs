@@ -19,7 +19,12 @@ public class DishRequestExampleWithIdWithoutEtag : IExamplesProvider<DishDTO>
                 new IngredientDTO(600, "Mililiter", "Milk"),
                 new IngredientDTO(2, "Piece", "Eggs"),
                 new IngredientDTO(200, "Mililiter", "Oil"),
-            }
+            },
+            Instructions = """
+            Mix the ingredients together to form a firm dough.
+
+            Roll out the dough and add toppings.
+            """
         };
     }
 }

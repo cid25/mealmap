@@ -33,7 +33,8 @@ export class DishDetailsComponent implements OnInit {
     name: new FormControl<string | null>(null, [Validators.required, Validators.minLength(3)]),
     description: new FormControl<string | null>(null),
     servings: new FormControl<number>(DishDetailsComponent.default_servings, Validators.min(1)),
-    ingredients: new FormArray<IngredientGroup>([])
+    ingredients: new FormArray<IngredientGroup>([]),
+    instructions: new FormControl<string | null>(null)
   });
 
   constructor(
@@ -99,7 +100,8 @@ export class DishDetailsComponent implements OnInit {
       ingredients: formData.ingredients.filter(
         (ingredient) =>
           ingredient.quantity != null && ingredient.unit != null && ingredient.description != null
-      ) as IngredientFormData[]
+      ) as IngredientFormData[],
+      instructions: formData.instructions ?? undefined
     };
 
     this.dish?.map(dishData);
@@ -162,9 +164,10 @@ export class DishDetailsComponent implements OnInit {
     this.form.patchValue({
       name: this.dish?.name,
       description: this.dish?.description,
-      servings: this.dish?.servings ?? DishDetailsComponent.default_servings
+      servings: this.dish?.servings ?? DishDetailsComponent.default_servings,
+      instructions: this.dish?.instructions
     });
-
+    console.log(this.dish);
     this.initializeIngredientsForm();
   }
 

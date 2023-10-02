@@ -13,10 +13,7 @@ export class DishOverviewComponent implements OnInit {
   constructor(private dishService: DishService) {}
 
   async ngOnInit(): Promise<void> {
-    this._dishes = await this.dishService.getDishes([
-      'da7e7a58-4b29-4e26-80ee-35dd9f13a97d',
-      '66334f32-78d6-4d72-a03f-b8e3403fe690'
-    ]);
+    this._dishes = await this.dishService.listDishes();
   }
 
   dishesForDisplay(): Dish[] {

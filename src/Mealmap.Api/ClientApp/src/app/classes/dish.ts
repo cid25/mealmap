@@ -10,6 +10,7 @@ export class Dish {
   description?: string;
   servings?: number;
   ingredients?: Ingredient[];
+  instructions?: string;
   imageUrl?: string;
   image?: Blob;
   localImageURL?: SafeUrl;
@@ -27,6 +28,7 @@ export class Dish {
     result.description = this.description;
     result.servings = this.servings;
     result.ingredients = this.ingredients?.map((original) => original.clone());
+    result.instructions = this.instructions;
     result.imageUrl = this.imageUrl;
     result.image = this.image;
     result.localImageURL = this.localImageURL;
@@ -38,6 +40,7 @@ export class Dish {
     this.description = data.description;
     this.servings = data.servings;
     this.ingredients = data.ingredients.map((data) => Ingredient.fromFormData(data));
+    this.instructions = data.instructions;
     return this;
   }
 
@@ -48,6 +51,7 @@ export class Dish {
     this.description = dto.description;
     this.servings = dto.servings;
     this.ingredients = dto.ingredients.map((data) => Ingredient.fromDTO(data));
+    this.instructions = dto.instructions;
     this.imageUrl = dto.imageUrl;
     return this;
   }
