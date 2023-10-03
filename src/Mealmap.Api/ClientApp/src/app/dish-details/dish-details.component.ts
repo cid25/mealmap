@@ -67,10 +67,6 @@ export class DishDetailsComponent implements OnInit {
     this.addIngredientWatcher();
   }
 
-  back(): void {
-    this.location.back();
-  }
-
   editable(): boolean {
     return this._editable;
   }
@@ -104,6 +100,11 @@ export class DishDetailsComponent implements OnInit {
     return null;
   }
 
+  onClickBack(): void {
+    console.log(this.location.getState());
+    this.location.back();
+  }
+
   async onClickSubmit(): Promise<void> {
     this.dish?.map(this.getFormData());
 
@@ -130,7 +131,7 @@ export class DishDetailsComponent implements OnInit {
 
   async onClickDelete(): Promise<void> {
     await this.dishService.delete(this.dish!);
-    this.back();
+    this.onClickBack();
   }
 
   onImageSelected(event: Event): void {
