@@ -64,6 +64,11 @@ export class DishService {
     else return this.createDish(dish);
   }
 
+  async delete(dish: Dish): Promise<void> {
+    await this.deleteDish(dish);
+    this.clearCachesFrom(dish);
+  }
+
   urlFor(image: Blob): SafeUrl {
     const url = URL.createObjectURL(image);
     return this.sanitizer.bypassSecurityTrustUrl(url);
@@ -137,6 +142,11 @@ export class DishService {
     this.etagCache.set(dish.id!, etag);
   }
 
+  private clearCachesFrom(dish: Dish): void {
+    this.dishCache.delete(dish.id!);
+    this.etagCache.delete(dish.id!);
+  }
+
   private setImage(dish: Dish, response: HttpResponse<Blob>): Dish {
     if (response.status == 200 && response.body) {
       dish.image = new Blob([response.body], {
@@ -181,6 +191,11 @@ export class DishService {
       headers: new HttpHeaders().set('Content-Type', 'application/json')
     };
     return await firstValueFrom(this.http.post<DishDTO>(this.base_url, dish.toJSON(), options));
+  }
+
+  private async deleteDish(dish: Dish): Promise<void> {
+    const url = `${this.base_url}/${dish.id}`;
+    await firstValueFrom(this.http.delete(url));
   }
 
   private async putImage(id: string, image: Blob): Promise<void> {

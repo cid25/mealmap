@@ -1,20 +1,7 @@
-<div class="card h-100 dish-card">
-    <ng-container [ngSwitch]="hasImage()">
-        <a *ngSwitchCase="true" [routerLink]="[dish.id]" class="p-0 border-0">
-            <img [src]="dish.localImageURL" class="rounded-top-1 img-fluid text-center" alt="No image">
-        </a>
-        <a *ngSwitchCase="false" [routerLink]="[dish.id]">
-            <div class="rounded-top-1 d-flex flex-column justify-content-center" style="background-color: lightgrey; min-height: 11em;">
-                <span class="d-block text-center">No Image</span>
-            </div>
-        </a>
-    </ng-container>
-    <div class="d-flex text-white">
-        <a class="flex-grow-1 btn btn-success rounded-0" role="button" [routerLink]="[dish.id]" [queryParams]="{edit: true}">
-            <div class="d-flex justify-content-center align-items-center"><img src="/assets/icons/pencil-square.svg" class="me-1">Edit</div>
-        </a>
-        <button id="btndelete" class="btn btn-danger flex-grow-1 rounded-0 d-flex justify-content-center align-items-center"><img src="/assets/icons/trash3-fill.svg" class="me-1">Delete</button>
-    </div>
+<div class="card h-100 card-m">
+    <a [routerLink]="[dish.id]" class="p-0 border-0">
+        <img [src]="dish.localImageURL" onerror="this.src='/assets/no-image.png'" class="card-image-m rounded-top" alt="No image">
+    </a>
     <div class="card-body">
         <h5 class="card-title text-center">{{ dish.name }}</h5>
         <p class="card-text">{{ dish.description }}</p>

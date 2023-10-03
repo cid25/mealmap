@@ -19,6 +19,11 @@ code {
   border-color: #1861ac;
 }
 
+.card-m {
+  width: min(201px, 44vw);
+  min-height: 160px;
+}
+
 .card-image-l {
   aspect-ratio: 5 / 4;
   width: min(300px, 80vw);
@@ -38,9 +43,4 @@ code {
   width: min(150px, 40vw);
   height: min(120px, 32vw);
   object-fit: cover;
-}
-
-.empty-card-m {
-  width: min(200px, 44vw);
-  min-height: 160px;
 }

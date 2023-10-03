@@ -1,7 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Meal } from '../classes/meal';
 import { Course } from '../classes/course';
-import { SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-meal-card',

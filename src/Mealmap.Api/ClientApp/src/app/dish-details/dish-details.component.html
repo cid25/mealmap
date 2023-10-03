@@ -1,8 +1,8 @@
+<button type="button" id="btnBack" (click)="back()" class="btn btn-primary d-flex justify-content-center align-items-center mb-2">
+    <img src="/assets/icons/box-arrow-left.svg" class="me-1">
+    <span>Back</span>
+</button>
 <div class="d-flex gap-2 mb-2">
-    <button type="button" id="btnBack" (click)="back()" class="btn btn-primary d-flex justify-content-center align-items-center">
-        <img src="/assets/icons/box-arrow-left.svg" class="me-1">
-        <span>Back</span>
-    </button>
     <ng-container *ngIf="!editable()">
         <button type="button" id="btnEdit" (click)="enableEdit()" class="btn btn-success d-flex justify-content-center align-items-center">
             <img src="/assets/icons/pencil-square.svg" class="me-1">
@@ -14,10 +14,14 @@
             <img src="/assets/icons/save.svg" class="me-1">
             <span>Save</span>
         </button>
-        <button type="button" id="btnUndo" [disabled]="!edited()" (click)="reset()" class="btn btn-warning d-flex justify-content-center align-items-center">
+        <button type="button" id="btnUndo" [disabled]="!edited()" (click)="onClickReset()" class="btn btn-warning d-flex justify-content-center align-items-center">
             <img src="/assets/icons/arrow-repeat.svg" class="me-1">
             <span>Undo</span>
         </button>
+        <button type="button" id="btndelete" class="btn btn-danger d-flex justify-content-center align-items-center" (click)="onClickDelete()">
+            <img src="/assets/icons/trash3-fill.svg" class="me-1">
+            <span>Delete</span>
+          </button>
     </ng-container>
 </div>
 <form *ngIf="editable()" id="dishForm" [formGroup]="form" (ngSubmit)="onClickSubmit()" class="d-flex flex-wrap gap-3">

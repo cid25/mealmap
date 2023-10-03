@@ -158,7 +158,7 @@ public class DishesController : ControllerBase
     [ProducesResponseType(typeof(DishDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [SwaggerResponseExample(200, typeof(DishResponseExampleWithIdAndEtag))]
-    public ActionResult<DishDTO> DeleteDish([FromRoute] Guid id)
+    public async Task<ActionResult<DishDTO>> DeleteDish([FromRoute] Guid id)
     {
         var dish = _repository.GetSingleById(id);
 
@@ -166,6 +166,7 @@ public class DishesController : ControllerBase
             return NotFound($"Dish with id does not exist.");
 
         _repository.Remove(dish);
+        await _unitOfWork.SaveTransactionAsync();
 
         var dto = _outputMapper.FromEntity(dish);
         return Ok(dto);

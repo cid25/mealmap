@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { DishService } from '../services/dish.service';
 import { Dish } from '../classes/dish';
@@ -39,6 +39,7 @@ export class DishDetailsComponent implements OnInit {
 
   constructor(
     private dishService: DishService,
+    private router: Router,
     private route: ActivatedRoute,
     private location: Location
   ) {}
@@ -90,24 +91,6 @@ export class DishDetailsComponent implements OnInit {
     return this.form.valid;
   }
 
-  async onClickSubmit(): Promise<void> {
-    this.dish?.map(this.getFormData());
-
-    if (this._image) this.dish?.setImage(this._image, this._localImageURL!);
-    else this.dish?.deleteImage();
-
-    this.dish = await this.dishService.save(this.dish!);
-    this.form.markAsPristine();
-    this.InitializeValues();
-  }
-
-  reset(): void {
-    this.dish = this._uneditedDish;
-    this._image = this.dish?.image;
-    this._localImageURL = this.dish?.localImageURL;
-    this.initializeFormValues();
-  }
-
   hasName(): boolean {
     return this.form.get('name')!.valid;
   }
@@ -119,6 +102,35 @@ export class DishDetailsComponent implements OnInit {
   imageURL(): SafeUrl | null {
     if (this._localImageURL) return this._localImageURL;
     return null;
+  }
+
+  async onClickSubmit(): Promise<void> {
+    this.dish?.map(this.getFormData());
+
+    const creating = this.dish?.id == undefined;
+
+    if (this._image) this.dish?.setImage(this._image, this._localImageURL!);
+    else this.dish?.deleteImage();
+
+    this.dish = await this.dishService.save(this.dish!);
+
+    if (creating) this.router.navigateByUrl(`dishes/${this.dish.id!}?edit=true`);
+    else {
+      this.form.markAsPristine();
+      this.InitializeValues();
+    }
+  }
+
+  onClickReset(): void {
+    this.dish = this._uneditedDish;
+    this._image = this.dish?.image;
+    this._localImageURL = this.dish?.localImageURL;
+    this.initializeFormValues();
+  }
+
+  async onClickDelete(): Promise<void> {
+    await this.dishService.delete(this.dish!);
+    this.back();
   }
 
   onImageSelected(event: Event): void {
