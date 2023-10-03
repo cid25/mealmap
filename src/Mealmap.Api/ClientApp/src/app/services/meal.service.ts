@@ -12,7 +12,7 @@ import { DishService } from './dish.service';
 export class MealService {
   private readonly base_url = 'api/meals';
 
-  private meals: Map<string, Meal> = new Map<string, Meal>();
+  private mealCache: Map<string, Meal> = new Map<string, Meal>();
 
   constructor(
     private http: HttpClient,
@@ -35,7 +35,7 @@ export class MealService {
     const result: Meal[] = [];
     dates.forEach((date) => {
       const key = Meal.keyFor(date);
-      const meal = this.meals.get(key);
+      const meal = this.mealCache.get(key);
       if (meal !== undefined) result.push(meal);
     });
 
@@ -46,15 +46,15 @@ export class MealService {
     let result: Meal = new Meal(date);
 
     const dateKey = Meal.keyFor(date);
-    if (this.meals.has(dateKey)) {
-      result = this.meals.get(dateKey) as Meal;
+    if (this.mealCache.has(dateKey)) {
+      result = this.mealCache.get(dateKey) as Meal;
     } else {
       const meal = (await this.fetchForRange(date, date))[0];
 
       if (meal !== undefined) result = meal;
     }
 
-    this.meals.set(result.key(), result);
+    this.mealCache.set(result.key(), result);
     await this.retrieveDishesForMeals();
     return result;
   }
@@ -62,10 +62,10 @@ export class MealService {
   async deleteMeal(date: Date): Promise<void> {
     const dateKey = Meal.keyFor(date);
 
-    const url = `${this.base_url}/${this.meals.get(dateKey)?.id}`;
+    const url = `${this.base_url}/${this.mealCache.get(dateKey)?.id}`;
     await firstValueFrom(this.http.delete(url));
 
-    this.meals.delete(dateKey);
+    this.mealCache.delete(dateKey);
   }
 
   async saveMeal(meal: Meal): Promise<void> {
@@ -89,14 +89,14 @@ export class MealService {
 
     if (returned !== undefined) {
       const received = Meal.from(returned);
-      this.meals.set(received.key(), received);
+      this.mealCache.set(received.key(), received);
     }
   }
 
   private datesWithoutMeal(dates: Date[]): Date[] {
     return dates.filter((date) => {
       const key = Meal.keyFor(date);
-      if (!this.meals.has(key) || this.meals.get(key)?.id == '') return true;
+      if (!this.mealCache.has(key) || this.mealCache.get(key)?.id == '') return true;
       else return false;
     });
   }
@@ -122,7 +122,7 @@ export class MealService {
     const remainingBlankDates = this.datesWithoutMeal(dates);
     remainingBlankDates.forEach((date) => {
       const meal = new Meal(date);
-      this.meals.set(meal.key(), meal);
+      this.mealCache.set(meal.key(), meal);
     });
   }
 
@@ -134,7 +134,7 @@ export class MealService {
 
     if (mealData) {
       const meals = mealData.map((rawMeal) => Meal.from(rawMeal));
-      meals.forEach((meal) => this.meals.set(meal.key(), meal));
+      meals.forEach((meal) => this.mealCache.set(meal.key(), meal));
       return meals;
     }
     return [];
@@ -142,9 +142,9 @@ export class MealService {
 
   private async retrieveDishesForMeals(): Promise<void> {
     const ids = this.collectMissingDishIds();
-    const dishes = await this.dishService.getDishes(ids);
+    const dishes = await this.dishService.getByIds(ids);
 
-    this.meals.forEach((value) =>
+    this.mealCache.forEach((value) =>
       value.courses.forEach((course) => {
         if (!course.dish) {
           const dish = dishes.find((dish) => dish.id === course.dishId);
@@ -156,7 +156,7 @@ export class MealService {
 
   private collectMissingDishIds(): string[] {
     const result: string[] = [];
-    this.meals.forEach((value) =>
+    this.mealCache.forEach((value) =>
       value.courses.filter((course) => !course.dish).forEach((course) => result.push(course.dishId))
     );
     return result;

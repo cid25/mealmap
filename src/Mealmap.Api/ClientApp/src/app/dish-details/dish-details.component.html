@@ -1,18 +1,30 @@
 <div class="d-flex gap-2 mb-2">
-    <button (click)="back()" class="btn btn-primary d-flex justify-content-center align-items-center"><img src="/assets/icons/box-arrow-left.svg" class="me-1">Back</button>
+    <button type="button" id="btnBack" (click)="back()" class="btn btn-primary d-flex justify-content-center align-items-center">
+        <img src="/assets/icons/box-arrow-left.svg" class="me-1">
+        <span>Back</span>
+    </button>
     <ng-container *ngIf="!editable()">
-        <button (click)="enableEdit()" class="btn btn-success d-flex justify-content-center align-items-center"><img src="/assets/icons/pencil-square.svg" class="me-1">Edit</button>
+        <button type="button" id="btnEdit" (click)="enableEdit()" class="btn btn-success d-flex justify-content-center align-items-center">
+            <img src="/assets/icons/pencil-square.svg" class="me-1">
+            <span>Edit</span>
+        </button>
     </ng-container>
     <ng-container *ngIf="editable()">
-        <button type="submit" form="dish-form" [disabled]="!valid() || !edited()" class="btn btn-success d-flex justify-content-center align-items-center"><img src="/assets/icons/save.svg" class="me-1">Save</button>
-        <button [disabled]="!edited()" (click)="reset()" class="btn btn-warning d-flex justify-content-center align-items-center"><img src="/assets/icons/arrow-repeat.svg" class="me-1">Undo</button>
+        <button type="submit" id="btnSave" form="dishForm" [disabled]="!valid() || !edited()" class="btn btn-success d-flex justify-content-center align-items-center">
+            <img src="/assets/icons/save.svg" class="me-1">
+            <span>Save</span>
+        </button>
+        <button type="button" id="btnUndo" [disabled]="!edited()" (click)="reset()" class="btn btn-warning d-flex justify-content-center align-items-center">
+            <img src="/assets/icons/arrow-repeat.svg" class="me-1">
+            <span>Undo</span>
+        </button>
     </ng-container>
 </div>
-<form *ngIf="editable()" id="dish-form" [formGroup]="form" (ngSubmit)="submit()" class="d-flex flex-wrap gap-3">
+<form *ngIf="editable()" id="dishForm" [formGroup]="form" (ngSubmit)="onClickSubmit()" class="d-flex flex-wrap gap-3">
     <div class="w-100 d-flex flex-column" style="max-width: 25em;">
         <div class="form-floating mb-3">
             <input type="text" id="formName" formControlName="name" placeholder="Name" class="form-control">
-            <label for="dishName">Name</label>
+            <label for="formName">Name</label>
         </div>
         <div class="form-floating mb-3">
             <textarea id="formDescription" formControlName="description" placeholder="Description" class="form-control" style="min-height: 7em;"></textarea>
@@ -21,9 +33,15 @@
         <div class="mb-3">
             <img [src]="imageURL()" onerror="this.src='/assets/no-image.png'" class="mb-2 card-image-l" style="min-height: 8em;">
             <div class="d-flex gap-2">
-                <input type="file" id="formImageFile" accept=".png,.jpg,.jpeg" (change)="onImageSelected($event)" class="d-none" #formImageFile>
-                <button (click)="formImageFile.click()" [disabled]="!hasName()" class="btn btn-primary d-flex justify-content-center align-items-center"><img [src]="hasImage() ? '/assets/icons/arrow-left-right.svg' : '/assets/icons/plus-square-fill.svg'" class="me-1"><span class=" fw-semibold">{{ hasImage() ? 'Replace Image' : 'Add Image' }}</span></button>
-                <button *ngIf="hasImage()" (click)="deleteImage()" class="btn btn-danger d-flex justify-content-center align-items-center"><img src="/assets/icons/trash3-fill.svg" class="me-1">Delete Image</button>
+                <input type="file" id="inputFile" accept=".png,.jpg,.jpeg" (change)="onImageSelected($event)" class="d-none" #formImageFile>
+                <button type="button" id="btnAddImage" (click)="formImageFile.click();formImageFile.value=''" [disabled]="!hasName()" class="btn btn-primary d-flex justify-content-center align-items-center">
+                    <img [src]="hasImage() ? '/assets/icons/arrow-left-right.svg' : '/assets/icons/plus-square-fill.svg'" class="me-1">
+                    <span class=" fw-semibold">{{ hasImage() ? 'Replace Image' : 'Add Image' }}</span>
+                </button>
+                <button *ngIf="hasImage()" type="button" id="btnDeleteImage" (click)="deleteImage()" class="btn btn-danger d-flex justify-content-center align-items-center">
+                    <img src="/assets/icons/trash3-fill.svg" class="me-1">
+                    <span>Delete Image</span>
+                </button>
             </div>
         </div>
     </div>
@@ -42,13 +60,13 @@
             <div *ngFor="let ingredientFormGroup of ingredients.controls; index as i" class="row mb-2 g-2">
                 <ng-container [formGroupName]="i">
                     <div class="col-3 col-sm-2">
-                        <input type="number" [id]="'formIngredient' + i" formControlName="quantity" class="form-control text-end">
+                        <input type="number" [id]="'formIngredientQuantity' + i" formControlName="quantity" class="form-control text-end">
                     </div>
                     <div class="col-3 col-sm-2">
-                        <input type="text" [id]="'formIngredient' + i" formControlName="unit" class="form-control">
+                        <input type="text" [id]="'formIngredientUnit' + i" formControlName="unit" class="form-control">
                     </div>
                     <div class="col-6 col-sm-8">
-                        <input type="text" [id]="'formIngredient' + i" formControlName="description" class="form-control">
+                        <input type="text" [id]="'formIngredientDescription' + i" formControlName="description" class="form-control">
                     </div>
                 </ng-container>
             </div>

@@ -71,6 +71,7 @@ public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, Comma
         dish.Name = request.Dto.Name;
         dish.Description = request.Dto.Description;
         dish.Servings = request.Dto.Servings;
+        dish.Instructions = request.Dto.Instructions;
 
         dish.RemoveAllIngredients();
         if (request.Dto.Ingredients != null)

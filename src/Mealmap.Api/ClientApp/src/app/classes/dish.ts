@@ -2,10 +2,10 @@ import { SafeUrl } from '@angular/platform-browser';
 import { Ingredient } from './ingredient';
 import { DishDTO } from '../interfaces/dish.dto';
 import { DishFormData } from '../interfaces/dish-form-data';
+import { ETag } from '../classes/etag';
 
 export class Dish {
   id?: string;
-  eTag?: string;
   name?: string;
   description?: string;
   servings?: number;
@@ -15,15 +15,14 @@ export class Dish {
   image?: Blob;
   localImageURL?: SafeUrl;
 
-  static from(dto: DishDTO) {
+  static from(dto: DishDTO): [Dish, ETag] {
     const result = new Dish();
-    return result.copy(dto);
+    return [result.copy(dto), new ETag(dto.eTag)];
   }
 
   clone(): Dish {
     const result = new Dish();
     result.id = this.id;
-    result.eTag = this.eTag;
     result.name = this.name;
     result.description = this.description;
     result.servings = this.servings;
@@ -44,9 +43,31 @@ export class Dish {
     return this;
   }
 
+  toJSON(): string {
+    const result = {
+      id: this.id ?? null,
+      name: this.name ?? null,
+      description: this.description ?? null,
+      servings: this.servings ?? null,
+      ingredients: this.ingredients ?? [],
+      instructions: this.instructions ?? null
+    };
+
+    return JSON.stringify(result);
+  }
+
+  deleteImage(): void {
+    this.image = undefined;
+    this.localImageURL = undefined;
+  }
+
+  setImage(image: Blob | undefined, localImageURL: SafeUrl | undefined): void {
+    this.image = image;
+    this.localImageURL = localImageURL;
+  }
+
   private copy(dto: DishDTO): Dish {
     this.id = dto.id;
-    this.eTag = dto.eTag;
     this.name = dto.name;
     this.description = dto.description;
     this.servings = dto.servings;

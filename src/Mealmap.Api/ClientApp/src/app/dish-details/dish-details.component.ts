@@ -51,15 +51,16 @@ export class DishDetailsComponent implements OnInit {
     const id = this.route.snapshot.params['id'];
 
     if (id) {
-      this.dish = await this.dishService.getDish(id);
+      this.dish = await this.dishService.getById(id);
       if (this.route.snapshot.queryParams['edit']) this.enableEdit();
     } else {
       this.dish = new Dish();
       this.enableEdit();
-      this.disableControlsExceptName();
     }
 
     this.InitializeValues();
+
+    if (!this.dish?.id) this.disableControlsExceptName();
 
     this.addNameWatcher();
     this.addIngredientWatcher();
@@ -89,22 +90,15 @@ export class DishDetailsComponent implements OnInit {
     return this.form.valid;
   }
 
-  submit(): void {
-    this.form.value;
-    const formData = this.form.getRawValue();
+  async onClickSubmit(): Promise<void> {
+    this.dish?.map(this.getFormData());
 
-    const dishData: DishFormData = {
-      name: formData.name!,
-      description: formData.description ?? undefined,
-      servings: formData.servings!,
-      ingredients: formData.ingredients.filter(
-        (ingredient) =>
-          ingredient.quantity != null && ingredient.unit != null && ingredient.description != null
-      ) as IngredientFormData[],
-      instructions: formData.instructions ?? undefined
-    };
+    if (this._image) this.dish?.setImage(this._image, this._localImageURL!);
+    else this.dish?.deleteImage();
 
-    this.dish?.map(dishData);
+    this.dish = await this.dishService.save(this.dish!);
+    this.form.markAsPristine();
+    this.InitializeValues();
   }
 
   reset(): void {
@@ -119,7 +113,7 @@ export class DishDetailsComponent implements OnInit {
   }
 
   hasImage(): boolean {
-    return !!this._image;
+    return this._image != undefined;
   }
 
   imageURL(): SafeUrl | null {
@@ -131,7 +125,7 @@ export class DishDetailsComponent implements OnInit {
     const target = event.target as HTMLInputElement;
     if (target.files) {
       this._image = target.files[0];
-      this._localImageURL = this.dishService.getURLforImage(this._image);
+      this._localImageURL = this.dishService.urlFor(this._image);
     }
   }
 
@@ -196,7 +190,7 @@ export class DishDetailsComponent implements OnInit {
     );
   }
 
-  private blank(data: IngredientFormData): boolean {
+  private isBlank(data: IngredientFormData): boolean {
     return (
       data.quantity == null &&
       (data.unit == null || data.unit.trim() == '') &&
@@ -214,7 +208,7 @@ export class DishDetailsComponent implements OnInit {
   private addIngredientWatcher(): void {
     this.ingredients.valueChanges.subscribe(() => {
       const ingredients = this.ingredients.value as IngredientFormData[];
-      const emptyRowCount = ingredients.filter((ingredient) => this.blank(ingredient)).length;
+      const emptyRowCount = ingredients.filter((ingredient) => this.isBlank(ingredient)).length;
 
       if (emptyRowCount == 0) this.addBlankIngredientFormGroup();
       else if (emptyRowCount > 1) this.trimBlankIngredientFormGroup();
@@ -223,7 +217,24 @@ export class DishDetailsComponent implements OnInit {
 
   private trimBlankIngredientFormGroup(): void {
     for (let i: number = 0; i < this.ingredients.length; i++) {
-      if (this.blank(this.ingredients.at(i).value)) this.ingredients.removeAt(i);
+      if (this.isBlank(this.ingredients.at(i).value)) this.ingredients.removeAt(i);
     }
+  }
+
+  private getFormData(): DishFormData {
+    const rawData = this.form.getRawValue();
+
+    const formData: DishFormData = {
+      name: rawData.name!,
+      description: rawData.description ?? undefined,
+      servings: rawData.servings!,
+      ingredients: rawData.ingredients.filter(
+        (ingredient) =>
+          ingredient.quantity != null && ingredient.unit != null && ingredient.description != null
+      ) as IngredientFormData[],
+      instructions: rawData.instructions ?? undefined
+    };
+
+    return formData;
   }
 }
