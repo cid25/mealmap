@@ -33,12 +33,12 @@
         <div class="mb-3">
             <img [src]="imageURL()" onerror="this.src='/assets/no-image.png'" class="mb-2 card-image-l" style="min-height: 8em;">
             <div class="d-flex gap-2">
-                <input type="file" id="inputFile" accept=".png,.jpg,.jpeg" (change)="onImageSelected($event)" class="d-none" #formImageFile>
+                <input type="file" id="inputFile" accept=".png,.jpg,.jpeg" (input)="onImageSelected($event)" class="d-none" #formImageFile>
                 <button type="button" id="btnAddImage" (click)="formImageFile.click();formImageFile.value=''" [disabled]="!hasName()" class="btn btn-primary d-flex justify-content-center align-items-center">
                     <img [src]="hasImage() ? '/assets/icons/arrow-left-right.svg' : '/assets/icons/plus-square-fill.svg'" class="me-1">
                     <span class=" fw-semibold">{{ hasImage() ? 'Replace Image' : 'Add Image' }}</span>
                 </button>
-                <button *ngIf="hasImage()" type="button" id="btnDeleteImage" (click)="deleteImage()" class="btn btn-danger d-flex justify-content-center align-items-center">
+                <button *ngIf="hasImage()" type="button" id="btnDeleteImage" (click)="onClickDeleteImage()" class="btn btn-danger d-flex justify-content-center align-items-center">
                     <img src="/assets/icons/trash3-fill.svg" class="me-1">
                     <span>Delete Image</span>
                 </button>

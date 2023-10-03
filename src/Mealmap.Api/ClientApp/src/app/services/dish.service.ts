@@ -106,8 +106,8 @@ export class DishService {
     let [result, etag] = Dish.from(responseDTO!);
 
     if (imageUpdated || imageDeleted) {
-      if (imageUpdated) await this.putImage(dish);
-      else if (imageDeleted) await this.deleteImage(dish);
+      if (imageUpdated) await this.putImage(dish.id!, dish.image!);
+      else if (imageDeleted) await this.deleteImage(dish.id!);
 
       [result, etag] = Dish.from(await this.getDish(dish.id!));
       result.setImage(dish.image, dish.localImageURL);
@@ -119,9 +119,10 @@ export class DishService {
 
   private async createDish(dish: Dish): Promise<Dish> {
     const creationResponse = await this.postDish(dish);
+    const [created] = Dish.from(creationResponse!);
 
     const hasImage = dish.image != undefined;
-    if (hasImage) await this.putImage(dish);
+    if (hasImage) await this.putImage(created.id!, dish.image!);
 
     const responseDTO = await this.getDish(creationResponse!.id);
     const [result, etag] = Dish.from(responseDTO!);
@@ -182,16 +183,16 @@ export class DishService {
     return await firstValueFrom(this.http.post<DishDTO>(this.base_url, dish.toJSON(), options));
   }
 
-  private async putImage(dish: Dish): Promise<void> {
-    const url = `${this.base_url}/${dish.id}/image`;
+  private async putImage(id: string, image: Blob): Promise<void> {
+    const url = `${this.base_url}/${id}/image`;
     const options = {
-      headers: new HttpHeaders().set('Content-Type', dish.image!.type)
+      headers: new HttpHeaders().set('Content-Type', image!.type)
     };
-    await firstValueFrom(this.http.put(url, dish.image, options));
+    await firstValueFrom(this.http.put(url, image, options));
   }
 
-  private async deleteImage(dish: Dish): Promise<void> {
-    const url = `${this.base_url}/${dish.id}/image`;
+  private async deleteImage(id: string): Promise<void> {
+    const url = `${this.base_url}/${id}/image`;
     await firstValueFrom(this.http.delete(url));
   }
 }

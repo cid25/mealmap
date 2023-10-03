@@ -129,7 +129,7 @@ export class DishDetailsComponent implements OnInit {
     }
   }
 
-  deleteImage(): void {
+  onClickDeleteImage(): void {
     this._image = undefined;
     this._localImageURL = undefined;
   }
