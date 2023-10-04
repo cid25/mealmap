@@ -60,7 +60,7 @@
     <div class="align-item-start mx-0 px-0" style="min-width: min(450px, 100%); max-width: max(800px, 50vw);">
         <div class="py-2 bg-secondary text-white text-center border-secondary rounded-1">Instructions</div>
         <div [ngSwitch]="dish?.instructions != undefined" class="mb-4 p-2">
-            <div *ngSwitchCase="true">{{ dish?.instructions }}</div>
+            <div *ngSwitchCase="true" style="white-space: pre-wrap;">{{ dish?.instructions }}</div>
             <div *ngSwitchCase="false" class="text-center fw-lighter fst-italic">No instructions available</div>
         </div>
     </div>
