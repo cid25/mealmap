@@ -8,9 +8,10 @@ public class Dish : EntityBase
 {
     private List<Ingredient> _ingredients = new();
 
-    [MaxLength(100)]
+    [MaxLength(50)]
     public string Name { get; set; }
 
+    [MaxLength(80)]
     public string? Description { get; set; }
 
     [Range(1, int.MaxValue)]
