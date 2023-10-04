@@ -216,22 +216,22 @@ public class DishesControllerTests
     }
 
     [Fact]
-    public void DeleteDish_WhenDishExists_ReturnsOkAndDish()
+    public async void DeleteDish_WhenDishExists_ReturnsOkAndDish()
     {
         var dish = _repositoryFake.GetAll().First();
 
-        var result = _controller.DeleteDish(dish.Id);
+        var result = await _controller.DeleteDish(dish.Id);
 
         result.Result.Should().BeOfType<OkObjectResult>();
         ((OkObjectResult)result.Result!).Value.Should().BeOfType<DishDTO>();
     }
 
     [Fact]
-    public void DeleteDish_WhenDishDoesntExist_ReturnsNotFound()
+    public async void DeleteDish_WhenDishDoesntExist_ReturnsNotFound()
     {
         var nonExistingDishGuid = new Guid("99999999-9999-9999-9999-999999999999");
 
-        var result = _controller.DeleteDish(nonExistingDishGuid);
+        var result = await _controller.DeleteDish(nonExistingDishGuid);
 
         result.Result.Should().BeOfType<NotFoundObjectResult>();
     }
