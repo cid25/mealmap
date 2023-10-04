@@ -19,17 +19,17 @@ code {
   border-color: #1861ac;
 }
 
-.card-m {
-  width: min(201px, 44vw);
-  min-height: min(300px, 45vh);
-  max-height: max(420px, 30vh);
-}
-
 .card-image-l {
   aspect-ratio: 5 / 4;
   width: min(300px, 80vw);
   height: min(240px, 64vw);
   object-fit: cover;
+}
+
+.card-m {
+  width: min(201px, 44vw);
+  min-height: min(300px, 45vh);
+  max-height: max(420px, 30vh);
 }
 
 .card-image-m {
@@ -39,7 +39,13 @@ code {
   object-fit: cover;
 }
 
-.card-image-s {
+.card-s {
+  width: min(201px, 44vw);
+  min-height: min(270px, 45vh);
+  max-height: max(320px, 30vh);
+}
+
+.card-image-xs {
   aspect-ratio: 5 / 4;
   width: min(150px, 40vw);
   height: min(120px, 32vw);

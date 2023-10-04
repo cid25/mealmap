@@ -9,8 +9,7 @@ import { Course } from '../classes/course';
 
 @Component({
   selector: 'app-meal-editor',
-  templateUrl: './meal-editor.component.html',
-  styleUrls: ['./meal-editor.component.css']
+  templateUrl: './meal-editor.component.html'
 })
 export class MealEditorComponent implements OnInit, OnChanges {
   private uneditedMeal: Meal | undefined;
@@ -31,6 +30,11 @@ export class MealEditorComponent implements OnInit, OnChanges {
     this.diningDate = DateTime.fromISO(this.route.snapshot.params['date']).toJSDate();
   }
 
+  get courses(): Course[] {
+    if (this.meal === undefined) return [];
+    return this.meal!.courses.sort((a, b) => a.index - b.index);
+  }
+
   async ngOnInit(): Promise<void> {
     await this.retrieveMeal();
   }
@@ -42,11 +46,6 @@ export class MealEditorComponent implements OnInit, OnChanges {
 
   back(): void {
     this.location.back();
-  }
-
-  coursesForDisplay(): Course[] {
-    if (this.meal === undefined) return [];
-    return this.meal!.courses.sort();
   }
 
   mainCourse(course: Course): boolean {
