@@ -115,9 +115,9 @@ export class DishService {
       else if (imageDeleted) await this.deleteImage(dish.id!);
 
       [result, etag] = Dish.from(await this.getDish(dish.id!));
-      result.setImage(dish.image, dish.localImageURL);
     }
 
+    result.setImage(dish.image, dish.localImageURL);
     this.updateCachesWith(result, etag);
     return result.clone();
   }

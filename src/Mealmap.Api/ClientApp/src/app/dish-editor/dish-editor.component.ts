@@ -94,7 +94,7 @@ export class DishEditorComponent implements OnInit {
 
     const creating = this.dish?.id == undefined;
 
-    if (this._image) this.dish?.setImage(this._image, this._localImageURL!);
+    if (this._image != undefined) this.dish?.setImage(this._image, this._localImageURL!);
     else this.dish?.deleteImage();
 
     this.dish = await this.dishService.save(this.dish!);
