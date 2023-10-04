@@ -12,8 +12,6 @@ public class AutomapperProfile : Profile
     {
         CreateMap<EntityVersion, string?>().ConvertUsing(ev => ev.AsString());
 
-        CreateMap<UnitOfMeasurement, string>()
-            .ConvertUsing(unit => unit.Stringify());
         CreateMap<Ingredient, IngredientDTO>();
         CreateMap<Dish, DishDTO>()
             .ForMember(dto => dto.ImageUrl, opt => opt.Ignore())

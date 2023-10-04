@@ -1,4 +1,5 @@
-﻿using Mealmap.Domain.DishAggregate;
+﻿using Mealmap.Domain.Common.DataAccess;
+using Mealmap.Domain.DishAggregate;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SystemHeaders = System.Net.Http.Headers;
@@ -58,6 +59,7 @@ public class DishesPipelineTests
             {
                 return Mock.Of<IDishRepository>(mock => mock.GetSingleById(It.IsAny<Guid>()) == _dummyDish);
             }));
+            services.Replace(ServiceDescriptor.Scoped<IUnitOfWork>(_ => Mock.Of<IUnitOfWork>()));
         });
 
         var content = new ByteArrayContent(new byte[1]);

@@ -56,9 +56,9 @@ public class Dish : EntityBase
     }
 
     /// <exception cref="DomainValidationException"></exception>
-    public void AddIngredient(decimal quantity, string unitOfMeasurementName, string description)
+    public void AddIngredient(decimal quantity, string unitOfMeasurement, string description)
     {
-        Ingredient ingredient = new(quantity, unitOfMeasurementName, description);
+        Ingredient ingredient = new(quantity, unitOfMeasurement, description);
 
         _ingredients.Add(ingredient);
     }
@@ -69,15 +69,14 @@ public class Dish : EntityBase
     }
 
     /// <exception cref="DomainValidationException"></exception>
-    public void RemoveIngredient(decimal quantity, string unitOfMeasurementName, string description)
+    public void RemoveIngredient(decimal quantity, string unitOfMeasurement, string description)
     {
-        if (!Ingredients.Any())
-            return;
+        if (!Ingredients.Any()) return;
 
-        var unit = new UnitOfMeasurement(unitOfMeasurementName);
-        Ingredient newIngredient = new(quantity, unit, description);
+        var ingredient = _ingredients.First((ingredient) =>
+            ingredient.Quantity == quantity && ingredient.UnitOfMeasurement == unitOfMeasurement && ingredient.Description == description);
 
-        _ingredients.Remove(newIngredient);
+        RemoveIngredient(ingredient);
     }
 
     public void RemoveIngredient(Ingredient ingredient)

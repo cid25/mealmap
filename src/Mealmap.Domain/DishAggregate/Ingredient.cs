@@ -1,11 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 using Mealmap.Domain.Common.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Domain.DishAggregate;
 
 [Owned]
-public class Ingredient : IEquatable<Ingredient>
+public class Ingredient
 {
 #pragma warning disable IDE0052
     private readonly Guid Id;
@@ -13,16 +13,15 @@ public class Ingredient : IEquatable<Ingredient>
     [Precision(8, 2)]
     public decimal Quantity { get; internal init; }
 
-    [NotMapped]
-    public UnitOfMeasurement UnitOfMeasurement { get; internal init; }
+    [MaxLength(30)]
+    public string UnitOfMeasurement { get; internal init; }
 
+    [MaxLength(100)]
     public string Description { get; internal init; }
 
-
-    private readonly UnitOfMeasurementCodes _unitOfMeasurementCode;
 #pragma warning restore IDE0052
 
-    internal Ingredient(decimal quantity, UnitOfMeasurementCodes unitOfMeasurementCode, string description)
+    internal Ingredient(decimal quantity, string unitOfMeasurement, string description)
     {
         if (quantity <= 0)
             throw new DomainValidationException("The quantity of an ingredient must be larger than 0.");
@@ -30,32 +29,7 @@ public class Ingredient : IEquatable<Ingredient>
         Id = Guid.NewGuid();
 
         Quantity = quantity;
-        _unitOfMeasurementCode = unitOfMeasurementCode;
-        UnitOfMeasurement = new UnitOfMeasurement(unitOfMeasurementCode);
+        UnitOfMeasurement = unitOfMeasurement;
         Description = description;
-    }
-
-    internal Ingredient(decimal quantity, UnitOfMeasurement unitOfMeasurement, string description)
-        : this(quantity, unitOfMeasurement.UnitOfMeasurementCode, description) { }
-
-    internal Ingredient(decimal quantity, string unitOfMeasurement, string description)
-        : this(quantity, new UnitOfMeasurement(unitOfMeasurement), description) { }
-
-    public bool Equals(Ingredient? other)
-    {
-        if (other is null)
-            return false;
-        return (Quantity, UnitOfMeasurement, Description)
-            == (other.Quantity, other.UnitOfMeasurement, other.Description);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as Ingredient);
-    }
-
-    public override int GetHashCode()
-    {
-        return (Quantity, UnitOfMeasurement.UnitOfMeasurementCode, Description).GetHashCode();
     }
 }

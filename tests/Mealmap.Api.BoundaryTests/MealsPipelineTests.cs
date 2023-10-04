@@ -1,4 +1,5 @@
-﻿using Mealmap.Domain.MealAggregate;
+﻿using Mealmap.Domain.Common.DataAccess;
+using Mealmap.Domain.MealAggregate;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -77,6 +78,7 @@ public class MealsPipelineTests
             {
                 return repositoryMock.Object;
             }));
+            services.Replace(ServiceDescriptor.Scoped<IUnitOfWork>(_ => Mock.Of<IUnitOfWork>()));
         });
 
         var response = await factory.CreateClient().DeleteAsync("/api/meals/" + Guid.NewGuid());

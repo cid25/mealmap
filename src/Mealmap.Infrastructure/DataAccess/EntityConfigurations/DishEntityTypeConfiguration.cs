@@ -33,7 +33,6 @@ public class DishEntityTypeConfiguration : IEntityTypeConfiguration<Dish>
             i.ToTable("ingredient", MealmapDbContext.SCHEMA);
             i.Property("Id");
             i.HasKey("Id");
-            i.Property("_unitOfMeasurementCode").HasColumnName("UnitOfMeasurementCode");
         });
     }
 }

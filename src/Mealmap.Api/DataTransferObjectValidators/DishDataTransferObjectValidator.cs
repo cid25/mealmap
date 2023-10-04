@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Mealmap.Api.DataTransferObjects;
-using Mealmap.Domain.DishAggregate;
 
 namespace Mealmap.Api.CommandValidators;
 
@@ -18,10 +17,6 @@ public class DishDataTransferObjectValidator : AbstractValidator<DishDTO>
         {
             ingredient.RuleFor(i => i.Quantity).GreaterThan(0m)
                 .WithMessage("The quantity of an ingredient must be greater than zero, but is {PropertyValue}.");
-
-            ingredient.RuleFor(i => i.UnitOfMeasurement).Must(unitOfMeasurement =>
-                Enum.IsDefined(typeof(UnitOfMeasurementCodes), unitOfMeasurement))
-                .WithMessage("The unit of measurement '{PropertyValue}' does not match one of the predefined ones.");
         });
     }
 }
