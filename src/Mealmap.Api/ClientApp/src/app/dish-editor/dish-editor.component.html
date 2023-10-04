@@ -11,10 +11,10 @@
         <img src="/assets/icons/arrow-repeat.svg" class="me-1">
         <span>Undo</span>
     </button>
-    <button type="button" id="btndelete" class="btn btn-danger d-flex justify-content-center align-items-center" (click)="onClickDelete()">
+    <button type="button" id="btndelete" *ngIf="!isNew()" (click)="onClickDelete()" class="btn btn-danger d-flex justify-content-center align-items-center">
         <img src="/assets/icons/trash3-fill.svg" class="me-1">
         <span>Delete</span>
-        </button>
+    </button>
 </div>
 <form id="dishForm" [formGroup]="form" (ngSubmit)="onClickSubmit()" class="d-flex flex-wrap gap-3">
     <div class="w-100 d-flex flex-column" style="max-width: 25em;">
@@ -31,7 +31,7 @@
             <div class="d-flex gap-2">
                 <input type="file" id="inputFile" accept=".png,.jpg,.jpeg" (input)="onImageSelected($event)" class="d-none" #formImageFile>
                 <button type="button" id="btnAddImage" (click)="formImageFile.click();formImageFile.value=''" [disabled]="!hasName()" class="btn btn-primary d-flex justify-content-center align-items-center">
-                    <img [src]="hasImage() ? '/assets/icons/arrow-left-right.svg' : '/assets/icons/plus-square-fill.svg'" class="me-1">
+                    <img src="/assets/icons/upload.svg" class="me-1">
                     <span class=" fw-semibold">{{ hasImage() ? 'Replace Image' : 'Add Image' }}</span>
                 </button>
                 <button *ngIf="hasImage()" type="button" id="btnDeleteImage" (click)="onClickDeleteImage()" class="btn btn-danger d-flex justify-content-center align-items-center">

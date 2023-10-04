@@ -85,6 +85,11 @@ export class DishEditorComponent implements OnInit {
     return null;
   }
 
+  isNew(): boolean {
+    const url = this.route.snapshot.url;
+    return url[url.length - 1].path == 'new';
+  }
+
   onClickBack(): void {
     this.location.back();
   }
