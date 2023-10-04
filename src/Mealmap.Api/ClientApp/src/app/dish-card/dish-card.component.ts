@@ -3,8 +3,7 @@ import { Dish } from '../classes/dish';
 
 @Component({
   selector: 'app-dish-card',
-  templateUrl: './dish-card.component.html',
-  styleUrls: ['./dish-card.component.css']
+  templateUrl: './dish-card.component.html'
 })
 export class DishCardComponent {
   @Input()

@@ -4,8 +4,7 @@ import { DishService } from '../services/dish.service';
 
 @Component({
   selector: 'app-dish-overview',
-  templateUrl: './dish-overview.component.html',
-  styleUrls: ['./dish-overview.component.css']
+  templateUrl: './dish-overview.component.html'
 })
 export class DishOverviewComponent implements OnInit {
   private _dishes: Dish[] = [];

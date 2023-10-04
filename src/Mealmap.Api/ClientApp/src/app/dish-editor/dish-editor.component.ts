@@ -15,14 +15,12 @@ type IngredientGroup = FormGroup<{
 }>;
 
 @Component({
-  selector: 'app-dish-details',
-  templateUrl: './dish-details.component.html',
-  styleUrls: ['./dish-details.component.css']
+  selector: 'app-dish-editor',
+  templateUrl: './dish-editor.component.html'
 })
-export class DishDetailsComponent implements OnInit {
+export class DishEditorComponent implements OnInit {
   private static readonly default_servings: number = 2;
 
-  private _editable: boolean = false;
   private _uneditedDish: Dish | undefined;
   private _image: Blob | undefined;
   private _localImageURL: SafeUrl | undefined;
@@ -32,7 +30,7 @@ export class DishDetailsComponent implements OnInit {
   form = new FormGroup({
     name: new FormControl<string | null>(null, [Validators.required, Validators.minLength(3)]),
     description: new FormControl<string | null>(null),
-    servings: new FormControl<number>(DishDetailsComponent.default_servings, Validators.min(1)),
+    servings: new FormControl<number>(DishEditorComponent.default_servings, Validators.min(1)),
     ingredients: new FormArray<IngredientGroup>([]),
     instructions: new FormControl<string | null>(null)
   });
@@ -51,13 +49,8 @@ export class DishDetailsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.params['id'];
 
-    if (id) {
-      this.dish = await this.dishService.getById(id);
-      if (this.route.snapshot.queryParams['edit']) this.enableEdit();
-    } else {
-      this.dish = new Dish();
-      this.enableEdit();
-    }
+    if (id) this.dish = await this.dishService.getById(id);
+    else this.dish = new Dish();
 
     this.InitializeValues();
 
@@ -65,18 +58,6 @@ export class DishDetailsComponent implements OnInit {
 
     this.addNameWatcher();
     this.addIngredientWatcher();
-  }
-
-  editable(): boolean {
-    return this._editable;
-  }
-
-  enableEdit(): void {
-    this._editable = true;
-  }
-
-  disableEdit(): void {
-    this._editable = false;
   }
 
   edited(): boolean {
@@ -101,7 +82,6 @@ export class DishDetailsComponent implements OnInit {
   }
 
   onClickBack(): void {
-    console.log(this.location.getState());
     this.location.back();
   }
 
@@ -115,7 +95,7 @@ export class DishDetailsComponent implements OnInit {
 
     this.dish = await this.dishService.save(this.dish!);
 
-    if (creating) this.router.navigateByUrl(`dishes/${this.dish.id!}?edit=true`);
+    if (creating) this.router.navigateByUrl(`dishes/${this.dish.id!}/edit`);
     else {
       this.form.markAsPristine();
       this.InitializeValues();
@@ -131,7 +111,7 @@ export class DishDetailsComponent implements OnInit {
 
   async onClickDelete(): Promise<void> {
     await this.dishService.delete(this.dish!);
-    this.onClickBack();
+    this.router.navigateByUrl('dishes');
   }
 
   onImageSelected(event: Event): void {
@@ -171,7 +151,7 @@ export class DishDetailsComponent implements OnInit {
     this.form.patchValue({
       name: this.dish?.name,
       description: this.dish?.description,
-      servings: this.dish?.servings ?? DishDetailsComponent.default_servings,
+      servings: this.dish?.servings ?? DishEditorComponent.default_servings,
       instructions: this.dish?.instructions
     });
     this.initializeIngredientsForm();

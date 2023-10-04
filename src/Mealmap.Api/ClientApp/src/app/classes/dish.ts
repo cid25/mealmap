@@ -36,10 +36,16 @@ export class Dish {
 
   map(data: DishFormData): Dish {
     this.name = data.name!;
-    this.description = data.description;
+    this.description =
+      data.description == undefined || data.description.trim().length == 0
+        ? undefined
+        : data.description?.trim();
     this.servings = data.servings;
     this.ingredients = data.ingredients.map((data) => Ingredient.fromFormData(data));
-    this.instructions = data.instructions;
+    this.instructions =
+      data.instructions == undefined || data.instructions.trim().length == 0
+        ? undefined
+        : data.instructions?.trim();
     return this;
   }
 

@@ -66,7 +66,7 @@ export class DishService {
 
   async delete(dish: Dish): Promise<void> {
     await this.deleteDish(dish);
-    this.clearCachesFrom(dish);
+    this.clearCachesOf(dish);
   }
 
   urlFor(image: Blob): SafeUrl {
@@ -142,7 +142,7 @@ export class DishService {
     this.etagCache.set(dish.id!, etag);
   }
 
-  private clearCachesFrom(dish: Dish): void {
+  private clearCachesOf(dish: Dish): void {
     this.dishCache.delete(dish.id!);
     this.etagCache.delete(dish.id!);
   }
@@ -176,6 +176,7 @@ export class DishService {
       }
     );
   }
+
   private async putDish(dish: Dish): Promise<DishDTO | undefined> {
     const url = `${this.base_url}/${dish.id}`;
     const options = {

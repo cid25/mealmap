@@ -39,7 +39,7 @@ export class MealService {
       if (meal !== undefined) result.push(meal);
     });
 
-    return result;
+    return result.map((meal) => meal.clone());
   }
 
   async getMealFor(date: Date): Promise<Meal> {
@@ -56,7 +56,7 @@ export class MealService {
 
     this.mealCache.set(result.key(), result);
     await this.retrieveDishesForMeals();
-    return result;
+    return result.clone();
   }
 
   async deleteMeal(date: Date): Promise<void> {
@@ -141,24 +141,20 @@ export class MealService {
   }
 
   private async retrieveDishesForMeals(): Promise<void> {
-    const ids = this.collectMissingDishIds();
+    const ids = this.collectDishIdsForMeals();
     const dishes = await this.dishService.getByIds(ids);
 
     this.mealCache.forEach((value) =>
       value.courses.forEach((course) => {
-        if (!course.dish) {
-          const dish = dishes.find((dish) => dish.id === course.dishId);
-          if (dish !== undefined) course.dish = dish;
-        }
+        const dish = dishes.find((dish) => dish.id === course.dishId);
+        if (dish !== undefined) course.dish = dish;
       })
     );
   }
 
-  private collectMissingDishIds(): string[] {
+  private collectDishIdsForMeals(): string[] {
     const result: string[] = [];
-    this.mealCache.forEach((value) =>
-      value.courses.filter((course) => !course.dish).forEach((course) => result.push(course.dishId))
-    );
+    this.mealCache.forEach((value) => result.push(...value.courses.map((course) => course.dishId)));
     return result;
   }
 }

@@ -32,12 +32,12 @@ export class MealEditorComponent implements OnInit, OnChanges {
   }
 
   async ngOnInit(): Promise<void> {
-    await this.setMeal();
+    await this.retrieveMeal();
   }
 
   async ngOnChanges(): Promise<void> {
     this.deactivatePicker();
-    await this.setMeal();
+    await this.retrieveMeal();
   }
 
   back(): void {
@@ -82,7 +82,7 @@ export class MealEditorComponent implements OnInit, OnChanges {
 
   async saveChanges(): Promise<void> {
     await this.mealService.saveMeal(this.meal!);
-    this.setMeal();
+    this.retrieveMeal();
   }
 
   discardChanges(): void {
@@ -113,9 +113,9 @@ export class MealEditorComponent implements OnInit, OnChanges {
     }
   }
 
-  private async setMeal(): Promise<void> {
+  private async retrieveMeal(): Promise<void> {
     const meal = await this.mealService.getMealFor(this.diningDate);
-    this.meal = meal.clone();
+    this.meal = meal;
     this.uneditedMeal = meal.clone();
   }
 

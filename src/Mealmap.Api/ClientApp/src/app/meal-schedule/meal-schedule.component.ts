@@ -31,6 +31,7 @@ export class MealScheduleComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.retrieveMeals();
+    console.log('init');
   }
 
   mealsForDisplay(): Meal[] {

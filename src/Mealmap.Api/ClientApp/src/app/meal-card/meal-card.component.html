@@ -1,5 +1,5 @@
 <div class="card h-100 card-m">
-  <div class="py-2 rounded-top text-white text-center bg-secondary">{{ meal!.diningDate | date:'EE - dd.MM.yyyy' }}</div>
+  <div class="py-2 rounded-top text-white text-center bg-secondary">{{ meal!.diningDate | date:'EE - dd.MM.yy' }}</div>
   <div *ngIf="!hasCourses()" class="h-100 d-flex justify-content-center align-items-center text-primary">
     <a [routerLink]="[meal.key()]" class="w-25 h-25"><img src="/assets/icons/plus-square-dotted.svg" alt="Add Meal" class="w-100 h-100"></a>
   </div>
@@ -7,7 +7,7 @@
     <a [routerLink]="[meal.key()]">
         <img [src]="mainCourse()!.dish!.localImageURL" onerror="this.src='/assets/no-image.png'" class="card-image-m" alt="No image">
     </a>
-      <div class="d-flex text-white">
+      <div class="d-flex flex-wrap text-white">
       <a [routerLink]="[meal.key()]" class="flex-grow-1 btn btn-success rounded-0 d-flex justify-content-center align-items-center" role="button">
           <img src="/assets/icons/pencil-square.svg" class="me-1">
           <span>Edit</span>
@@ -19,6 +19,10 @@
     </div>
     <div class="card-body">
       <h5 class="card-title text-center">{{ mainCourse()?.dish?.name }}</h5>
+      <ng-container [ngSwitch]="mainCourse()?.dish?.description != undefined" >
+        <p *ngSwitchCase="true" class="card-text" >{{ mainCourse()?.dish?.description }}</p>
+        <p *ngSwitchCase="false" class="card-text fw-lighter fst-italic">No description available</p>
+      </ng-container>
       <p class="card-text">{{ mainCourse()?.dish?.description }}</p>
     </div>
   </ng-container>

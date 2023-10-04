@@ -3,28 +3,20 @@
     <span>Back</span>
 </button>
 <div class="d-flex gap-2 mb-2">
-    <ng-container *ngIf="!editable()">
-        <button type="button" id="btnEdit" (click)="enableEdit()" class="btn btn-success d-flex justify-content-center align-items-center">
-            <img src="/assets/icons/pencil-square.svg" class="me-1">
-            <span>Edit</span>
+    <button type="submit" id="btnSave" form="dishForm" [disabled]="!valid() || !edited()" class="btn btn-success d-flex justify-content-center align-items-center">
+        <img src="/assets/icons/save.svg" class="me-1">
+        <span>Save</span>
+    </button>
+    <button type="button" id="btnUndo" [disabled]="!edited()" (click)="onClickReset()" class="btn btn-warning d-flex justify-content-center align-items-center">
+        <img src="/assets/icons/arrow-repeat.svg" class="me-1">
+        <span>Undo</span>
+    </button>
+    <button type="button" id="btndelete" class="btn btn-danger d-flex justify-content-center align-items-center" (click)="onClickDelete()">
+        <img src="/assets/icons/trash3-fill.svg" class="me-1">
+        <span>Delete</span>
         </button>
-    </ng-container>
-    <ng-container *ngIf="editable()">
-        <button type="submit" id="btnSave" form="dishForm" [disabled]="!valid() || !edited()" class="btn btn-success d-flex justify-content-center align-items-center">
-            <img src="/assets/icons/save.svg" class="me-1">
-            <span>Save</span>
-        </button>
-        <button type="button" id="btnUndo" [disabled]="!edited()" (click)="onClickReset()" class="btn btn-warning d-flex justify-content-center align-items-center">
-            <img src="/assets/icons/arrow-repeat.svg" class="me-1">
-            <span>Undo</span>
-        </button>
-        <button type="button" id="btndelete" class="btn btn-danger d-flex justify-content-center align-items-center" (click)="onClickDelete()">
-            <img src="/assets/icons/trash3-fill.svg" class="me-1">
-            <span>Delete</span>
-          </button>
-    </ng-container>
 </div>
-<form *ngIf="editable()" id="dishForm" [formGroup]="form" (ngSubmit)="onClickSubmit()" class="d-flex flex-wrap gap-3">
+<form id="dishForm" [formGroup]="form" (ngSubmit)="onClickSubmit()" class="d-flex flex-wrap gap-3">
     <div class="w-100 d-flex flex-column" style="max-width: 25em;">
         <div class="form-floating mb-3">
             <input type="text" id="formName" formControlName="name" placeholder="Name" class="form-control">
@@ -49,8 +41,8 @@
             </div>
         </div>
     </div>
-    <div class="border border-secondary rounded-2" style="min-width: 20em;">
-        <div class="w-100 bg-secondary text-white text-center py-2 rounded-top-2">Ingredients</div>
+    <div class="rounded-2" style="min-width: 20em;">
+        <div class="w-100 bg-secondary text-white text-center py-2 rounded-1">Ingredients</div>
         <div class="m-2 ms-3 mb-4 d-flex justify-content-start align-items-center">
             <label for="formServings" class="form-label fw-semibold me-2">Servings</label>
             <input type="number" id="formServings" formControlName="servings" class="form-control flex-grow-0 text-end" style="max-width: 5em;" min="1">
@@ -58,7 +50,7 @@
         <div formArrayName="ingredients" class="container mb-2">
             <div class="row g-2 mb-2">
                 <div class="col-3 col-sm-2 text-end pe-4 fw-semibold">Qty</div>
-                <div class="col-3 col-sm-2 text-start ps-4 fw-semibold">Unit</div>
+                <div class="col-3 col-sm-2 text-start ps-2 fw-semibold">Unit</div>
                 <div class="col-6 col-sm-8 ps-2 fw-semibold">Description</div>
             </div>
             <div *ngFor="let ingredientFormGroup of ingredients.controls; index as i" class="row mb-2 g-2">
@@ -77,7 +69,7 @@
         </div>
     </div>
     <div class="container align-item-start mx-0 px-0">
-        <div class="py-2 bg-secondary text-white text-center border-secondary rounded-top-2">Instructions</div>
+        <div class="py-2 bg-secondary text-white text-center border-secondary rounded-1">Instructions</div>
         <div class="form-floating">
             <textarea id="formInstructions" formControlName="instructions" placeholder="Instructions" class="form-control mb-2" style="min-height: 20em;"></textarea>
         </div>
