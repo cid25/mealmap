@@ -5,7 +5,7 @@
     <div class="card-body">
         <h5 class="card-title text-center">{{ dish.name }}</h5>
         <p [ngSwitch]="dish.description != undefined" class="card-text">
-            <span *ngSwitchCase="true">{{ dish.description }}</span>
+            <span *ngSwitchCase="true" class="fw-light">{{ dish.description }}</span>
             <span *ngSwitchCase="false" class="fw-lighter fst-italic">No description available</span>
         </p>
     </div>

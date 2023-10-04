@@ -28,8 +28,12 @@ export class DishEditorComponent implements OnInit {
   dish: Dish | undefined;
 
   form = new FormGroup({
-    name: new FormControl<string | null>(null, [Validators.required, Validators.minLength(3)]),
-    description: new FormControl<string | null>(null),
+    name: new FormControl<string | null>(null, [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.maxLength(50)
+    ]),
+    description: new FormControl<string | null>(null, Validators.maxLength(80)),
     servings: new FormControl<number>(DishEditorComponent.default_servings, Validators.min(1)),
     ingredients: new FormArray<IngredientGroup>([]),
     instructions: new FormControl<string | null>(null)

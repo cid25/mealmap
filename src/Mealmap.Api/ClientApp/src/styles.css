@@ -21,7 +21,8 @@ code {
 
 .card-m {
   width: min(201px, 44vw);
-  min-height: 160px;
+  min-height: min(300px, 45vh);
+  max-height: max(420px, 30vh);
 }
 
 .card-image-l {
