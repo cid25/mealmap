@@ -1,6 +1,9 @@
 <div class="border border-info rounded-top-2">
-    <div class="p-2 bg-info rounded-top-2 text-white d-flex justify-content-center"><div>Course {{ index }}</div></div>
-    <button type="button" class="btn btn-primary m-1" (click)="cancel()">Cancel</button>
+    <div class="p-2 bg-info rounded-top-2 text-white d-flex justify-content-center"><div>Pick Course {{ index }}</div></div>
+    <button type="button" (click)="cancel()" class="btn btn-primary m-2 d-flex justify-content-center align-items-center">
+        <img src="/assets/icons/x-lg.svg" class="me-1">
+        <span>Cancel</span>
+    </button>
     <div class="d-flex flex-wrap m-2 gap-2">
         <div *ngFor="let dish of dishes" class="card border-primary">
             <div class="text-center p-1">{{ dish.name }}</div>
