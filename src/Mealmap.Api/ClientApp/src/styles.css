@@ -41,8 +41,6 @@ code {
 
 .card-s {
   width: min(201px, 44vw);
-  min-height: min(270px, 45vh);
-  max-height: max(320px, 30vh);
 }
 
 .card-image-xs {

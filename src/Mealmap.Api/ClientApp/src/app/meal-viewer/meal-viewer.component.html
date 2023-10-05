@@ -19,10 +19,15 @@
                 <a [routerLink]="['/dishes', course.dish!.id]">
                     <img [src]="course.dish?.localImageURL" onerror="this.src='/assets/no-image.png'" class="card-image-m" alt="No image">
                 </a>
-                <div *ngIf="mainCourse(course)" class="bg-primary mb-2 py-2 d-flex justify-content-center">
-                    <img src="/assets/icons/star-fill.svg" class="me-1">
-                    <span class="text-white">Main Course</span>
-                </div>
+                <ng-container [ngSwitch]="mainCourse(course)">
+                    <div *ngSwitchCase="true" class="bg-primary py-2 rounded-bottom-1 d-flex justify-content-center">
+                        <img src="/assets/icons/star-fill.svg" class="me-1">
+                        <span class="text-white">Main Course</span>
+                    </div>
+                    <div *ngSwitchCase="false" class="bg-secondary py-2 rounded-bottom-1 d-flex justify-content-center">
+                        <span class="text-white">Side Dish</span>
+                    </div>
+                </ng-container>
             </div>
         </ng-container>
     </div>

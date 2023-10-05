@@ -19,7 +19,7 @@ export class MealEditorComponent implements OnInit, OnChanges {
   dishPickerActive: boolean = false;
   courseIndexPicking: number = 0;
 
-  diningDate!: Date;
+  diningDate: Date;
 
   constructor(
     private mealService: MealService,
@@ -32,7 +32,7 @@ export class MealEditorComponent implements OnInit, OnChanges {
 
   get courses(): Course[] {
     if (this.meal === undefined) return [];
-    return this.meal!.courses.sort((a, b) => a.index - b.index);
+    return this.meal.courses;
   }
 
   async ngOnInit(): Promise<void> {
@@ -60,7 +60,8 @@ export class MealEditorComponent implements OnInit, OnChanges {
   }
 
   mealEdited(): boolean {
-    return JSON.stringify(this.uneditedMeal) != JSON.stringify(this.meal);
+    if (this.meal == undefined) return false;
+    return this.meal.toJSON() != this.uneditedMeal!.toJSON();
   }
 
   nextCourseIndex(): number {

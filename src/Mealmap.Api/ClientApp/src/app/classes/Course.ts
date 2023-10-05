@@ -25,4 +25,8 @@ export class Course {
     clone.mainCourse = this.mainCourse;
     return clone;
   }
+
+  static sort(a: Course, b: Course): number {
+    return a.index - b.index;
+  }
 }

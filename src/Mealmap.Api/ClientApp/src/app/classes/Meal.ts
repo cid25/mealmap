@@ -58,11 +58,13 @@ export class Meal {
   private copy(dto: MealDTO): Meal {
     this.id = dto.id;
     this.eTag = dto.eTag;
-    this.courses = dto.courses.map((data) => {
-      const courseCopy = new Course(data.index, data.dishId);
-      courseCopy.copy(data);
-      return courseCopy;
-    });
+    this.courses = dto.courses
+      .map((data) => {
+        const courseCopy = new Course(data.index, data.dishId);
+        courseCopy.copy(data);
+        return courseCopy;
+      })
+      .sort(Course.sort);
     return this;
   }
 }
