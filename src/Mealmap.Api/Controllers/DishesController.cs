@@ -46,13 +46,13 @@ public class DishesController : ControllerBase
     /// <response code="200">Dishes Returned</response>
     [HttpGet(Name = nameof(GetDishes))]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(IEnumerable<DishDTO>), StatusCodes.Status200OK)]
-    public ActionResult<IEnumerable<DishDTO>> GetDishes()
+    [ProducesResponseType(typeof(PaginatedDTO<DishDTO>), StatusCodes.Status200OK)]
+    public ActionResult<PaginatedDTO<DishDTO>> GetDishes([FromQuery] Guid? next, [FromQuery] int? limit)
     {
         var dishes = _repository.GetAll();
         var dataTransferObjects = _outputMapper.FromEntities(dishes);
 
-        return new OkObjectResult(dataTransferObjects);
+        return new OkObjectResult(new PaginatedDTO<DishDTO>(dataTransferObjects));
     }
 
     /// <summary>

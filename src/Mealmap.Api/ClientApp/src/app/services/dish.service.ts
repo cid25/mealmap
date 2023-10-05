@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { firstValueFrom, catchError, of } from 'rxjs';
+import { Paginated } from '../interfaces/paginated.dto';
 import { DishDTO } from '../interfaces/dish.dto';
 import { Dish } from '../classes/dish';
 import { ETag } from '../classes/etag';
@@ -21,11 +22,17 @@ export class DishService {
   ) {}
 
   async list(): Promise<Dish[]> {
-    const dishDTOs = await firstValueFrom(this.http.get<DishDTO[]>(this.base_url));
-    const dishesAndEtags = dishDTOs.map((dto) => Dish.from(dto));
-    dishesAndEtags.forEach(([dish, etag]) => this.updateCachesWith(dish, etag));
+    let response = await firstValueFrom(this.http.get<Paginated<DishDTO>>(this.base_url));
+    const dtos = response.items.map((dishDTO) => Dish.from(dishDTO));
 
-    const dishes = dishesAndEtags.map(([dish]) => dish);
+    while (response.next != undefined) {
+      response = await firstValueFrom(this.http.get<Paginated<DishDTO>>(response.next.toString()));
+      dtos.push(...response.items.map((dishDTO) => Dish.from(dishDTO)));
+    }
+
+    dtos.forEach(([dish, etag]) => this.updateCachesWith(dish, etag));
+
+    const dishes = dtos.map(([dish]) => dish);
     await this.loadImagesFor(dishes);
 
     const result = dishes.map((dish) => dish.clone());
