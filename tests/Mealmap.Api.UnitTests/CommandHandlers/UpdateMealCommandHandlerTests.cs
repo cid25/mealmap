@@ -32,7 +32,7 @@ public class UpdateMealCommandHandlerTests
             mockUnitOfWork.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(m => m.FromEntity(dummyMeal) == dto),
             Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(repo
+            new MealDataTransferObjectValidator(Mock.Of<IRepository<Dish>>(repo
                 => repo.GetSingleById(It.IsAny<Guid>()) == new Dish("fake")))
         );
 
@@ -62,7 +62,7 @@ public class UpdateMealCommandHandlerTests
             Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(repo
+            new MealDataTransferObjectValidator(Mock.Of<IRepository<Dish>>(repo
                 => repo.GetSingleById(It.IsAny<Guid>()) == new Dish("fake")))
         );
 
@@ -90,7 +90,7 @@ public class UpdateMealCommandHandlerTests
             Mock.Of<IUnitOfWork>(),
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(repo
+            new MealDataTransferObjectValidator(Mock.Of<IRepository<Dish>>(repo
                 => repo.GetSingleById(It.IsAny<Guid>()) == null))
         );
 
@@ -127,7 +127,7 @@ public class UpdateMealCommandHandlerTests
             mockUnitOfWork.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(repo
+            new MealDataTransferObjectValidator(Mock.Of<IRepository<Dish>>(repo
                 => repo.GetSingleById(It.IsAny<Guid>()) == new Dish("fake")))
         );
 
@@ -158,7 +158,7 @@ public class UpdateMealCommandHandlerTests
             mockUnitOfWork.Object,
             Mock.Of<IOutputMapper<MealDTO, Meal>>(),
             Mock.Of<ILogger<UpdateMealCommandHandler>>(),
-            new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(repo
+            new MealDataTransferObjectValidator(Mock.Of<IRepository<Dish>>(repo
                 => repo.GetSingleById(It.IsAny<Guid>()) == new Dish("fake")))
         );
 

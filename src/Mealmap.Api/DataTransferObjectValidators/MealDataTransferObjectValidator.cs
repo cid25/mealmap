@@ -1,14 +1,15 @@
 ﻿using FluentValidation;
 using Mealmap.Api.DataTransferObjects;
+using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.DishAggregate;
 
 namespace Mealmap.Api.DataTransferObjectValidators;
 
 public class MealDataTransferObjectValidator : AbstractValidator<MealDTO>
 {
-    private readonly IDishRepository _dishRepository;
+    private readonly IRepository<Dish> _dishRepository;
 
-    public MealDataTransferObjectValidator(IDishRepository dishRepository)
+    public MealDataTransferObjectValidator(IRepository<Dish> dishRepository)
     {
         _dishRepository = dishRepository;
 

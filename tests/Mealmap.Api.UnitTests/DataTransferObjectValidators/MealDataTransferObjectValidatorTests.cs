@@ -1,5 +1,6 @@
 ﻿using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.DataTransferObjectValidators;
+using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.DishAggregate;
 
 namespace Mealmap.Api.UnitTests.CommandValidators;
@@ -18,7 +19,7 @@ public class MealDataTransferObjectValidatorTests
                 new CourseDTO() { Index = 2, MainCourse = false, DishId = guid },
             }
         };
-        var sut = new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(m =>
+        var sut = new MealDataTransferObjectValidator(Mock.Of<IRepository<Dish>>(m =>
             m.GetSingleById(guid) == new Dish("dummy")));
 
         // Act
@@ -39,7 +40,7 @@ public class MealDataTransferObjectValidatorTests
                 new CourseDTO() { Index = 2, MainCourse = false, DishId = Guid.NewGuid() },
             }
         };
-        var sut = new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(m =>
+        var sut = new MealDataTransferObjectValidator(Mock.Of<IRepository<Dish>>(m =>
             m.GetSingleById(It.IsAny<Guid>()) == null));
 
         // Act
@@ -63,7 +64,7 @@ public class MealDataTransferObjectValidatorTests
             }
         };
 
-        var sut = new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(m =>
+        var sut = new MealDataTransferObjectValidator(Mock.Of<IRepository<Dish>>(m =>
             m.GetSingleById(It.IsAny<Guid>()) == new Dish("dummy")));
 
         // Act
@@ -86,7 +87,7 @@ public class MealDataTransferObjectValidatorTests
             }
         };
 
-        var sut = new MealDataTransferObjectValidator(Mock.Of<IDishRepository>(m =>
+        var sut = new MealDataTransferObjectValidator(Mock.Of<IRepository<Dish>>(m =>
             m.GetSingleById(It.IsAny<Guid>()) == new Dish("dummy")));
 
         // Act

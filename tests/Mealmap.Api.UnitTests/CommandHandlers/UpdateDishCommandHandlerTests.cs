@@ -23,7 +23,7 @@ public class UpdateDishCommandHandlerTests
 
         Dish dummyDish = new(aGuid, "fakeDishName", null, 2);
 
-        var mockRepository = new Mock<IDishRepository>();
+        var mockRepository = new Mock<IRepository<Dish>>();
         var mockUnitOfWork = new Mock<IUnitOfWork>();
         mockRepository.Setup(m => m.GetSingleById(It.Is<Guid>(g => g == aGuid))).Returns(dummyDish);
         var handler = new UpdateDishCommandHandler(
@@ -53,7 +53,7 @@ public class UpdateDishCommandHandlerTests
         const string aVersion = "AAAAAAAA";
         DishDTO dto = new("fakeDishName");
 
-        var mockRepository = new Mock<IDishRepository>();
+        var mockRepository = new Mock<IRepository<Dish>>();
         mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(value: null);
         var handler = new UpdateDishCommandHandler(
             mockRepository.Object,
@@ -83,7 +83,7 @@ public class UpdateDishCommandHandlerTests
 
         Dish dummyDish = new(aGuid, "fakeDishName", null, 2);
 
-        var mockRepository = new Mock<IDishRepository>();
+        var mockRepository = new Mock<IRepository<Dish>>();
         mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(dummyDish);
         var mockUnitOfWork = new Mock<IUnitOfWork>();
         mockUnitOfWork.Setup(m => m.SaveTransactionAsync()).Throws(new ConcurrentUpdateException());
@@ -115,7 +115,7 @@ public class UpdateDishCommandHandlerTests
 
         Dish dummyDish = new(aGuid, "fakeDishName", null, 2);
 
-        var mockRepository = new Mock<IDishRepository>();
+        var mockRepository = new Mock<IRepository<Dish>>();
         mockRepository.Setup(m => m.GetSingleById(It.IsAny<Guid>())).Returns(dummyDish);
         var mockUnitOfWork = new Mock<IUnitOfWork>();
         mockUnitOfWork.Setup(m => m.SaveTransactionAsync()).Throws(new DomainValidationException(String.Empty));

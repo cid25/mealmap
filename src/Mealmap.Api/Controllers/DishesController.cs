@@ -19,7 +19,7 @@ namespace Mealmap.Api.Controllers;
 public class DishesController : ControllerBase
 {
     private readonly ILogger<DishesController> _logger;
-    private readonly IDishRepository _repository;
+    private readonly IRepository<Dish> _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOutputMapper<DishDTO, Dish> _outputMapper;
     private readonly IRequestContext _context;
@@ -27,7 +27,7 @@ public class DishesController : ControllerBase
 
     public DishesController(
         ILogger<DishesController> logger,
-        IDishRepository repository,
+        IRepository<Dish> repository,
         IUnitOfWork unitOfWork,
         IOutputMapper<DishDTO, Dish> outputMapper,
         IRequestContext context,

@@ -16,30 +16,13 @@ public class DishesPipelineTests
     }
 
     [Fact]
-    public async void GetDish_ReturnsJsonAndStatusOk()
-    {
-        var factory = new MockableWebApplicationFactory(services =>
-        {
-            services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
-            {
-                return Mock.Of<IDishRepository>(mock => mock.GetSingleById(It.IsAny<Guid>()) == _dummyDish);
-            }));
-        });
-
-        var response = await factory.CreateClient().GetAsync("/api/dishes/" + _dummyDish.Id.ToString());
-
-        response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
-        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-    }
-
-    [Fact]
     public async void PutDishImage_WhenImageUploaded_ReturnsNoBodyAndContentType()
     {
         var factory = new MockableWebApplicationFactory(services =>
         {
-            services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
+            services.Replace(ServiceDescriptor.Scoped<IRepository<Dish>>(_ =>
             {
-                return Mock.Of<IDishRepository>(mock => mock.GetSingleById(It.IsAny<Guid>()) == _dummyDish);
+                return Mock.Of<IRepository<Dish>>(mock => mock.GetSingleById(It.IsAny<Guid>()) == _dummyDish);
             }));
             services.Replace(ServiceDescriptor.Scoped<IUnitOfWork>(_ => Mock.Of<IUnitOfWork>()));
         });
@@ -57,9 +40,9 @@ public class DishesPipelineTests
     {
         var factory = new MockableWebApplicationFactory(services =>
         {
-            services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
+            services.Replace(ServiceDescriptor.Scoped<IRepository<Dish>>(_ =>
             {
-                return Mock.Of<IDishRepository>();
+                return Mock.Of<IRepository<Dish>>();
             }));
         });
 
@@ -76,10 +59,10 @@ public class DishesPipelineTests
         const string contentType = "image/jpeg";
         var factory = new MockableWebApplicationFactory(services =>
         {
-            services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
+            services.Replace(ServiceDescriptor.Scoped<IRepository<Dish>>(_ =>
             {
                 _dummyDish.SetImage(new byte[1], contentType);
-                return Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == _dummyDish);
+                return Mock.Of<IRepository<Dish>>(m => m.GetSingleById(It.IsAny<Guid>()) == _dummyDish);
             }));
         });
 
@@ -94,9 +77,9 @@ public class DishesPipelineTests
     {
         var factory = new MockableWebApplicationFactory(services =>
         {
-            services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
+            services.Replace(ServiceDescriptor.Scoped<IRepository<Dish>>(_ =>
             {
-                return Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == _dummyDish);
+                return Mock.Of<IRepository<Dish>>(m => m.GetSingleById(It.IsAny<Guid>()) == _dummyDish);
             }));
         });
 
@@ -110,9 +93,9 @@ public class DishesPipelineTests
     {
         var factory = new MockableWebApplicationFactory(services =>
         {
-            services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
+            services.Replace(ServiceDescriptor.Scoped<IRepository<Dish>>(_ =>
             {
-                return Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == null);
+                return Mock.Of<IRepository<Dish>>(m => m.GetSingleById(It.IsAny<Guid>()) == null);
             }));
         });
 

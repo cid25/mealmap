@@ -1,8 +1,9 @@
-﻿using Mealmap.Domain.DishAggregate;
+﻿using Mealmap.Domain.Common.DataAccess;
+using Mealmap.Domain.DishAggregate;
 
 namespace Mealmap.Api.UnitTests;
 
-internal class FakeDishRepository : Dictionary<Guid, Dish>, IDishRepository
+internal class FakeDishRepository : Dictionary<Guid, Dish>, IRepository<Dish>
 {
     public IEnumerable<Dish> GetAll()
     {

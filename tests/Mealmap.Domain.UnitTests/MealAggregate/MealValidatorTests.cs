@@ -1,4 +1,5 @@
-﻿using Mealmap.Domain.DishAggregate;
+﻿using Mealmap.Domain.Common.DataAccess;
+using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
 
 namespace Mealmap.Domain.UnitTests.MealAggregate;
@@ -11,7 +12,7 @@ public class MealValidatorTests
         // Arrange
         var meal = new Meal(DateOnly.FromDateTime(DateTime.Now));
         meal.AddCourse(1, true, Guid.NewGuid());
-        var repository = Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == new Dish("fakeName"));
+        var repository = Mock.Of<IRepository<Dish>>(m => m.GetSingleById(It.IsAny<Guid>()) == new Dish("fakeName"));
         var sut = new MealValidator(repository);
 
         // Act
@@ -28,7 +29,7 @@ public class MealValidatorTests
         // Arrange
         var meal = new Meal(DateOnly.FromDateTime(DateTime.Now));
         meal.AddCourse(1, true, Guid.NewGuid());
-        var repository = Mock.Of<IDishRepository>(m => m.GetSingleById(It.IsAny<Guid>()) == null);
+        var repository = Mock.Of<IRepository<Dish>>(m => m.GetSingleById(It.IsAny<Guid>()) == null);
         var sut = new MealValidator(repository);
 
         // Act

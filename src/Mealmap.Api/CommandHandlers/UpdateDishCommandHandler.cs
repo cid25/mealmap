@@ -11,14 +11,14 @@ namespace Mealmap.Api.CommandHandlers;
 
 public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, CommandNotification<DishDTO>>
 {
-    private readonly IDishRepository _repository;
+    private readonly IRepository<Dish> _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<UpdateDishCommandHandler> _logger;
     private readonly IOutputMapper<DishDTO, Dish> _outputMapper;
     private readonly DishDataTransferObjectValidator _validator;
 
     public UpdateDishCommandHandler(
-        IDishRepository repository,
+        IRepository<Dish> repository,
         IUnitOfWork unitOfWork,
         IOutputMapper<DishDTO, Dish> outputMapper,
         ILogger<UpdateDishCommandHandler> logger,

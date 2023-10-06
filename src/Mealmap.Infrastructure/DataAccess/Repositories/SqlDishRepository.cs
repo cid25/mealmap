@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Infrastructure.DataAccess.Repositories;
 
-public class SqlDishRepository : IDishRepository
+public class SqlDishRepository : IRepository<Dish>
 {
     private MealmapDbContext _dbContext { get; }
     internal DbSet<Dish> dbSet { get; }

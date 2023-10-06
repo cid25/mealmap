@@ -44,7 +44,7 @@ try
     builder.Services
         .AddScoped<IUnitOfWork, UnitOfWork>()
         .AddScoped<IMealRepository, SqlMealRepository>()
-        .AddScoped<IDishRepository, SqlDishRepository>();
+        .AddScoped<IRepository<Dish>, SqlDishRepository>();
 
     // Add Application Services
     builder.Services

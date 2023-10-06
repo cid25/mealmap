@@ -15,7 +15,7 @@ public class CreateDishCommandHandlerTests
     [Fact]
     public async void Handle_WhenDishIsValid_StoresMealAndReturnsDto()
     {
-        var repository = new Mock<IDishRepository>();
+        var repository = new Mock<IRepository<Dish>>();
         var unitOfWork = new Mock<IUnitOfWork>();
         CreateDishCommandHandler handler = new(
             repository.Object,
@@ -41,7 +41,7 @@ public class CreateDishCommandHandlerTests
     [Fact]
     public async void Handle_WhenSavingThrowsDomainValidationException_ReturnsNotificationWithNotValidError()
     {
-        var repository = new Mock<IDishRepository>();
+        var repository = new Mock<IRepository<Dish>>();
         var unitOfWork = new Mock<IUnitOfWork>();
         unitOfWork.Setup(m => m.SaveTransactionAsync()).Throws(new DomainValidationException(String.Empty));
         CreateDishCommandHandler handler = new(

@@ -1,13 +1,14 @@
-﻿using Mealmap.Domain.DishAggregate;
+﻿using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
+using Mealmap.Domain.DishAggregate;
 
 namespace Mealmap.Domain.MealAggregate;
 
 public class MealValidator : AbstractEntityValidator<Meal>
 {
-    private readonly IDishRepository _repository;
+    private readonly IRepository<Dish> _repository;
 
-    public MealValidator(IDishRepository repository)
+    public MealValidator(IRepository<Dish> repository)
     {
         _repository = repository;
     }
