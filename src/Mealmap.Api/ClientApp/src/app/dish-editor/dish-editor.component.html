@@ -19,8 +19,13 @@
 <form id="dishForm" [formGroup]="form" (ngSubmit)="onClickSubmit()" class="d-flex flex-wrap gap-3">
     <div class="w-100 d-flex flex-column" style="max-width: 25em;">
         <div class="form-floating mb-3">
-            <input type="text" id="formName" formControlName="name" placeholder="Name" class="form-control">
-            <label for="formName">Name</label>
+            <input type="text" id="formName" formControlName="name" placeholder="Name" class="form-control" [ngClass]="{'border-danger': form.controls.name.invalid}">
+            <label for="formName" [ngClass]="{'text-danger': form.controls.name.invalid}">Name</label>
+            <div class="mt-1 ps-2 text-danger">
+                <span *ngIf="form.controls.name.errors?.['required']">Name is required</span>
+                <span *ngIf="form.controls.name.errors?.['minlength']">Name must be at least 3 characters long.</span>
+                <span *ngIf="form.controls.name.errors?.['maxlength']">Name can only be 50 characters long.</span>
+            </div>
         </div>
         <div class="form-floating mb-3">
             <textarea id="formDescription" formControlName="description" placeholder="Description" class="form-control" style="min-height: 7em;"></textarea>
