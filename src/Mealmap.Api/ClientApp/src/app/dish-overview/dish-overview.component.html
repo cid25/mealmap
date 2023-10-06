@@ -1,6 +1,18 @@
-<div>
-    <a class="btn btn-primary" role="button" [routerLink]="['new']"><div class="d-flex justify-content-center align-items-center"><img src="/assets/icons/plus-square-fill.svg" class="me-1"><span class="px-2">Create New</span></div></a>
+<div class="mb-2">
+    <a role="button" [routerLink]="['new']" class="btn btn-primary">
+        <div class="d-flex justify-content-center align-items-center">
+            <img src="/assets/icons/plus-square-fill.svg" class="me-1">
+            <span class="px-2">Create New</span>
+        </div>
+    </a>
 </div>
+<form [formGroup]="form" (ngSubmit)="onClickSearch()" class="d-flex">
+    <input type="search" (input)="onSearchInput()" formControlName="search" autofocus class="me-2 border-primary rounded-2 ps-2" #search>
+    <button type="submit" class="btn btn-primary d-flex justify-content-center align-items-center">
+        <img src="/assets/icons/search.svg" class="me-1">
+        <span class="px-2">Search</span>
+    </button>
+</form>
 <div class="d-flex flex-wrap mt-2 gap-2">
     <app-dish-card *ngFor="let dish of dishesForDisplay()" [dish]="dish"></app-dish-card>
 </div>

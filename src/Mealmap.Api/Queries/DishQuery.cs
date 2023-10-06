@@ -16,6 +16,9 @@ public class DishQuery : QueryBase, IRequest<PaginatedDTO<DishDTO>>
         var query = db.AsNoTracking();
 
         if (Next != null) query = query.Where(d => d.Id >= Next);
+        if (Searchterm != null) query = query.Where(d =>
+            d.Name.Contains(Searchterm) || (d.Description != null && d.Description.Contains(Searchterm))
+        );
 
         return query.OrderBy(d => d.Id).Take(EffectiveLimit() + 1);
     }

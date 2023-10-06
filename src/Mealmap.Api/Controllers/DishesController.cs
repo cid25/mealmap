@@ -50,14 +50,15 @@ public class DishesController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(typeof(PaginatedDTO<DishDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<PaginatedDTO<DishDTO>>> GetDishes([FromQuery] Guid? next, [FromQuery] int? limit)
+    public async Task<ActionResult<PaginatedDTO<DishDTO>>> GetDishes([FromQuery] Guid? next, [FromQuery] int? limit, [FromQuery] string? search)
     {
         if (limit < 1) return BadRequest("Limit must be greater than 0.");
 
         DishQuery query = new()
         {
             Limit = limit,
-            Next = next
+            Next = next,
+            Searchterm = search == String.Empty ? null : search
         };
 
         var dto = await _mediator.Send(query);

@@ -21,14 +21,17 @@ export class DishService {
     private sanitizer: DomSanitizer
   ) {}
 
-  async get(maxResults?: number | undefined): Promise<Dish[]> {
-    const options = {
-      params: new HttpParams().set(
-        'limit',
-        maxResults == undefined || maxResults > 50 ? 50 : maxResults
-      )
-    };
-    let response = await firstValueFrom(this.http.get<Paginated<DishDTO>>(this.base_url, options));
+  async get(maxResults?: number, searchterm?: string): Promise<Dish[]> {
+    let params = new HttpParams().set(
+      'limit',
+      maxResults == undefined || maxResults > 50 ? 50 : maxResults
+    );
+    if (searchterm != undefined) params = params.set('search', searchterm);
+
+    let response = await firstValueFrom(
+      this.http.get<Paginated<DishDTO>>(this.base_url, { params: params })
+    );
+
     const dtos = response.items.map((dishDTO) => Dish.from(dishDTO));
 
     while (response.next != undefined && (maxResults == undefined || dtos.length < maxResults)) {
