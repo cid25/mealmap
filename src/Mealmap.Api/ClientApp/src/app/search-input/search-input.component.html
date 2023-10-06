@@ -1,0 +1,7 @@
+<form [formGroup]="form" (ngSubmit)="onClickSearch()" class="d-flex">
+    <input type="search" (input)="onSearchInput()" formControlName="search" class="me-2 border-primary rounded-2 ps-2" #search>
+    <button type="submit" class="btn btn-primary d-flex justify-content-center align-items-center">
+        <img src="/assets/icons/search.svg" class="me-1">
+        <span class="px-2">Search</span>
+    </button>
+</form>

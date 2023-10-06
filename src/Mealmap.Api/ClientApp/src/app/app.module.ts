@@ -17,6 +17,7 @@ import { DishCardComponent } from './dish-card/dish-card.component';
 import { DishEditorComponent } from './dish-editor/dish-editor.component';
 import { DishViewerComponent } from './dish-viewer/dish-viewer.component';
 import { MealViewerComponent } from './meal-viewer/meal-viewer.component';
+import { SearchInputComponent } from './search-input/search-input.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { MealViewerComponent } from './meal-viewer/meal-viewer.component';
     DishCardComponent,
     DishEditorComponent,
     DishViewerComponent,
-    MealViewerComponent
+    MealViewerComponent,
+    SearchInputComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
