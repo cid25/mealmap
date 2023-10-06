@@ -1,10 +1,15 @@
 <div class="border border-info rounded-top-2">
-    <div class="p-2 bg-info rounded-top-2 text-white d-flex justify-content-center"><div>Pick Course {{ index }}</div></div>
-    <button type="button" (click)="cancel()" class="btn btn-primary m-2 d-flex justify-content-center align-items-center">
+    <div class="p-2 mb-2 bg-info rounded-top-2 text-white d-flex justify-content-center">
+        Pick Course {{ index }}
+    </div>
+    <button type="button" (click)="onClickCancel()" class="btn btn-primary m-2 d-flex justify-content-center align-items-center">
         <img src="/assets/icons/x-lg.svg" class="me-1">
         <span>Cancel</span>
     </button>
-    <div class="d-flex flex-wrap m-2 gap-2">
+    <div class="m-2">
+        <app-search-input (searched)="onSearch($event)"></app-search-input>
+    </div>
+    <div class="m-2 d-flex flex-wrap gap-2">
         <div *ngFor="let dish of dishes" class="card border-primary">
             <div class="text-center p-1">{{ dish.name }}</div>
             <button type="button" class="btn d-block p-0 border-0" (click)="select(dish.id!)">

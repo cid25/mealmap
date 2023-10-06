@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { DishService } from '../services/dish.service';
 import { Dish } from '../classes/dish';
+import { SearchedEvent } from '../interfaces/searched.event';
 import { DishPickedEvent } from '../interfaces/dish-picked.event';
 
 @Component({
@@ -31,7 +32,11 @@ export class DishPickerComponent implements OnInit {
     this.picked.emit({ index: this.index, dish: dishPicked! });
   }
 
-  cancel(): void {
+  onClickCancel(): void {
     this.cancelled.emit();
+  }
+
+  async onSearch(event: SearchedEvent): Promise<void> {
+    this.dishes = await this.dishService.get(undefined, event.searchterm);
   }
 }
