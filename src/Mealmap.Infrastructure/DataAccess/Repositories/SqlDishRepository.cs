@@ -1,5 +1,5 @@
-﻿using Mealmap.Domain.DishAggregate;
-using Mealmap.Domain.Common.DataAccess;
+﻿using Mealmap.Domain.Common.DataAccess;
+using Mealmap.Domain.DishAggregate;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Infrastructure.DataAccess.Repositories;
@@ -13,13 +13,6 @@ public class SqlDishRepository : IDishRepository
     {
         _dbContext = dbContext;
         dbSet = dbContext.Set<Dish>();
-    }
-
-    public IEnumerable<Dish> GetAll()
-    {
-        var dishes = dbSet.ToList();
-
-        return dishes;
     }
 
     public Dish? GetSingleById(Guid id)

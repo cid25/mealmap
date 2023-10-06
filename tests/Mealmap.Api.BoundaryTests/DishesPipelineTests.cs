@@ -15,24 +15,6 @@ public class DishesPipelineTests
         _dummyDish = new("Tuna Supreme") { Description = null, Servings = 2 };
     }
 
-
-    [Fact]
-    public async void GetDishes_ReturnsJsonAndStatusOk()
-    {
-        var factory = new MockableWebApplicationFactory(services =>
-        {
-            services.Replace(ServiceDescriptor.Scoped<IDishRepository>(_ =>
-            {
-                return Mock.Of<IDishRepository>(mock => mock.GetAll() == new List<Dish> { _dummyDish });
-            }));
-        });
-
-        var response = await factory.CreateClient().GetAsync("/api/dishes");
-
-        response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
-        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-    }
-
     [Fact]
     public async void GetDish_ReturnsJsonAndStatusOk()
     {

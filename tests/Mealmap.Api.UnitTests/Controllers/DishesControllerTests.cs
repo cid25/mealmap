@@ -49,9 +49,9 @@ public class DishesControllerTests
     }
 
     [Fact]
-    public void GetDishes_ReturnsDishDTOs()
+    public async void GetDishes_ReturnsDishDTOs()
     {
-        var result = _controller.GetDishes(next: null, limit: null);
+        var result = await _controller.GetDishes(next: null, limit: null);
 
         result.Should().BeOfType<ActionResult<PaginatedDTO<DishDTO>>>();
         result.Result.Should().BeOfType<OkObjectResult>();

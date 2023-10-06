@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse, HttpParams } from '@angular/common/http';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { firstValueFrom, catchError, of } from 'rxjs';
 import { Paginated } from '../interfaces/paginated.dto';
@@ -21,11 +21,17 @@ export class DishService {
     private sanitizer: DomSanitizer
   ) {}
 
-  async list(): Promise<Dish[]> {
-    let response = await firstValueFrom(this.http.get<Paginated<DishDTO>>(this.base_url));
+  async get(maxResults?: number | undefined): Promise<Dish[]> {
+    const options = {
+      params: new HttpParams().set(
+        'limit',
+        maxResults == undefined || maxResults > 50 ? 50 : maxResults
+      )
+    };
+    let response = await firstValueFrom(this.http.get<Paginated<DishDTO>>(this.base_url, options));
     const dtos = response.items.map((dishDTO) => Dish.from(dishDTO));
 
-    while (response.next != undefined) {
+    while (response.next != undefined && (maxResults == undefined || dtos.length < maxResults)) {
       response = await firstValueFrom(this.http.get<Paginated<DishDTO>>(response.next.toString()));
       dtos.push(...response.items.map((dishDTO) => Dish.from(dishDTO)));
     }

@@ -55,20 +55,6 @@ public class SqlDishRepositoryTests
         _dbContext.SaveChanges();
     }
 
-
-    [Fact]
-    public void GetAll_ReturnsAllDishes()
-    {
-        // Arrage
-        var expectedCount = _repository.dbSet.Count();
-
-        // Act
-        var result = _repository.GetAll();
-
-        // Assert
-        result.Should().NotBeEmpty().And.HaveCount(expectedCount);
-    }
-
     [Fact]
     public void GetSingleById_WhenIdNonExisting_ReturnsNull()
     {

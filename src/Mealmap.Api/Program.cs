@@ -50,6 +50,7 @@ try
     builder.Services
         .AddHttpContextAccessor()
         .AddScoped<IRequestContext, RequestContext>()
+        .AddScoped<UrlBuilder>()
         .AddDataTransferObjectValidators()
         .AddCommandHandlers()
         .AddOutputMappers();

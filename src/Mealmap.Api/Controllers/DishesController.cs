@@ -1,6 +1,7 @@
 ﻿using Mealmap.Api.Commands;
 using Mealmap.Api.DataTransferObjects;
 using Mealmap.Api.OutputMappers;
+using Mealmap.Api.Queries;
 using Mealmap.Api.RequestFormatters;
 using Mealmap.Api.Swagger;
 using Mealmap.Domain.Common.DataAccess;
@@ -44,15 +45,24 @@ public class DishesController : ControllerBase
     /// Lists dishes.
     /// </summary>
     /// <response code="200">Dishes Returned</response>
+    /// <response code="400">Bad Request</response>
     [HttpGet(Name = nameof(GetDishes))]
     [Produces("application/json")]
     [ProducesResponseType(typeof(PaginatedDTO<DishDTO>), StatusCodes.Status200OK)]
-    public ActionResult<PaginatedDTO<DishDTO>> GetDishes([FromQuery] Guid? next, [FromQuery] int? limit)
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<PaginatedDTO<DishDTO>>> GetDishes([FromQuery] Guid? next, [FromQuery] int? limit)
     {
-        var dishes = _repository.GetAll();
-        var dataTransferObjects = _outputMapper.FromEntities(dishes);
+        if (limit < 1) return BadRequest("Limit must be greater than 0.");
 
-        return new OkObjectResult(new PaginatedDTO<DishDTO>(dataTransferObjects));
+        DishQuery query = new()
+        {
+            Limit = limit,
+            Next = next
+        };
+
+        var dto = await _mediator.Send(query);
+
+        return new OkObjectResult(dto);
     }
 
     /// <summary>
