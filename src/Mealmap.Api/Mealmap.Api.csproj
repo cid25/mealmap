@@ -2,12 +2,10 @@
 
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TypeScriptGeneratesDeclarations>True</TypeScriptGeneratesDeclarations>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <TypeScriptGeneratesDeclarations>True</TypeScriptGeneratesDeclarations>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -19,9 +17,6 @@
     <AnalysisMode>Recommended</AnalysisMode>
     <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
     <IsPackable>false</IsPackable>
-    <SpaRoot>..\Mealmap.Web\</SpaRoot>
-    <SpaProxyServerUrl>https://localhost:44461</SpaProxyServerUrl>
-    <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <RootNamespace>Mealmap.Api</RootNamespace>
   </PropertyGroup>
 
@@ -45,21 +40,5 @@
     <ProjectReference Include="..\Mealmap.Domain\Mealmap.Domain.csproj" />
     <ProjectReference Include="..\Mealmap.Infrastructure\Mealmap.Infrastructure.csproj" />
   </ItemGroup>
-
-  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
-    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --configuration production" />
-
-    <!-- Include the newly-built files in the publish output -->
-    <ItemGroup>
-      <DistFiles Include="$(SpaRoot)dist\**; $(SpaRoot)dist-server\**" />
-      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-        <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </ResolvedFileToPublish>
-    </ItemGroup>
-  </Target>
 
 </Project>

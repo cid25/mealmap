@@ -1,0 +1,6 @@
+**/bin/
+**/obj/
+Mealmap.Testdata
+Mealmap.Web/dist
+Mealmap.Web/.angular
+Mealmap.Web/node_modules
