@@ -4,9 +4,7 @@ on: [push, workflow_dispatch]
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
@@ -19,3 +17,6 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal --filter "FullyQualifiedName!~Mealmap.Infrastructure.IntegrationTests"
+  release:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    uses: ./.github/workflows/cd.yml
