@@ -1,9 +1,36 @@
 name : cd
 
-on: workflow_call
+on: [workflow_call, workflow_dispatch]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  integration-test:
+  # integration-test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
+  build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            .github
+            src
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: /src
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository }}:0.0.${{ github.run_id }}
+            ${{ env.REGISTRY }}/${{ github.repository }}:latest
