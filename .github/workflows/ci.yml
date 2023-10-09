@@ -1,6 +1,11 @@
 name: ci
 
-on: [push, workflow_dispatch]
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+  workflow_dispatch:
 
 jobs:
   test:
