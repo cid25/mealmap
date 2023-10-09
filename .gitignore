@@ -6,3 +6,5 @@
 .vs/
 node_modules/
 .angular/
+/publish
+/src/Mealmap.Web/dist/

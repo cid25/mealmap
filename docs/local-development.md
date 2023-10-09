@@ -1,5 +1,13 @@
 # Setting up for development
 
+## Components and IDEs
+
+The .NET backend is developed using Visual Studio 2022 and split into multiple implementation and tests projects.
+Open `Mealmap.sln` with Visual Studio to get the full picture.
+
+The Angular frontend/UI is developed using Visual Studio Code.
+Its code can be found in `src\Mealmap.Web`.
+
 ## Integration Tests
 
 The test suite contains a set of integration tests, which are tests run against external dependencies and therefore slower in their execution.
