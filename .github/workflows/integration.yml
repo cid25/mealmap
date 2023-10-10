@@ -1,4 +1,4 @@
-name: ci
+name: Integration
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
       working-directory: infrastructure/terraform
       shell: pwsh
       run: terraform validate
-  test:
+  unit-test:
     needs: lint
     runs-on: ubuntu-latest
     steps:
@@ -40,6 +40,8 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal --filter "FullyQualifiedName!~Mealmap.Infrastructure.IntegrationTests"
-  release:
-    if: ${{ github.ref == 'refs/heads/main' }}
-    uses: ./.github/workflows/cd.yml
+  # integration-test:
+  #   needs: [lint, unit-test]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3

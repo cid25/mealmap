@@ -1,6 +1,11 @@
-name : cd
+name : Deployment
 
-on: [workflow_call, workflow_dispatch]
+on:
+  workflow_run:
+    workflows: [Integration]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   packages: write
@@ -10,10 +15,6 @@ env:
   TF_DIRECTORY: infrastructure/terraform
 
 jobs:
-  # integration-test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v3
   build:
     runs-on: ubuntu-latest
     steps:
