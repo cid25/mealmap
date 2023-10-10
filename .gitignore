@@ -7,3 +7,5 @@
 node_modules/
 .angular/
 /src/Mealmap.Web/dist/
+.terraform/
+.terraform.lock.hcl

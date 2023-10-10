@@ -5,10 +5,28 @@ on:
     paths:
       - 'src/**'
       - 'tests/**'
+      - 'infrastructure/**'
   workflow_dispatch:
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Terraform format
+      working-directory: infrastructure/terraform
+      shell: pwsh
+      run: terraform fmt -check
+    - name: Terraform init
+      working-directory: infrastructure/terraform
+      shell: pwsh
+      run: terraform init -backend=false
+    - name: Terraform validate
+      working-directory: infrastructure/terraform
+      shell: pwsh
+      run: terraform validate
   test:
+    needs: lint
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
