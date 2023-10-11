@@ -32,9 +32,31 @@ resource "azurerm_linux_web_app" "app_service" {
     }
   }
 
+  connection_string {
+    name  = "MealmapDb"
+    type  = "SQLAzure"
+    value = "Server=tcp:${azurerm_mssql_server.sql.name}.database.windows.net;Database=${azurerm_mssql_database.sql_db.name};Authentication=Active Directory Default;User Id=${azurerm_user_assigned_identity.app_service.client_id};TrustServerCertificate=True"
+  }
+
   lifecycle {
     ignore_changes = [
       site_config[0].application_stack[0].docker_image_name
     ]
   }
+}
+
+resource "mssql_user" "app_sql_db_user" {
+  depends_on = [azurerm_mssql_firewall_rule.allow_azure_services]
+
+  server {
+    host = "${azurerm_mssql_server.sql.name}.database.windows.net"
+    login {
+      username = local.sql_server_admin_login
+      password = random_password.sql_server_admin_password.result
+    }
+  }
+  database  = azurerm_mssql_database.sql_db.name
+  username  = azurerm_user_assigned_identity.app_service.name
+  object_id = azurerm_user_assigned_identity.app_service.client_id
+  roles     = ["db_datareader", "db_datawriter"]
 }

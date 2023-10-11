@@ -18,17 +18,19 @@ resource "azurerm_user_assigned_identity" "sql_server" {
 }
 
 resource "azurerm_mssql_server" "sql" {
-  name                = "sql-${var.app_name}-${var.environment_short}"
-  resource_group_name = azurerm_resource_group.mealmap.name
-  location            = var.location
-  version             = "12.0"
-  minimum_tls_version = "1.2"
+  name                         = "sql-${var.app_name}-${var.environment_short}"
+  resource_group_name          = azurerm_resource_group.mealmap.name
+  location                     = var.location
+  version                      = "12.0"
+  minimum_tls_version          = "1.2"
+  administrator_login          = local.sql_server_admin_login
+  administrator_login_password = random_password.sql_server_admin_password.result
 
   azuread_administrator {
     login_username              = azuread_group.sql_aad_admins.display_name
     object_id                   = azuread_group.sql_aad_admins.object_id
     tenant_id                   = data.azuread_client_config.current.tenant_id
-    azuread_authentication_only = true
+    azuread_authentication_only = false
   }
 
   identity {
@@ -37,6 +39,13 @@ resource "azurerm_mssql_server" "sql" {
   }
 
   primary_user_assigned_identity_id = azurerm_user_assigned_identity.sql_server.id
+}
+
+resource "azurerm_mssql_firewall_rule" "allow_azure_services" {
+  name             = "AllowAzureServices"
+  server_id        = azurerm_mssql_server.sql.id
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "0.0.0.0"
 }
 
 resource "azurerm_mssql_database" "sql_db" {
