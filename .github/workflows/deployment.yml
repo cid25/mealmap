@@ -73,6 +73,15 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
+    - name: Install EF Core tools
+      run: dotnet tool install --global dotnet-ef
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Run migrations
+      env:
+        ConnectionStrings__MealmapDb: "Server=sql-mealmap-prod.database.windows.net; Authentication=Active Directory Service Principal; Encrypt=True; Database=sqldb-mealmap-prod; User Id=${{ vars.ARM_CLIENT_ID }}; Password=${{ secrets.ARM_CLIENT_SECRET }}"
+      working-directory: src/Mealmap.Migrations
+      run: dotnet ef database update
     - name: Deploy app
       uses: azure/webapps-deploy@v2
       with:

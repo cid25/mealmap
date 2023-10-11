@@ -40,7 +40,8 @@ try
     // Add Infrastructure Services
     builder.Services.AddDbContext<MealmapDbContext>(options
         => options.UseSqlServer(
-            builder.Configuration.GetConnectionString("MealmapDb")));
+            builder.Configuration.GetConnectionString("MealmapDb"),
+            b => b.MigrationsAssembly("Mealmap.Migrations")));
     builder.Services
         .AddScoped<IUnitOfWork, UnitOfWork>()
         .AddScoped<IMealRepository, SqlMealRepository>()

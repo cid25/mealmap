@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Mealmap.Api.Migrations
+namespace Mealmap.Migrations.Migrations
 {
     [DbContext(typeof(MealmapDbContext))]
     partial class MealmapDbContextModelSnapshot : ModelSnapshot
@@ -17,7 +17,7 @@ namespace Mealmap.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("ProductVersion", "7.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);

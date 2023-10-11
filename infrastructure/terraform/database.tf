@@ -4,7 +4,12 @@ resource "azuread_group" "sql_aad_admins" {
   security_enabled = true
 }
 
-resource "azuread_group_member" "admin" {
+resource "azuread_group_member" "pipeline_service_admin" {
+  group_object_id  = azuread_group.sql_aad_admins.id
+  member_object_id = data.azuread_client_config.current.object_id
+}
+
+resource "azuread_group_member" "user_admins" {
   for_each = var.sql_administrators
 
   group_object_id  = azuread_group.sql_aad_admins.id
