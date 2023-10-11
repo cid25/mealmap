@@ -60,3 +60,9 @@ resource "mssql_user" "app_sql_db_user" {
   object_id = azurerm_user_assigned_identity.app_service.client_id
   roles     = ["db_datareader", "db_datawriter"]
 }
+
+resource "azurerm_app_service_custom_hostname_binding" "custom" {
+  hostname            = "${var.environment_short == "prod" ? "" : join(var.environment_short, ".")}${var.app_name}.${var.base_domain_name}"
+  app_service_name    = azurerm_linux_web_app.app_service.name
+  resource_group_name = azurerm_resource_group.mealmap.name
+}

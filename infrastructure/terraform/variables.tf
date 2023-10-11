@@ -13,6 +13,11 @@ variable "location" {
   description = "The Azure location/region to create the infrastructure in."
 }
 
+variable "base_domain_name" {
+  type        = string
+  description = "The domain name under which to create the subdomain entry for the app, e.g. 'krukow.eu'."
+}
+
 variable "sql_administrators" {
   type        = map(object({ object_id = string }))
   description = "Map of object ids of AAD/Microsoft Entra users/principals that are granted admin privileges for the SQL server and databases."
