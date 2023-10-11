@@ -5,7 +5,7 @@ resource "azuread_group" "sql_aad_admins" {
 }
 
 resource "azuread_group_member" "admin" {
-  for_each = var.administrators
+  for_each = var.sql_administrators
 
   group_object_id  = azuread_group.sql_aad_admins.id
   member_object_id = each.value.object_id
@@ -47,4 +47,10 @@ resource "azurerm_mssql_database" "sql_db" {
   sku_name             = "Basic"
   storage_account_type = "Local"
   geo_backup_enabled   = false
+
+  lifecycle {
+    ignore_changes = [
+      geo_backup_enabled
+    ]
+  }
 }

@@ -11,8 +11,10 @@ permissions:
   packages: write
 
 env:
-  REGISTRY: ghcr.io
+  CONTAINER_REGISTRY: ghcr.io
   TF_DIRECTORY: infrastructure/terraform
+  TARGET_IMAGE_TAG: ghcr.io/${{ github.repository }}:0.0.${{ github.run_id }}
+  DEFAULT_IMAGE_TAG: ghcr.io/${{ github.repository }}:latest
 
 jobs:
   build:
@@ -27,7 +29,7 @@ jobs:
     - name: Log in to GHCR
       uses: docker/login-action@v3
       with:
-        registry: ${{ env.REGISTRY }}
+        registry: ${{ env.CONTAINER_REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ github.token }}
     - name: Build and push
@@ -36,8 +38,8 @@ jobs:
         context: ${{ github.workspace }}/src
         push: true
         tags: |
-          ${{ env.REGISTRY }}/${{ github.repository }}:0.0.${{ github.run_id }}
-          ${{ env.REGISTRY }}/${{ github.repository }}:latest
+          ${{ env.TARGET_IMAGE_TAG }}
+          ${{ env.DEFAULT_IMAGE_TAG }}
   update-infrastructure:
     runs-on: ubuntu-latest
     environment: production
@@ -46,6 +48,11 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }}
+      TF_VAR_environment_short: ${{ vars.ENVIRONMENT_SHORT }}
+      TF_VAR_docker_registry_url: 'https://ghcr.io'
+      TF_VAR_docker_registry_username: ${{ github.repository_owner }}
+      TF_VAR_docker_registry_password: ${{ secrets.DOCKER_REGISTRY_ACCESS_TOKEN }}
+      TF_VAR_default_docker_image_name: ghcr.io/${{ github.repository }}:latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -61,3 +68,14 @@ jobs:
       working-directory: ${{ env.TF_DIRECTORY }}
       shell: pwsh
       run: terraform apply -auto-approve -input=false tfplan
+  deploy-app:
+    needs: [build,update-infrastructure]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - name: Deploy app
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: app-mealmap-prod
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        images: ${{ env.TARGET_IMAGE_TAG }}

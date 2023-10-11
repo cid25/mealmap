@@ -22,7 +22,7 @@ indent_size = 2
 indent_size = 2
 
 # HCL/Terraform files
-[*.{tf}]
+[*.{tf,tfvars}]
 indent_size = 2
 
 # Code files
