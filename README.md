@@ -2,7 +2,7 @@
 
 Mealmap is a never-ending project that serves only one purpose: to further the author's education.
 
-It is a "productively" used application, but also a playground to tinker with further tools, libraries, design patterns, and "good principles and practices".
+It is a "productively" used application, but also a playground to tinker with tools, libraries, design patterns, and "good principles and practices".
 
 Tech Stack:
 
