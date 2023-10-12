@@ -38,6 +38,11 @@ resource "azurerm_linux_web_app" "app_service" {
     value = "Server=tcp:${azurerm_mssql_server.sql.name}.database.windows.net;Database=${azurerm_mssql_database.sql_db.name};Authentication=Active Directory Default;User Id=${azurerm_user_assigned_identity.app_service.client_id};TrustServerCertificate=True"
   }
 
+  app_settings = {
+    ASPNETCORE_URLS = "https://*:443"
+  }
+  https_only = true
+
   lifecycle {
     ignore_changes = [
       site_config[0].application_stack[0].docker_image_name
