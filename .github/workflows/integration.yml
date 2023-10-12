@@ -25,7 +25,7 @@ jobs:
       working-directory: infrastructure/terraform
       shell: pwsh
       run: terraform validate
-  unit-test:
+  test:
     needs: lint
     runs-on: ubuntu-latest
     steps:
@@ -38,10 +38,9 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
+    - name: Unit Tests
       run: dotnet test --no-build --verbosity normal --filter "FullyQualifiedName!~Mealmap.Infrastructure.IntegrationTests"
-  # integration-test:
-  #   needs: [lint, unit-test]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v3
+    - name: Spin up database
+      run: docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=MealIntTest!" -p 1433:1433 --name mealmapsql --hostname mealmapsql -d mcr.microsoft.com/mssql/server:2022-latest
+    - name: Integration Tests
+      run: dotnet test --no-build --verbosity normal --filter "FullyQualifiedName~Mealmap.Infrastructure.IntegrationTests"
