@@ -39,7 +39,7 @@ resource "azurerm_linux_web_app" "app_service" {
   }
 
   app_settings = {
-    ASPNETCORE_URLS = "https://*:443"
+    ASPNETCORE_URLS = "http://*:80"
   }
   https_only = true
 
