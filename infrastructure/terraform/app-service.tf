@@ -65,4 +65,18 @@ resource "azurerm_app_service_custom_hostname_binding" "custom" {
   hostname            = "${var.environment_short == "prod" ? "" : join(var.environment_short, ".")}${var.app_name}.${var.base_domain_name}"
   app_service_name    = azurerm_linux_web_app.app_service.name
   resource_group_name = azurerm_resource_group.mealmap.name
+
+  lifecycle {
+    ignore_changes = [ssl_state, thumbprint]
+  }
+}
+
+resource "azurerm_app_service_managed_certificate" "managed_cert" {
+  custom_hostname_binding_id = azurerm_app_service_custom_hostname_binding.custom.id
+}
+
+resource "azurerm_app_service_certificate_binding" "cert_binding" {
+  hostname_binding_id = azurerm_app_service_custom_hostname_binding.custom.id
+  certificate_id      = azurerm_app_service_managed_certificate.managed_cert.id
+  ssl_state           = "SniEnabled"
 }
