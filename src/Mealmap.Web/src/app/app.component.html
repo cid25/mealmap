@@ -1,6 +1,6 @@
 <body>
   <app-nav-menu></app-nav-menu>
   <main class="container-fluid mt-2">
-    <router-outlet *ngIf="!isIframe"></router-outlet>
+    <router-outlet *ngIf="!isIframe && isUserLoggedIn"></router-outlet>
   </main>
 </body>

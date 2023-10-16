@@ -1,7 +1,3 @@
-locals {
-  hostname = "${var.environment_short == "prod" ? "" : join(var.environment_short, ".")}${var.app_name}.${var.base_domain_name}"
-}
-
 resource "azurerm_service_plan" "app_service_plan" {
   name                = "asp-${var.app_name}-${var.environment_short}"
   resource_group_name = azurerm_resource_group.mealmap.name
