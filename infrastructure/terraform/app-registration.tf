@@ -6,6 +6,18 @@ resource "azuread_application" "spa" {
   }
 }
 
+resource "azuread_service_principal" "spa" {
+  application_id               = azuread_application.spa.application_id
+  app_role_assignment_required = false
+  owners                       = [data.azuread_client_config.current.object_id]
+  login_url                    = "https://${local.hostname}"
+
+  feature_tags {
+    enterprise = true
+    gallery    = true
+  }
+}
+
 resource "random_uuid" "api_scope" {}
 
 resource "azuread_application" "api" {
@@ -35,7 +47,27 @@ resource "null_resource" "app_reg_api_uri" {
   }
 }
 
+resource "azuread_service_principal" "api" {
+  depends_on = [azuread_application.api, null_resource.app_reg_api_uri]
+
+  application_id               = azuread_application.api.application_id
+  app_role_assignment_required = false
+  owners                       = [data.azuread_client_config.current.object_id]
+
+  feature_tags {
+    enterprise = true
+  }
+}
+
 resource "azuread_application_pre_authorized" "spa_on_api" {
+  depends_on = [
+    azuread_application.spa,
+    azuread_service_principal.spa,
+    azuread_application.api,
+    null_resource.app_reg_api_uri,
+    azuread_service_principal.api
+  ]
+
   application_object_id = azuread_application.api.object_id
   authorized_app_id     = azuread_application.spa.application_id
   permission_ids        = [random_uuid.api_scope.id]
@@ -48,11 +80,16 @@ resource "azuread_service_principal" "msgraph" {
   use_existing   = true
 }
 
-resource "azuread_service_principal" "spa" {
-  application_id = azuread_application.spa.application_id
-}
-
 resource "azuread_service_principal_delegated_permission_grant" "spa_on_msgraph" {
+  depends_on = [
+    azuread_application.spa,
+    azuread_service_principal.spa,
+    azuread_application.api,
+    null_resource.app_reg_api_uri,
+    azuread_service_principal.api,
+    azuread_application_pre_authorized.spa_on_api
+  ]
+
   service_principal_object_id          = azuread_service_principal.spa.object_id
   resource_service_principal_object_id = azuread_service_principal.msgraph.object_id
   claim_values                         = ["User.Read"]
