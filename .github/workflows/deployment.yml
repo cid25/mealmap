@@ -44,10 +44,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     env:
-      ARM_CLIENT_ID: ${{ vars.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }}
+      ARM_CLIENT_ID: ${{ vars.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       TF_VAR_environment_short: ${{ vars.ENVIRONMENT_SHORT }}
       TF_VAR_docker_registry_url: 'https://ghcr.io'
       TF_VAR_docker_registry_username: ${{ github.repository_owner }}

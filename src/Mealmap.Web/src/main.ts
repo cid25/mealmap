@@ -5,17 +5,41 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
+import { InjectionToken } from '@angular/core';
+import { IConfig } from './app/interfaces/config';
 
 export function getBaseUrl() {
   return document.getElementsByTagName('base')[0].href;
 }
 
-const providers = [{ provide: 'BASE_URL', useFactory: getBaseUrl, deps: [] }];
+export const APP_CONFIG = new InjectionToken<IConfig>('app-config');
+
+function configListener(this: XMLHttpRequest) {
+  try {
+    const configuration: IConfig = JSON.parse(this.responseText);
+
+    // pass config to bootstrap process using an injection token
+    platformBrowserDynamic([
+      { provide: 'BASE_URL', useFactory: getBaseUrl, deps: [] },
+      { provide: APP_CONFIG, useValue: configuration }
+    ])
+      .bootstrapModule(AppModule)
+      .catch((err) => console.error(err));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function configFailed(evt: ProgressEvent<XMLHttpRequestEventTarget>) {
+  console.error('Error: retrieving config.json', evt.timeStamp);
+}
 
 if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic(providers)
-  .bootstrapModule(AppModule)
-  .catch((err) => console.log(err));
+const request = new XMLHttpRequest();
+request.addEventListener('load', configListener);
+request.addEventListener('error', configFailed);
+request.open('GET', '/api/settings');
+request.send();

@@ -1,3 +1,7 @@
+locals {
+  hostname = "${var.environment_short == "prod" ? "" : join(var.environment_short, ".")}${var.app_name}.${var.base_domain_name}"
+}
+
 resource "azurerm_service_plan" "app_service_plan" {
   name                = "asp-${var.app_name}-${var.environment_short}"
   resource_group_name = azurerm_resource_group.mealmap.name
@@ -39,7 +43,14 @@ resource "azurerm_linux_web_app" "app_service" {
   }
 
   app_settings = {
-    ASPNETCORE_URLS = "http://*:80"
+    ASPNETCORE_URLS      = "http://*:80"
+    AzureAd__Instance    = "https://login.microsoftonline.com/"
+    AzureAd__ClientId    = azuread_application.api.application_id
+    AzureAd__TenantId    = data.azuread_client_config.current.tenant_id
+    Angular__Authority   = "https://login.microsoftonline.com/${data.azuread_client_config.current.tenant_id}"
+    Angular__ClientId    = azuread_application.spa.application_id
+    Angular__ApiScope    = "api://${azuread_application.api.application_id}/access"
+    Angular__RedirectUri = "https://${local.hostname}"
   }
   https_only = true
 
@@ -67,7 +78,7 @@ resource "mssql_user" "app_sql_db_user" {
 }
 
 resource "azurerm_app_service_custom_hostname_binding" "custom" {
-  hostname            = "${var.environment_short == "prod" ? "" : join(var.environment_short, ".")}${var.app_name}.${var.base_domain_name}"
+  hostname            = local.hostname
   app_service_name    = azurerm_linux_web_app.app_service.name
   resource_group_name = azurerm_resource_group.mealmap.name
 

@@ -5,13 +5,18 @@ using Mealmap.Api.Swagger;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.MealAggregate;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Mealmap.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
+[RequiredScope("access")]
+[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
 [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
 public class MealsController : ControllerBase
 {

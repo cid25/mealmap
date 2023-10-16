@@ -12,6 +12,7 @@ using Mealmap.Domain.MealAggregate;
 using Mealmap.Infrastructure.DataAccess;
 using Mealmap.Infrastructure.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Swashbuckle.AspNetCore.Filters;
@@ -31,8 +32,9 @@ try
     builder.Host.UseSerilog();
 
     // Add Configuration
-    builder.Services.Configure<HostingOptions>(
-        builder.Configuration.GetSection(HostingOptions.SectionName));
+    builder.Services
+        .Configure<HostingOptions>(builder.Configuration.GetSection(HostingOptions.SectionName))
+        .Configure<AngularSettings>(builder.Configuration.GetSection(AngularSettings.SectionName));
 
     // Add Domain Services
     builder.Services.RegisterDeferredDomainValidation();
@@ -56,6 +58,7 @@ try
         .AddCommandHandlers()
         .AddOutputMappers();
 
+    builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration);
     builder.Services.AddControllers(options =>
         options.InputFormatters.Insert(0, new ImageInputFormatter())
         );
@@ -102,6 +105,8 @@ try
     app.UseHttpsRedirection();
     app.UseStaticFiles();
     app.UseStatusCodePages();
+    app.UseAuthentication();
+    app.UseAuthorization();
 
     app.MapControllers();
 
