@@ -35,6 +35,10 @@ resource "azuread_application" "api" {
 
     known_client_applications = [azuread_application.spa.application_id]
   }
+
+  lifecycle {
+    ignore_changes = [identifier_uris]
+  }
 }
 
 resource "null_resource" "app_reg_api_uri" {
