@@ -27,7 +27,7 @@ import { DishEditorComponent } from './dish-editor/dish-editor.component';
 import { DishOverviewComponent } from './dish-overview/dish-overview.component';
 import { DishPickerComponent } from './dish-picker/dish-picker.component';
 import { DishViewerComponent } from './dish-viewer/dish-viewer.component';
-import { MealCardComponent } from './meal-card/meal-card.component';
+import { MealScheduleCardComponent } from './meal-schedule-card/meal-schedule-card.component';
 import { MealEditorComponent } from './meal-editor/meal-editor.component';
 import { MealScheduleComponent } from './meal-schedule/meal-schedule.component';
 import { MealViewerComponent } from './meal-viewer/meal-viewer.component';
@@ -70,7 +70,7 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     AppComponent,
     NavMenuComponent,
     MealScheduleComponent,
-    MealCardComponent,
+    MealScheduleCardComponent,
     MealEditorComponent,
     DishPickerComponent,
     DishOverviewComponent,

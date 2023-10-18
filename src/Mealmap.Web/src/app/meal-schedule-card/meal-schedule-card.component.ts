@@ -3,10 +3,10 @@ import { Meal } from '../classes/meal';
 import { Course } from '../classes/course';
 
 @Component({
-  selector: 'app-meal-card',
-  templateUrl: './meal-card.component.html'
+  selector: 'app-meal-schedule-card',
+  templateUrl: './meal-schedule-card.component.html'
 })
-export class MealCardComponent {
+export class MealScheduleCardComponent {
   @Input()
   meal!: Meal;
 

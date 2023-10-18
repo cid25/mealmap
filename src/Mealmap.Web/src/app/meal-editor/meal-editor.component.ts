@@ -101,13 +101,14 @@ export class MealEditorComponent implements OnInit, OnChanges {
 
   pickDish(event: DishPickedEvent): void {
     this.deactivatePicker();
-    const existingCourse = this.meal?.courses.filter((course) => course.index == event.index);
+    const pickedEvent = event as unknown as DishPickedEvent;
+    const existingCourse = this.meal?.courses.filter((course) => course.index == pickedEvent.index);
     if (existingCourse?.length === 1) {
-      existingCourse[0].dish = event.dish;
-      existingCourse[0].dishId = event.dish.id!;
+      existingCourse[0].dish = pickedEvent.dish;
+      existingCourse[0].dishId = pickedEvent.dish.id!;
     } else {
-      const course = new Course(event.index, event.dish.id!);
-      course.dish = event.dish;
+      const course = new Course(pickedEvent.index, pickedEvent.dish.id!);
+      course.dish = pickedEvent.dish;
       if (this.meal?.courses.length === 0) course.mainCourse = true;
       this.meal?.courses.push(course);
     }
