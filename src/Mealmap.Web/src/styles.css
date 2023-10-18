@@ -27,7 +27,7 @@ code {
 }
 
 .card-m {
-  width: min(201px, 44vw);
+  width: min(202px, 45vw);
   min-height: min(300px, 45vh);
   max-height: max(420px, 30vh);
 }
@@ -40,7 +40,7 @@ code {
 }
 
 .card-s {
-  width: min(201px, 44vw);
+  width: min(202px, 45vw);
 }
 
 .card-image-xs {
