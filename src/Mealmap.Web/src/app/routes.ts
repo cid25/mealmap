@@ -7,6 +7,7 @@ import { DishEditorComponent } from './dish-editor/dish-editor.component';
 import { DishViewerComponent } from './dish-viewer/dish-viewer.component';
 
 const routes: Routes = [
+  { path: 'meals/current', component: MealScheduleComponent, title: 'Meal Schedule' },
   { path: 'meals/:date/edit', component: MealEditorComponent, title: 'Meal Details' },
   { path: 'meals/:date', component: MealViewerComponent, title: 'Meal Details' },
   { path: 'meals', component: MealScheduleComponent, title: 'Meal Schedule' },
@@ -14,7 +15,7 @@ const routes: Routes = [
   { path: 'dishes/:id/edit', component: DishEditorComponent, title: 'Dish Editor' },
   { path: 'dishes/:id', component: DishViewerComponent, title: 'Dish Viewer' },
   { path: 'dishes', component: DishOverviewComponent, title: 'Dishes' },
-  { path: '**', redirectTo: 'meals' }
+  { path: '**', redirectTo: 'meals/current' }
 ];
 
 export default routes;

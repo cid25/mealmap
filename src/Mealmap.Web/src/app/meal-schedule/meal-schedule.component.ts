@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { MealService } from '../services/meal.service';
-import { DishService } from '../services/dish.service';
-import { Meal } from '../classes/meal';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { DateTime } from 'luxon';
+import { Meal } from '../classes/meal';
+import { MealService } from '../services/meal.service';
 
 @Component({
   selector: 'app-meal-schedule',
@@ -12,25 +12,33 @@ import { DateTime } from 'luxon';
 export class MealScheduleComponent implements OnInit {
   private meals: Meal[] = [];
 
-  private timeperiodType: Timeperiod;
-  private reference: Date;
-  private start: Date;
-  private end: Date;
+  private timeperiodType!: Timeperiod;
+  private reference!: Date;
+  private start!: Date;
+  private end!: Date;
 
   constructor(
     private mealService: MealService,
-    private dishService: DishService
-  ) {
-    this.timeperiodType = Timeperiod.Weekly;
-
-    this.reference = new Date(Date.now());
-    this.reference.setUTCHours(0, 0, 0, 0);
-
-    [this.start, this.end] = this.calcTimerange();
-  }
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.retrieveMeals();
+    if (
+      this.route.routeConfig?.path == 'meals/current' ||
+      this.route.routeConfig?.path == 'meals'
+    ) {
+      this.router.navigateByUrl(`meals?period=weekly&reference=${this.toDateString(this.today())}`);
+    }
+
+    if (this.route.snapshot.params['period'] == 'monthly') this.timeperiodType = Timeperiod.Monthly;
+    else this.timeperiodType = Timeperiod.Weekly;
+
+    const reference = this.route.snapshot.params['reference'];
+    if (reference == undefined) this.reference = this.today();
+    else this.reference = DateTime.fromISO(reference).toJSDate();
+
+    await this.loadContent();
   }
 
   mealsForDisplay(): Meal[] {
@@ -60,16 +68,16 @@ export class MealScheduleComponent implements OnInit {
     if (this.timeperiodType != Timeperiod.Weekly) {
       this.timeperiodType = Timeperiod.Weekly;
     }
-    [this.start, this.end] = this.calcTimerange();
-    await this.retrieveMeals();
+
+    await this.refreshView();
   }
 
   async viewMonthlyRange(): Promise<void> {
     if (this.timeperiodType != Timeperiod.Monthly) {
       this.timeperiodType = Timeperiod.Monthly;
     }
-    [this.start, this.end] = this.calcTimerange();
-    await this.retrieveMeals();
+
+    await this.refreshView();
   }
 
   async shiftTimeperiodPrior(): Promise<void> {
@@ -78,8 +86,7 @@ export class MealScheduleComponent implements OnInit {
     else reference = reference.minus({ month: 1 });
     this.reference = reference.toJSDate();
 
-    [this.start, this.end] = this.calcTimerange();
-    await this.retrieveMeals();
+    await this.refreshView();
   }
 
   async shiftTimeperiodAfter(): Promise<void> {
@@ -88,8 +95,7 @@ export class MealScheduleComponent implements OnInit {
     if (this.timeperiodType == Timeperiod.Monthly) reference = reference.plus({ month: 1 });
     this.reference = reference.toJSDate();
 
-    [this.start, this.end] = this.calcTimerange();
-    await this.retrieveMeals();
+    await this.refreshView();
   }
 
   async deleteMeal(date: Date): Promise<void> {
@@ -100,18 +106,43 @@ export class MealScheduleComponent implements OnInit {
   async shiftCurrent(): Promise<void> {
     this.reference = new Date(Date.now());
     this.reference.setUTCHours(0, 0, 0, 0);
-    [this.start, this.end] = this.calcTimerange();
-    await this.retrieveMeals();
-  }
 
-  private async retrieveMeals(): Promise<void> {
-    this.meals = await this.mealService.getMealsFor(this.start, this.end);
+    await this.refreshView();
   }
 
   private today(): Date {
     const today = new Date(Date.now());
     today.setUTCHours(0, 0, 0, 0);
     return today;
+  }
+
+  private toDateString(date: Date): string {
+    return DateTime.fromJSDate(date).toISODate()!;
+  }
+
+  private async refreshView(): Promise<void> {
+    this.doNavigate();
+    await this.loadContent();
+  }
+
+  private doNavigate(): void {
+    const extras: NavigationExtras = {
+      queryParams: {
+        period: this.timeperiodType == Timeperiod.Weekly ? 'weekly' : 'monthly',
+        reference: this.toDateString(this.reference)
+      }
+    };
+
+    this.router.navigate([], extras);
+  }
+
+  private async loadContent(): Promise<void> {
+    [this.start, this.end] = this.calcTimerange();
+    await this.retrieveMeals();
+  }
+
+  private async retrieveMeals(): Promise<void> {
+    this.meals = await this.mealService.getMealsFor(this.start, this.end);
   }
 
   private calcTimerange(): [Date, Date] {

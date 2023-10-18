@@ -1,5 +1,5 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { DateTime } from 'luxon';
 import { MealService } from '../services/meal.service';
@@ -24,7 +24,6 @@ export class MealEditorComponent implements OnInit, OnChanges {
   constructor(
     private mealService: MealService,
     private route: ActivatedRoute,
-    private router: Router,
     private location: Location
   ) {
     this.diningDate = DateTime.fromISO(this.route.snapshot.params['date']).toJSDate();

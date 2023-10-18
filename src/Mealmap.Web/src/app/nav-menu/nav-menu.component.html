@@ -1,6 +1,6 @@
 <header class="bg-primary">
   <div class="px-3 pt-2 text-white d-flex flex-row justify-content-between align-items-center">
-    <a class="navbar-brand fs-4" routerLink="/meals">Mealmap</a>
+    <a class="navbar-brand fs-4" routerLink="/meals/current">Mealmap</a>
     <button type="button" *ngIf="!loggedIn" (click)="login()" class="btn btn-primary border-white"><img src="/assets/icons/login.svg" class="me-2 mb-1">Login</button>
     <div ngbDropdown *ngIf="loggedIn" class="d-inline-block">
 			<button type="button" class="btn btn-primary border-white" id="profileDropdown" ngbDropdownToggle>
@@ -15,7 +15,7 @@
     <nav class="navbar navbar-expand-sm navbar-dark">
       <ul class="navbar-nav flex-grow-1 d-flex flex-row justify-content-start mb-lg-0">
         <li [routerLinkActive]="['link-active']" [routerLinkActiveOptions]="{ exact: true }" class="nav-item mx-3">
-          <a class="nav-link text-light fs-5" routerLink="/meals">Meals</a>
+          <a class="nav-link text-light fs-5" routerLink="/meals/current">Meals</a>
         </li>
         <li [routerLinkActive]="['link-active']" class="nav-item mx-3">
           <a class="nav-link text-light fs-5" routerLink="/dishes">Dishes</a>
