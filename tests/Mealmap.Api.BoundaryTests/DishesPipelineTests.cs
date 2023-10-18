@@ -29,7 +29,7 @@ public class DishesPipelineTests
 
         var content = new ByteArrayContent(new byte[1]);
         content.Headers.ContentType = SystemHeaders.MediaTypeHeaderValue.Parse("image/jpeg");
-        var response = await factory.CreateClient().PutAsync("/api/dishes/" + _dummyDish.Id.ToString() + "/image", content);
+        var response = await factory.CreateAuthorizedClient().PutAsync("/api/dishes/" + _dummyDish.Id.ToString() + "/image", content);
 
         response.Content.Headers.ContentLength.Should().Be(0);
         response.Content.Headers.ContentType.Should().BeNull();
@@ -48,7 +48,7 @@ public class DishesPipelineTests
 
         var content = new ByteArrayContent(new byte[1]);
         content.Headers.ContentType = SystemHeaders.MediaTypeHeaderValue.Parse("application/json");
-        var response = await factory.CreateClient().PutAsync("/api/dishes/" + _dummyDish.Id.ToString() + "/image", content);
+        var response = await factory.CreateAuthorizedClient().PutAsync("/api/dishes/" + _dummyDish.Id.ToString() + "/image", content);
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.UnsupportedMediaType);
     }
@@ -66,7 +66,7 @@ public class DishesPipelineTests
             }));
         });
 
-        var response = await factory.CreateClient().GetAsync("/api/dishes/" + _dummyDish.Id.ToString() + "/image");
+        var response = await factory.CreateAuthorizedClient().GetAsync("/api/dishes/" + _dummyDish.Id.ToString() + "/image");
 
         response.Content.Headers.ContentType!.MediaType.Should().Be(contentType);
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -83,7 +83,7 @@ public class DishesPipelineTests
             }));
         });
 
-        var response = await factory.CreateClient().GetAsync("/api/dishes/" + _dummyDish.Id.ToString() + "/image");
+        var response = await factory.CreateAuthorizedClient().GetAsync("/api/dishes/" + _dummyDish.Id.ToString() + "/image");
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.NoContent);
     }
@@ -99,7 +99,7 @@ public class DishesPipelineTests
             }));
         });
 
-        var response = await factory.CreateClient().GetAsync("/api/dishes/" + Guid.NewGuid() + "/image");
+        var response = await factory.CreateAuthorizedClient().GetAsync("/api/dishes/" + Guid.NewGuid() + "/image");
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
     }
