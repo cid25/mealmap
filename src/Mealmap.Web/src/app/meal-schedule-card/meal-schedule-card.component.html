@@ -17,8 +17,8 @@
     <div class="card-body">
       <h5 class="card-title text-center">{{ mainCourse()?.dish?.name }}</h5>
       <ng-container [ngSwitch]="mainCourse()?.dish?.description != undefined" >
-        <p *ngSwitchCase="true" class="card-text fw-light" >{{ mainCourse()?.dish?.description }}</p>
-        <p *ngSwitchCase="false" class="card-text fw-lighter fst-italic">No description available</p>
+        <p *ngSwitchCase="true" class="card-text text-center fw-light" >{{ mainCourse()?.dish?.description }}</p>
+        <p *ngSwitchCase="false" class="card-text text-center fw-lighter fst-italic">No description available</p>
       </ng-container>
     </div>
   </ng-container>
