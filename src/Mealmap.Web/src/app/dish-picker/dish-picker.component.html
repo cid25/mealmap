@@ -11,7 +11,7 @@
     </div>
     <div class="m-2 d-flex flex-wrap gap-2">
         <div *ngFor="let dish of dishes" class="card border-primary">
-            <div class="text-center p-1">{{ dish.name }}</div>
+            <div class="border-bottom border-primary text-center p-1">{{ dish.name }}</div>
             <button type="button" class="btn d-block p-0 border-0" (click)="select(dish.id!)">
                 <img [src]="dish.localImageURL" onerror="this.src='/assets/no-image.png'" class="card-image-xs" alt="No image">
             </button>

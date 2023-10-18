@@ -1,4 +1,4 @@
-<div class="card h-100 card-m">
+<div class="card h-100 card-m border-primary">
   <div class="py-2 rounded-top text-white text-center bg-secondary">{{ meal!.diningDate | date:'EE - dd.MM.yy' }}</div>
   <ng-container *ngIf="hasCourses()">
     <a [routerLink]="[meal.key()]">
