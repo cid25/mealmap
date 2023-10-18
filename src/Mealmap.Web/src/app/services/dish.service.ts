@@ -147,6 +147,7 @@ export class DishService {
 
     const responseDTO = await this.getDish(creationResponse!.id);
     const [result, etag] = Dish.from(responseDTO!);
+    if (hasImage) result.setImage(dish.image, dish.localImageURL);
 
     if (responseDTO !== undefined) this.updateCachesWith(result, etag);
 
