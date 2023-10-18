@@ -37,12 +37,16 @@ export class MealScheduleComponent implements OnInit {
     return this.meals.sort((a: Meal, b: Meal) => a.diningDate.getTime() - b.diningDate.getTime());
   }
 
-  weeklyRange(): boolean {
+  isWeeklyRange(): boolean {
     return this.timeperiodType == Timeperiod.Weekly;
   }
 
-  monthlyRange(): boolean {
+  isMonthlyRange(): boolean {
     return this.timeperiodType == Timeperiod.Monthly;
+  }
+
+  isCurrent(): boolean {
+    return DateTime.fromJSDate(this.reference).equals(DateTime.fromJSDate(this.today()));
   }
 
   timeLabel(): string {
@@ -93,8 +97,21 @@ export class MealScheduleComponent implements OnInit {
     await this.retrieveMeals();
   }
 
+  async shiftCurrent(): Promise<void> {
+    this.reference = new Date(Date.now());
+    this.reference.setUTCHours(0, 0, 0, 0);
+    [this.start, this.end] = this.calcTimerange();
+    await this.retrieveMeals();
+  }
+
   private async retrieveMeals(): Promise<void> {
     this.meals = await this.mealService.getMealsFor(this.start, this.end);
+  }
+
+  private today(): Date {
+    const today = new Date(Date.now());
+    today.setUTCHours(0, 0, 0, 0);
+    return today;
   }
 
   private calcTimerange(): [Date, Date] {

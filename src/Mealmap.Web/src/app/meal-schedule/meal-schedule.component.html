@@ -1,10 +1,11 @@
 <div class="d-flex flex-wrap justify-content-start gap-2 mb-2">
     <div class="btn-group" role="group" aria-label="Timerange selection toggle button group">
-        <input type="radio" class="btn-check" name="btntimerange" id="time-weekly" autocomplete="off" [checked]="weeklyRange()" (change)="viewWeeklyRange()">
+        <input type="radio" class="btn-check" name="btntimerange" id="time-weekly" autocomplete="off" [checked]="isWeeklyRange()" (change)="viewWeeklyRange()">
         <label class="btn btn-outline-primary" for="time-weekly">Weekly</label>
-        <input type="radio" class="btn-check" name="btntimerange" id="time-monthly" autocomplete="off" [checked]="monthlyRange()" (change)="viewMonthlyRange()">
+        <input type="radio" class="btn-check" name="btntimerange" id="time-monthly" autocomplete="off" [checked]="isMonthlyRange()" (change)="viewMonthlyRange()">
         <label class="btn btn-outline-primary" for="time-monthly">Monthly</label>
     </div>
+    <button type="button" class="btn btn-primary" name="btncurrent" (click)="shiftCurrent()" [disabled]="isCurrent()">Current</button>
     <div class="btn-group">
         <button type="button" id="btnperiodprior" class="btn bg-primary" (click)="shiftTimeperiodPrior()"><img src="/assets/icons/chevron-double-left.svg" class="d-block"></button>
         <div class="bg-white text-primary border border-primary px-4 d-flex"><p class="m-auto">{{ timeLabel() }}</p></div>
