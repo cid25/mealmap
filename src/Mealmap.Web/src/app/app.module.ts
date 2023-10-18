@@ -18,7 +18,8 @@ import {
   InteractionType,
   PublicClientApplication
 } from '@azure/msal-browser';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { APP_CONFIG } from 'src/main';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DishCardComponent } from './dish-card/dish-card.component';
@@ -32,7 +33,6 @@ import { MealScheduleComponent } from './meal-schedule/meal-schedule.component';
 import { MealViewerComponent } from './meal-viewer/meal-viewer.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { SearchInputComponent } from './search-input/search-input.component';
-import { APP_CONFIG } from 'src/main';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   const config = inject(APP_CONFIG);
@@ -50,11 +50,14 @@ export function MSALInstanceFactory(): IPublicClientApplication {
   });
 }
 
+export const GRAPH_ENDPOINT = 'https://graph.microsoft.com/v1.0/me';
+
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const config = inject(APP_CONFIG);
 
   const protectedResourceMap = new Map<string, Array<string>>();
   protectedResourceMap.set('api/*', [config.apiScope]);
+  protectedResourceMap.set(GRAPH_ENDPOINT, ['user.read']);
 
   return {
     interactionType: InteractionType.Redirect,
@@ -83,7 +86,8 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     HttpClientModule,
     ReactiveFormsModule,
     NgbModule,
-    MsalModule
+    MsalModule,
+    NgbDropdownModule
   ],
   providers: [
     {
