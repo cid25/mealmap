@@ -13,5 +13,5 @@
     </div>
 </div>
 <div class="d-flex flex-wrap gap-2">
-    <app-meal-schedule-card *ngFor="let meal of mealsForDisplay()" [meal]="meal" (deleted)="deleteMeal($event)"></app-meal-schedule-card>
+    <app-meal-schedule-card *ngFor="let meal of mealsForDisplay()" [meal]="meal" [highlight]="isTodays(meal)" (deleted)="deleteMeal($event)"></app-meal-schedule-card>
 </div>

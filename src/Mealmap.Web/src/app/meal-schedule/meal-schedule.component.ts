@@ -57,6 +57,13 @@ export class MealScheduleComponent implements OnInit {
     return DateTime.fromJSDate(this.reference).equals(DateTime.fromJSDate(this.today()));
   }
 
+  isTodays(meal: Meal): boolean {
+    return (
+      DateTime.fromJSDate(meal.diningDate).toISODate() ==
+      DateTime.fromJSDate(this.today()).toISODate()
+    );
+  }
+
   timeLabel(): string {
     const datetime = DateTime.fromJSDate(this.reference);
     if (this.timeperiodType == Timeperiod.Weekly)

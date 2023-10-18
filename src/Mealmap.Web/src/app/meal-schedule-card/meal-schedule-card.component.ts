@@ -10,6 +10,9 @@ export class MealScheduleCardComponent {
   @Input()
   meal!: Meal;
 
+  @Input()
+  highlight: boolean = false;
+
   @Output()
   deleted = new EventEmitter();
 
