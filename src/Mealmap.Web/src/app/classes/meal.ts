@@ -60,7 +60,7 @@ export class Meal {
     this.eTag = dto.eTag;
     this.courses = dto.courses
       .map((data) => {
-        const courseCopy = new Course(data.index, data.dishId);
+        const courseCopy = new Course(data.index, data.dishId, data.attendees);
         courseCopy.copy(data);
         return courseCopy;
       })

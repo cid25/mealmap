@@ -22,4 +22,11 @@ public record CourseDTO
     /// </summary>
     /// <example>true</example>
     public bool MainCourse { get; init; }
+
+    /// <summary>
+    /// The number of people served this course.
+    /// </summary>
+    /// <example>true</example>
+    [Range(1, int.MaxValue)]
+    public int Attendees { get; init; }
 }

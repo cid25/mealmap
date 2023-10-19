@@ -43,7 +43,7 @@ public class MealsControllerTests
         _dishRepository.Add(krabbyPatty);
 
         Meal meal = new(diningDate: DateOnly.FromDateTime(DateTime.Now));
-        meal.AddCourse(index: 1, mainCourse: true, dishId: krabbyPatty.Id);
+        meal.AddCourse(index: 1, mainCourse: true, attendees: 2, dishId: krabbyPatty.Id);
         _mealRepository.Add(meal);
     }
 

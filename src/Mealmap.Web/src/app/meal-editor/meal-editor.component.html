@@ -18,33 +18,7 @@
     <div class="d-flex flex-wrap gap-2 align-items-start">
         <div role="group" class="d-flex flex-wrap gap-2 m-1">
             <ng-container *ngFor="let course of courses">
-                <div class="card card-m border-primary">
-                    <div class="border-bottom border-primary text-center text-primary fw-bold">{{ course.index }}</div>
-                    <div class="border-bottom border-primary card-title bg-white text-center mb-0 py-2 flex-grow-1">{{ course.dish?.name }}</div>
-                    <button type="button" class="btn d-block p-0 border-0 rounded-0" (click)="activatePicker(course.index)">
-                        <img [src]="course.dish?.localImageURL" onerror="this.src='/assets/no-image.png'" class="card-image-m" alt="No image">
-                    </button>
-                    <div class="d-flex flex-wrap border-0">
-                        <button id="btnedit" class="btn btn-success rounded-0 flex-grow-1 d-flex justify-content-center align-items-center" (click)="activatePicker(course.index)">
-                            <img src="/assets/icons/arrow-clockwise.svg" class="me-1">
-                            <span>Replace</span>
-                        </button>
-                        <button id="btndelete" class="btn btn-danger rounded-0 flex-grow-1 d-flex justify-content-center align-items-center" (click)="deleteCourse(course.index)">
-                            <img src="/assets/icons/trash3-fill.svg" class="me-1">
-                            <span>Delete</span>
-                        </button>
-                    </div>
-                    <div class="p-2">
-                        <input type="radio" [id]="'course-' + course.index" name="btnmaincourse" [value]="course.index" autocomplete="off" [checked]="course.mainCourse" class="btn-check">
-                        <label [for]="'course-' + course.index" (click)="makeMainCourse(course.index)" [ngSwitch]="mainCourse(course)" class="w-100 btn btn-outline-primary d-flex justify-content-center align-items-center">
-                            <ng-container *ngSwitchCase="true">
-                                <img src="/assets/icons/star-fill.svg" class="me-1">
-                                <span >Main Course</span>
-                            </ng-container>
-                            <span *ngSwitchCase="false" class="text-primary">Make Main</span>
-                        </label>
-                    </div>
-                </div>
+                <app-meal-editor-card [course]="course" (pickerActivated)="onPickerActivated($event)" (coursePromoted)="onCoursePromoted($event)" (courseDeleted)="onCourseDeleted($event)"></app-meal-editor-card>
             </ng-container>
             <div class="card-m border border-primary rounded-2 d-flex justify-content-center align-items-center">
                 <input type="image" src="/assets/icons/plus-square-dotted.svg" (click)="activatePicker(nextCourseIndex())" alt="Add Meal" height="50em" width="50em" class="overflow-hidden">

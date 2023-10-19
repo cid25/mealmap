@@ -58,8 +58,8 @@ static Meal[] GenerateMeals(Dish[] dishes)
     for (int i = 0; i < 35; i++)
     {
         meals[i] = new Meal(startOfWeek.AddDays(-14).AddDays(i));
-        meals[i].AddCourse(index: 1, mainCourse: true, dishId: dishes[0].Id);
-        meals[i].AddCourse(index: 2, mainCourse: false, dishId: dishes[1].Id);
+        meals[i].AddCourse(index: 1, mainCourse: true, attendees: 2, dishId: dishes[0].Id);
+        meals[i].AddCourse(index: 2, mainCourse: false, attendees: 2, dishId: dishes[1].Id);
 
     }
 

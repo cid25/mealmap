@@ -62,6 +62,6 @@ public class CreateMealCommandHandler : IRequestHandler<CreateMealCommand, Comma
     {
         if (request.Dto.Courses != null)
             foreach (var course in request.Dto.Courses)
-                meal.AddCourse(course.Index, course.MainCourse, course.DishId);
+                meal.AddCourse(course.Index, course.MainCourse, course.Attendees, course.DishId);
     }
 }

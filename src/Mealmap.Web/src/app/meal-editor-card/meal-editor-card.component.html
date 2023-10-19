@@ -1,0 +1,31 @@
+<div class="card card-m border-primary">
+    <div class="text-center text-primary fw-bold mb-1">{{ course.index }}</div>
+    <ng-container [ngSwitch]="course.mainCourse">
+        <div *ngSwitchCase="true" style="height: 2.5rem;" class="d-flex justify-content-center bg-favorite p-2 text-white">
+            <img src="/assets/icons/star-fill.svg" class="me-2">
+            <div class="align-self-center">Main Course</div>
+        </div>
+        <div *ngSwitchCase="false" style="height: 2.5rem;" class="d-flex justify-content-center">
+            <button type="button" (click)="makeMainCourse()" class="btn btn-primary h-100 w-100 rounded-0">
+                <img src="/assets/icons/click.svg" class="me-2">Make Main</button>
+        </div>
+    </ng-container>
+    <button type="button" class="btn d-block p-0 border-0 rounded-0" (click)="activatePicker()">
+        <img [src]="course.dish?.localImageURL" onerror="this.src='/assets/no-image.png'" class="card-image-m" alt="No image">
+    </button>
+    <div class="d-flex flex-wrap border-0">
+        <button id="btnedit" class="btn btn-success rounded-0 flex-grow-1 d-flex justify-content-center align-items-center" (click)="activatePicker()">
+            <img src="/assets/icons/arrow-clockwise.svg" class="me-1">
+            <span>Replace</span>
+        </button>
+        <button id="btndelete" class="btn btn-danger rounded-0 flex-grow-1 d-flex justify-content-center align-items-center" (click)="deleteCourse()">
+            <img src="/assets/icons/trash3-fill.svg" class="me-1">
+            <span>Delete</span>
+        </button>
+    </div>
+    <div><h5 class="card-title bg-white text-center mb-0 py-2 flex-grow-1">{{ course.dish?.name }}</h5></div>
+    <div class="d-flex justify-content-center gap-2 my-1">
+        <input type="number" [id]="'attendees-' + course.index" [formControl]="attendeesControl" class="d-inline form-control flex-grow-0 text-end" style="max-width: 4em;" min="1">
+        <div class="align-self-center">Persons</div>
+    </div>
+</div>

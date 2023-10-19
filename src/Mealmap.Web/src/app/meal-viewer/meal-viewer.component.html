@@ -14,20 +14,23 @@
     <div class="d-flex flex-wrap gap-2">
         <ng-container *ngFor="let course of courses">
             <div class="card h-100 card-s border-primary">
-                <div class="border-bottom border-primary text-center text-primary fw-bold">{{ course.index }}</div>
-                <div class="card-title bg-white text-center my-2">{{ course.dish?.name }}</div>
-                <a [routerLink]="['/dishes', course.dish!.id]">
-                    <img [src]="course.dish?.localImageURL" onerror="this.src='/assets/no-image.png'" class="card-image-m" alt="No image">
-                </a>
+                <div class="text-center text-primary fw-bold">{{ course.index }}</div>
                 <ng-container [ngSwitch]="mainCourse(course)">
-                    <div *ngSwitchCase="true" class="bg-primary py-2 rounded-bottom-1 d-flex justify-content-center">
+                    <div *ngSwitchCase="true" class="bg-favorite py-2 d-flex justify-content-center">
                         <img src="/assets/icons/star-fill.svg" class="me-1">
                         <span class="text-white">Main Course</span>
                     </div>
-                    <div *ngSwitchCase="false" class="bg-secondary py-2 rounded-bottom-1 d-flex justify-content-center">
+                    <div *ngSwitchCase="false" class="bg-secondary py-2 d-flex justify-content-center">
                         <span class="text-white">Side Dish</span>
                     </div>
                 </ng-container>
+                <a [routerLink]="['/dishes', course.dish!.id]">
+                    <img [src]="course.dish?.localImageURL" onerror="this.src='/assets/no-image.png'" class="card-image-m" alt="No image">
+                </a>
+                <div><h5 class="card-title bg-white text-center my-2">{{ course.dish?.name }}</h5></div>
+                <div class="d-flex justify-content-center my-1">
+                    <img src='/assets/icons/attendees.svg' class="me-2"><div class="align-self-center fs-6 fw-semibold">{{ course.attendees }} Persons</div>
+                </div>
             </div>
         </ng-container>
     </div>

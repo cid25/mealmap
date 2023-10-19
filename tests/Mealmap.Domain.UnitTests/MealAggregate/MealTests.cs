@@ -1,5 +1,5 @@
-﻿using Mealmap.Domain.MealAggregate;
-using Mealmap.Domain.Common.Validation;
+﻿using Mealmap.Domain.Common.Validation;
+using Mealmap.Domain.MealAggregate;
 
 namespace Mealmap.Domain.UnitTests.MealAggregate;
 
@@ -9,9 +9,9 @@ public class MealTests
     public void AddCourse_WhenAddingSecondMainCourse_ThrowsDomainValidationException()
     {
         Meal meal = new(DateOnly.FromDateTime(DateTime.Now));
-        meal.AddCourse(1, true, Guid.NewGuid());
+        meal.AddCourse(index: 1, mainCourse: true, attendees: 1, dishId: Guid.NewGuid());
 
-        Action act = () => meal.AddCourse(1, true, Guid.NewGuid());
+        Action act = () => meal.AddCourse(index: 2, mainCourse: true, attendees: 1, dishId: Guid.NewGuid());
 
         act.Should().Throw<DomainValidationException>();
     }
@@ -22,11 +22,11 @@ public class MealTests
         var someDate = DateOnly.FromDateTime(DateTime.Now);
         var someDishId = Guid.NewGuid();
         var meal = new Meal(someDate);
-        meal.AddCourse(1, false, someDishId);
-        meal.AddCourse(2, true, someDishId);
-        meal.AddCourse(4, false, someDishId);
+        meal.AddCourse(index: 1, mainCourse: false, attendees: 1, dishId: someDishId);
+        meal.AddCourse(index: 2, mainCourse: true, attendees: 1, dishId: someDishId);
+        meal.AddCourse(index: 4, mainCourse: false, attendees: 1, dishId: someDishId);
 
-        meal.AddCourse(2, false, someDishId);
+        meal.AddCourse(index: 2, mainCourse: false, attendees: 1, dishId: someDishId);
 
         meal.Courses.Where(x => x.Index == 2).Count().Should().Be(1);
         meal.Courses.Where(x => x.Index == 3).Count().Should().Be(1);
@@ -39,9 +39,9 @@ public class MealTests
         var someDate = DateOnly.FromDateTime(DateTime.Now);
         var someDishId = Guid.NewGuid();
         var meal = new Meal(someDate);
-        meal.AddCourse(1, false, someDishId);
-        meal.AddCourse(2, true, someDishId);
-        meal.AddCourse(4, false, someDishId);
+        meal.AddCourse(index: 1, mainCourse: false, attendees: 1, dishId: someDishId);
+        meal.AddCourse(index: 2, mainCourse: true, attendees: 1, dishId: someDishId);
+        meal.AddCourse(index: 4, mainCourse: false, attendees: 1, dishId: someDishId);
 
         meal.RemoveAllCourses();
 

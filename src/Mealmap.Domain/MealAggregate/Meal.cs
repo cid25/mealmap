@@ -30,12 +30,12 @@ public class Meal : EntityBase
     }
 
     /// <exception cref="DomainValidationException"></exception>
-    public void AddCourse(int index, bool mainCourse, Guid dishId)
+    public void AddCourse(int index, bool mainCourse, int attendees, Guid dishId)
     {
         if (mainCourse)
             ValidateNoExistingMainCourse();
 
-        Course course = new(index, mainCourse, dishId);
+        Course course = new(index, mainCourse, attendees, dishId);
         AddCourse(course);
     }
 

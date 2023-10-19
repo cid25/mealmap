@@ -54,6 +54,7 @@ public class MealsController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<MealDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    [SwaggerResponseExample(200, typeof(MealsResponseExample))]
     public ActionResult<IEnumerable<MealDTO>> GetMeals([FromQuery] DateOnly? fromDate, [FromQuery] DateOnly? toDate)
     {
         var meals = _repository.GetAll(fromDate, toDate);

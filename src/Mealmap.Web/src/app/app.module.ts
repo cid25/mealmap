@@ -1,6 +1,6 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule, inject } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import {
   MSAL_INSTANCE,
@@ -33,6 +33,7 @@ import { MealScheduleComponent } from './meal-schedule/meal-schedule.component';
 import { MealViewerComponent } from './meal-viewer/meal-viewer.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { SearchInputComponent } from './search-input/search-input.component';
+import { MealEditorCardComponent } from './meal-editor-card/meal-editor-card.component';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   const config = inject(APP_CONFIG);
@@ -78,12 +79,14 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     DishEditorComponent,
     DishViewerComponent,
     MealViewerComponent,
-    SearchInputComponent
+    SearchInputComponent,
+    MealEditorCardComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     AppRoutingModule,
     HttpClientModule,
+    FormsModule,
     ReactiveFormsModule,
     NgbModule,
     MsalModule,

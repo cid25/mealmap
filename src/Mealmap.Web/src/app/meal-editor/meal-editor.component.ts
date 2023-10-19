@@ -1,11 +1,12 @@
+import { Location } from '@angular/common';
 import { Component, OnChanges, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
 import { DateTime } from 'luxon';
-import { MealService } from '../services/meal.service';
-import { DishPickedEvent } from '../interfaces/dish-picked.event';
-import { Meal } from '../classes/meal';
 import { Course } from '../classes/course';
+import { Meal } from '../classes/meal';
+import { DishPickedEvent } from '../interfaces/dish-picked.event';
+import { CourseEvent } from '../meal-editor-card/meal-editor-card.component';
+import { MealService } from '../services/meal.service';
 
 @Component({
   selector: 'app-meal-editor',
@@ -47,17 +48,6 @@ export class MealEditorComponent implements OnInit, OnChanges {
     this.location.back();
   }
 
-  mainCourse(course: Course): boolean {
-    return course.mainCourse;
-  }
-
-  makeMainCourse(index: number) {
-    this.meal?.courses.forEach((course) => {
-      if (course.index == index) course.mainCourse = true;
-      else course.mainCourse = false;
-    });
-  }
-
   mealEdited(): boolean {
     if (this.meal == undefined) return false;
     return this.meal.toJSON() != this.uneditedMeal!.toJSON();
@@ -67,16 +57,6 @@ export class MealEditorComponent implements OnInit, OnChanges {
     const indices = this.meal?.courses.map<number>((course) => course.index);
     if (indices != undefined && indices.length > 0) return Math.max(...indices) + 1;
     else return 1;
-  }
-
-  deleteCourse(index: number): void {
-    const remainingCourses = this.meal?.courses.filter((course) => course.index != index);
-    if (remainingCourses == undefined) this.meal!.courses = [];
-    else this.meal!.courses = remainingCourses;
-
-    this.shiftCourses(index);
-
-    if (this.meal?.courses.length == 1) this.meal.courses[0].mainCourse = true;
   }
 
   async saveChanges(): Promise<void> {
@@ -89,9 +69,13 @@ export class MealEditorComponent implements OnInit, OnChanges {
     this.deactivatePicker();
   }
 
-  activatePicker(courseIndex: number): void {
+  onPickerActivated(event: CourseEvent): void {
+    this.activatePicker(event.index);
+  }
+
+  activatePicker(index: number): void {
     this.dishPickerActive = true;
-    this.courseIndexPicking = courseIndex;
+    this.courseIndexPicking = index;
   }
 
   cancelPicking(): void {
@@ -106,11 +90,28 @@ export class MealEditorComponent implements OnInit, OnChanges {
       existingCourse[0].dish = pickedEvent.dish;
       existingCourse[0].dishId = pickedEvent.dish.id!;
     } else {
-      const course = new Course(pickedEvent.index, pickedEvent.dish.id!);
+      const course = new Course(pickedEvent.index, pickedEvent.dish.id!, 1);
       course.dish = pickedEvent.dish;
       if (this.meal?.courses.length === 0) course.mainCourse = true;
       this.meal?.courses.push(course);
     }
+  }
+
+  onCoursePromoted(event: CourseEvent): void {
+    this.meal?.courses.forEach((course) => {
+      if (course.index == event.index) course.mainCourse = true;
+      else course.mainCourse = false;
+    });
+  }
+
+  onCourseDeleted(event: CourseEvent): void {
+    const remainingCourses = this.meal?.courses.filter((course) => course.index != event.index);
+    if (remainingCourses == undefined) this.meal!.courses = [];
+    else this.meal!.courses = remainingCourses;
+
+    this.shiftCourses(event.index);
+
+    if (this.meal?.courses.length == 1) this.meal.courses[0].mainCourse = true;
   }
 
   private async retrieveMeal(): Promise<void> {

@@ -13,6 +13,10 @@ code {
   color: #e01a76;
 }
 
+.bg-favorite {
+  background: goldenrod;
+}
+
 .btn-primary {
   color: #fff;
   background-color: #1b6ec2;
@@ -27,7 +31,7 @@ code {
 }
 
 .card-m {
-  width: min(202px, 45vw);
+  width: min(202px, 44vw);
   min-height: min(300px, 45vh);
   max-height: max(420px, 30vh);
 }
@@ -40,7 +44,7 @@ code {
 }
 
 .card-s {
-  width: min(202px, 45vw);
+  width: min(202px, 44vw);
 }
 
 .card-image-xs {

@@ -41,7 +41,7 @@ public class SqlMealRepositoryTests
         for (var day = 1; day <= 4; day++)
         {
             _meals[day - 1] = new(diningDate: new DateOnly(2020, 1, day));
-            _meals[day - 1].AddCourse(1, true, _dishes[0].Id);
+            _meals[day - 1].AddCourse(index: 1, mainCourse: true, attendees: 2, _dishes[0].Id);
         }
         _dbContext.AddRange(_meals);
 
@@ -170,7 +170,7 @@ public class SqlMealRepositoryTests
         var originalCount = meal!.Courses.Count;
         var originalVersion = meal.Version;
 
-        meal.AddCourse(2, false, _dishes![0].Id);
+        meal.AddCourse(index: 2, mainCourse: false, attendees: 2, _dishes![0].Id);
         _repository.Update(meal);
         _dbContext.SaveChanges();
 

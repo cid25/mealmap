@@ -73,6 +73,6 @@ public class UpdateMealCommandHandler : IRequestHandler<UpdateMealCommand, Comma
         meal.RemoveAllCourses();
         if (request.Dto.Courses != null)
             foreach (var course in request.Dto.Courses)
-                meal.AddCourse(course.Index, course.MainCourse, course.DishId);
+                meal.AddCourse(course.Index, course.MainCourse, course.Attendees, course.DishId);
     }
 }
