@@ -1,4 +1,4 @@
-import { MealDTO } from '../interfaces/meal.dto';
+import { MealDTO } from './meal.dto';
 import { Course } from './course';
 import { DateTime } from 'luxon';
 

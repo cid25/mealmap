@@ -1,5 +1,5 @@
-import { IngredientFormData } from '../interfaces/ingredient-form-data';
-import { IngredientDTO } from '../interfaces/ingredient.dto';
+import { IngredientFormData } from '../components/dish-editor/ingredient-form-data';
+import { IngredientDTO } from './ingredient.dto';
 
 export class Ingredient {
   quantity: number;

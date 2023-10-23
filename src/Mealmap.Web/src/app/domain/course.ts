@@ -1,4 +1,4 @@
-import { CourseDTO } from '../interfaces/course.dto';
+import { CourseDTO } from './course.dto';
 import { Dish } from './dish';
 
 export class Course {

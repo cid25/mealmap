@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { DishService } from '../services/dish.service';
-import { Dish } from '../classes/dish';
-import { IngredientFormData } from '../interfaces/ingredient-form-data';
-import { DishFormData } from '../interfaces/dish-form-data';
+import { DishService } from '../../services/dish.service';
+import { Dish } from '../../domain/dish';
+import { IngredientFormData } from './ingredient-form-data';
+import { DishFormData } from './dish-form-data';
 import { SafeUrl } from '@angular/platform-browser';
 
 type IngredientGroup = FormGroup<{

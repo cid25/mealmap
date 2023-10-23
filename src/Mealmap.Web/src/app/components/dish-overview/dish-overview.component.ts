@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Dish } from '../classes/dish';
-import { DishService } from '../services/dish.service';
-import { SearchedEvent } from '../interfaces/searched.event';
+import { Dish } from '../../domain/dish';
+import { DishService } from '../../services/dish.service';
+import { SearchedEvent } from '../../events/searched.event';
 
 @Component({
   selector: 'app-dish-overview',

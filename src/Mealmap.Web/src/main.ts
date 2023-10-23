@@ -6,7 +6,7 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 import { InjectionToken } from '@angular/core';
-import { IConfig } from './app/interfaces/config';
+import { IConfig } from './app/config';
 
 export function getBaseUrl() {
   return document.getElementsByTagName('base')[0].href;

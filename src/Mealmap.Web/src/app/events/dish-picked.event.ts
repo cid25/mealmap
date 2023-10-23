@@ -1,4 +1,4 @@
-import { Dish } from '../classes/dish';
+import { Dish } from '../domain/dish';
 
 export interface DishPickedEvent {
   index: number;

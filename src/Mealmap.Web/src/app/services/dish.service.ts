@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpParams } from '@angular/common/http';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { firstValueFrom, catchError, of } from 'rxjs';
-import { Paginated } from '../interfaces/paginated.dto';
-import { DishDTO } from '../interfaces/dish.dto';
-import { Dish } from '../classes/dish';
-import { ETag } from '../classes/etag';
+import { Paginated } from '../domain/paginated.dto';
+import { DishDTO } from '../domain/dish.dto';
+import { Dish } from '../domain/dish';
+import { ETag } from '../domain/etag';
 
 @Injectable({
   providedIn: 'root'

@@ -1,8 +1,8 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Dish } from '../classes/dish';
-import { DishService } from '../services/dish.service';
+import { Dish } from '../../domain/dish';
+import { DishService } from '../../services/dish.service';
 
 @Component({
   selector: 'app-dish-viewer',

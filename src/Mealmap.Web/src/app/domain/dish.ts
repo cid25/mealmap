@@ -1,8 +1,8 @@
 import { SafeUrl } from '@angular/platform-browser';
 import { Ingredient } from './ingredient';
-import { DishDTO } from '../interfaces/dish.dto';
-import { DishFormData } from '../interfaces/dish-form-data';
-import { ETag } from '../classes/etag';
+import { DishDTO } from './dish.dto';
+import { DishFormData } from '../components/dish-editor/dish-form-data';
+import { ETag } from './etag';
 
 export class Dish {
   id?: string;

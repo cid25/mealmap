@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { MealScheduleComponent } from './meal-schedule/meal-schedule.component';
-import { MealEditorComponent } from './meal-editor/meal-editor.component';
-import { MealViewerComponent } from './meal-viewer/meal-viewer.component';
-import { DishOverviewComponent } from './dish-overview/dish-overview.component';
-import { DishEditorComponent } from './dish-editor/dish-editor.component';
-import { DishViewerComponent } from './dish-viewer/dish-viewer.component';
+import { MealScheduleComponent } from './components/meal-schedule/meal-schedule.component';
+import { MealEditorComponent } from './components/meal-editor/meal-editor.component';
+import { MealViewerComponent } from './components/meal-viewer/meal-viewer.component';
+import { DishOverviewComponent } from './components/dish-overview/dish-overview.component';
+import { DishEditorComponent } from './components/dish-editor/dish-editor.component';
+import { DishViewerComponent } from './components/dish-viewer/dish-viewer.component';
 
 const routes: Routes = [
   { path: 'meals/current', component: MealScheduleComponent, title: 'Meal Schedule' },

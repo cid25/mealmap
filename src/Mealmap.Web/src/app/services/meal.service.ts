@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { DateTime } from 'luxon';
-import { MealDTO } from '../interfaces/meal.dto';
-import { Meal } from '../classes/meal';
+import { MealDTO } from '../domain/meal.dto';
+import { Meal } from '../domain/meal';
 import { DishService } from './dish.service';
 
 @Injectable({
