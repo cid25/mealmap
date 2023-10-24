@@ -36,7 +36,7 @@ export class DishService {
 
     while (response.next != undefined && (maxResults == undefined || dtos.length < maxResults)) {
       response = await firstValueFrom(this.http.get<Paginated<DishDTO>>(response.next.toString()));
-      dtos.push(src / app.response.items.map((dishDTO) => Dish.from(dishDTO)));
+      dtos.push(...response.items.map((dishDTO) => Dish.from(dishDTO)));
     }
 
     dtos.forEach(([dish, etag]) => this.updateCachesWith(dish, etag));
