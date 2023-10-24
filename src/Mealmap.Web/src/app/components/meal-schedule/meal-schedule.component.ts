@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { DateTime } from 'luxon';
-import { Meal } from '../../domain/meal';
-import { MealService } from '../../services/meal.service';
+import { Meal } from 'src/app/domain/meal';
+import { MealService } from 'src/app/services/meal.service';
 
 @Component({
   selector: 'app-meal-schedule',

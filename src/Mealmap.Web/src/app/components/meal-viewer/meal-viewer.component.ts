@@ -2,9 +2,9 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DateTime } from 'luxon';
-import { Meal } from '../../domain/meal';
-import { MealService } from '../../services/meal.service';
-import { Course } from '../../domain/course';
+import { Meal } from 'src/app/domain/meal';
+import { MealService } from 'src/app/services/meal.service';
+import { Course } from 'src/app/domain/course';
 
 @Component({
   selector: 'app-meal-viewer',

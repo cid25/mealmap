@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { MealScheduleCardComponent } from './meal-schedule-card.component';
+import { Meal } from 'src/app/domain/meal';
+import { DateTime } from 'luxon';
 
 describe('MealScheduleCardComponent', () => {
   let component: MealScheduleCardComponent;
@@ -13,6 +14,7 @@ describe('MealScheduleCardComponent', () => {
 
     fixture = TestBed.createComponent(MealScheduleCardComponent);
     component = fixture.componentInstance;
+    component.meal = new Meal(DateTime.now().toJSDate());
     fixture.detectChanges();
   });
 

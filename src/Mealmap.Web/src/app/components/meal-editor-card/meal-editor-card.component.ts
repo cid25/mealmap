@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter, Input, OnInit } from '@angular/core';
-import { Course } from '../../domain/course';
+import { Course } from 'src/app/domain/course';
 import { FormControl } from '@angular/forms';
 
 export type CourseEvent = {

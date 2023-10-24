@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Meal } from '../../domain/meal';
-import { Course } from '../../domain/course';
+import { Meal } from 'src/app/domain/meal';
+import { Course } from 'src/app/domain/course';
 
 @Component({
   selector: 'app-meal-schedule-card',

@@ -17,5 +17,12 @@
       "editor.codeActionsOnSave": {
         "source.formatAll.terraform": true
       }
-    }
+    },
+    "karmaTestExplorer.autoWatchEnabled": true,
+    "karmaTestExplorer.autoWatchBatchDelay": 1000,
+    "karmaTestExplorer.karmaConfFilePath": "src/Mealmap.Web/karma.conf.js",
+    "karmaTestExplorer.testFramework": "jasmine",
+    "karmaTestExplorer.projectWorkspaces": [
+      "src/Mealmap.Web"
+    ]
 }

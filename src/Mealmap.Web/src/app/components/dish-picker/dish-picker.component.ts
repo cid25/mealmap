@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { DishService } from '../../services/dish.service';
-import { Dish } from '../../domain/dish';
-import { SearchedEvent } from '../../events/searched.event';
-import { DishPickedEvent } from '../../events/dish-picked.event';
+import { DishService } from 'src/app/services/dish.service';
+import { Dish } from 'src/app/domain/dish';
+import { SearchedEvent } from 'src/app/events/searched.event';
+import { DishPickedEvent } from 'src/app/events/dish-picked.event';
 
 @Component({
   selector: 'app-dish-picker',

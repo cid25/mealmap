@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { InteractionStatus } from '@azure/msal-browser';
 import { Subject, filter, takeUntil } from 'rxjs';
-import { GRAPH_ENDPOINT } from '../../app.module';
+import { GRAPH_ENDPOINT } from 'src/app/app.module';
 
 type ProfileType = {
   displayName?: string;

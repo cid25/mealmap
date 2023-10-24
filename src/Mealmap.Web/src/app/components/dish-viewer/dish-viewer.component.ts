@@ -1,8 +1,8 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Dish } from '../../domain/dish';
-import { DishService } from '../../services/dish.service';
+import { ActivatedRoute } from '@angular/router';
+import { Dish } from 'src/app/domain/dish';
+import { DishService } from 'src/app/services/dish.service';
 
 @Component({
   selector: 'app-dish-viewer',
@@ -13,7 +13,6 @@ export class DishViewerComponent implements OnInit {
 
   constructor(
     private dishService: DishService,
-    private router: Router,
     private route: ActivatedRoute,
     private location: Location
   ) {}

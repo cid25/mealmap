@@ -30,6 +30,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Restore Node env
+      working-directory: src/Mealmap.Web
+      run: npm install
+    - name: Angular Unit Tests
+      working-directory: src/Mealmap.Web
+      run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadless
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:

@@ -2,11 +2,11 @@ import { Location } from '@angular/common';
 import { Component, OnChanges, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DateTime } from 'luxon';
-import { Course } from '../../domain/course';
-import { Meal } from '../../domain/meal';
-import { DishPickedEvent } from '../../events/dish-picked.event';
-import { CourseEvent } from '../meal-editor-card/meal-editor-card.component';
-import { MealService } from '../../services/meal.service';
+import { Course } from 'src/app/domain/course';
+import { Meal } from 'src/app/domain/meal';
+import { DishPickedEvent } from 'src/app/events/dish-picked.event';
+import { CourseEvent } from 'src/app/components/meal-editor-card/meal-editor-card.component';
+import { MealService } from 'src/app/services/meal.service';
 
 @Component({
   selector: 'app-meal-editor',

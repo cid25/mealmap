@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Dish } from '../../domain/dish';
+import { Dish } from 'src/app/domain/dish';
 
 @Component({
   selector: 'app-dish-card',

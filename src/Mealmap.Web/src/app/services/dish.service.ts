@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpParams } from '@angular/common/http';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { firstValueFrom, catchError, of } from 'rxjs';
-import { Paginated } from '../domain/paginated.dto';
-import { DishDTO } from '../domain/dish.dto';
-import { Dish } from '../domain/dish';
-import { ETag } from '../domain/etag';
+import { Paginated } from 'src/app/domain/paginated.dto';
+import { DishDTO } from 'src/app/domain/dish.dto';
+import { Dish } from 'src/app/domain/dish';
+import { ETag } from 'src/app/domain/etag';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +36,7 @@ export class DishService {
 
     while (response.next != undefined && (maxResults == undefined || dtos.length < maxResults)) {
       response = await firstValueFrom(this.http.get<Paginated<DishDTO>>(response.next.toString()));
-      dtos.push(...response.items.map((dishDTO) => Dish.from(dishDTO)));
+      dtos.push(src / app.response.items.map((dishDTO) => Dish.from(dishDTO)));
     }
 
     dtos.forEach(([dish, etag]) => this.updateCachesWith(dish, etag));
