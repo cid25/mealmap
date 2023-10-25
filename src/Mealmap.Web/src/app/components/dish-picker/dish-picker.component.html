@@ -10,12 +10,12 @@
         <app-search-input (searched)="onSearch($event)"></app-search-input>
     </div>
     <div class="m-2 d-flex flex-wrap gap-2">
-        <div *ngFor="let dish of dishes" class="card border-primary">
+        <div *ngFor="let dish of dishes; index as i" class="card border-primary">
             <div class="border-bottom border-primary text-center p-1">{{ dish.name }}</div>
-            <button type="button" class="btn d-block p-0 border-0" (click)="select(dish.id!)">
+            <button type="button" [id]="'btnimage-' + i" class="btn d-block p-0 border-0" (click)="select(dish.id!)">
                 <img [src]="dish.localImageURL" onerror="this.src='/assets/no-image.png'" class="card-image-xs" alt="No image">
             </button>
-            <button id="btnselect" class="btn btn-primary border-top-0" (click)="select(dish.id!)">Select</button>
+            <button type="button" [id]="'btnselect-' + i" class="btn btn-primary border-top-0" (click)="select(dish.id!)">Select</button>
         </div>
     </div>
 </div>

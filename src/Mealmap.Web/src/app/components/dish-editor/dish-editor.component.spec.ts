@@ -20,7 +20,6 @@ describe('DishEditorComponent', () => {
         provideRouter([{ path: 'new', component: DishEditorComponent }]),
         { provide: Location, useValue: locationSpy },
         { provide: DishService, useValue: dishServiceSpy }
-        // { provide: DishService, useValue: dishServiceStub as unknown as DishService }
       ]
     })
       .compileComponents()
