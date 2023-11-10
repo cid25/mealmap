@@ -1,4 +1,6 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Mealmap.Api.Dishes;
+using Mealmap.Api.Meals;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Mealmap.Api.Swagger;
@@ -9,8 +11,8 @@ public class IfMatchHeaderFilter : IOperationFilter
     {
         List<string> applicableMethods = new()
         {
-            nameof(Controllers.DishesController.PutDish),
-            nameof(Controllers.MealsController.PutMeal),
+            nameof(DishesController.PutDish),
+            nameof(MealsController.PutMeal),
         };
 
         if (applicableMethods.Contains(operation.OperationId))

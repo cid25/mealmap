@@ -1,4 +1,4 @@
-﻿using Mealmap.Api.DataTransferObjects;
+﻿using Mealmap.Api.Meals;
 using Swashbuckle.AspNetCore.Filters;
 
 

@@ -1,9 +1,8 @@
 ﻿using System.Reflection;
-using Mealmap.Api;
-using Mealmap.Api.CommandHandlers;
-using Mealmap.Api.CommandValidators;
-using Mealmap.Api.OutputMappers;
-using Mealmap.Api.RequestFormatters;
+using Mealmap.Api.Dishes;
+using Mealmap.Api.Meals;
+using Mealmap.Api.Settings;
+using Mealmap.Api.Shared;
 using Mealmap.Api.Swagger;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
@@ -34,12 +33,12 @@ try
     // Add Configuration
     builder.Services
         .Configure<HostingOptions>(builder.Configuration.GetSection(HostingOptions.SectionName))
-        .Configure<AngularSettings>(builder.Configuration.GetSection(AngularSettings.SectionName));
+        .Configure<AngularOptions>(builder.Configuration.GetSection(AngularOptions.SectionName));
 
-    // Add Domain Services
+    // Add Domain services
     builder.Services.RegisterDeferredDomainValidation();
 
-    // Add Infrastructure Services
+    // Add Infrastructure services
     builder.Services.AddDbContext<MealmapDbContext>(options
         => options.UseSqlServer(
             builder.Configuration.GetConnectionString("MealmapDb"),
@@ -49,14 +48,30 @@ try
         .AddScoped<IMealRepository, SqlMealRepository>()
         .AddScoped<IRepository<Dish>, SqlDishRepository>();
 
-    // Add Application Services
+    // Add Application services
     builder.Services
         .AddHttpContextAccessor()
         .AddScoped<IRequestContext, RequestContext>()
         .AddScoped<UrlBuilder>()
-        .AddDataTransferObjectValidators()
-        .AddCommandHandlers()
-        .AddOutputMappers();
+        .AddAutoMapper(typeof(AutomapperProfile))
+        .Scan(scan => scan.FromAssembliesOf(typeof(ICommandProcessor<,>))
+            .AddClasses(
+                classes => classes.AssignableTo(typeof(ICommandProcessor<,>))).AsImplementedInterfaces()
+            .AddClasses(
+                classes => classes.AssignableTo(typeof(IQueryResponder<,>))).AsImplementedInterfaces()
+        )
+        .AddScoped<DishDataTransferObjectValidator>()
+        .AddScoped<IOutputMapper<DishDTO, Dish>, DishOutputMapper>()
+        .AddScoped<MealDataTransferObjectValidator>()
+        .AddScoped<IOutputMapper<MealDTO, Meal>, MealOutputMapper>()
+        .Decorate<ICommandProcessor<CreateDishCommand, DishDTO>, CommandLoggerDecorator<CreateDishCommand, DishDTO>>()
+        .Decorate<ICommandProcessor<UpdateDishCommand, DishDTO>, CommandLoggerDecorator<UpdateDishCommand, DishDTO>>()
+        .Decorate<ICommandProcessor<DeleteDishCommand, DishDTO>, CommandLoggerDecorator<DeleteDishCommand, DishDTO>>()
+        .Decorate<ICommandProcessor<UpdateDishImageCommand, DishDTO>, CommandLoggerDecorator<UpdateDishImageCommand, DishDTO>>()
+        .Decorate<ICommandProcessor<DeleteDishImageCommand, DishDTO>, CommandLoggerDecorator<DeleteDishImageCommand, DishDTO>>()
+        .Decorate<ICommandProcessor<CreateMealCommand, MealDTO>, CommandLoggerDecorator<CreateMealCommand, MealDTO>>()
+        .Decorate<ICommandProcessor<UpdateMealCommand, MealDTO>, CommandLoggerDecorator<UpdateMealCommand, MealDTO>>()
+        .Decorate<ICommandProcessor<DeleteMealCommand, MealDTO>, CommandLoggerDecorator<DeleteMealCommand, MealDTO>>();
 
     builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration);
     builder.Services.AddControllers(options =>
@@ -64,7 +79,7 @@ try
         );
     builder.Services.AddProblemDetails();
 
-    // Add Swashbuckle
+    // Add Swashbuckle services
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerOperationExamples();
     builder.Services.AddSwaggerGen(options =>
