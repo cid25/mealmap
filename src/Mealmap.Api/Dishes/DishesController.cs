@@ -179,6 +179,7 @@ public class DishesController : ControllerBase
     /// Retrieves the image of a specific dish.
     /// </summary>
     /// <param name="id">The id of the dish to retrieve the image from.</param>
+    /// <param name="responder"></param>
     /// <response code="200">Image Set</response>
     /// <response code="204">No Image</response>
     /// <response code="404">Dish Not Found</response>

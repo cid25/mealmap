@@ -6,7 +6,6 @@ namespace Mealmap.Api.Dishes;
 
 public class DishImageQueryResponder : IQueryResponder<DishImageQuery, (DishDTO?, Image?)>
 {
-    private readonly ILogger<DishesController> _logger;
     private readonly IRepository<Dish> _repository;
     private readonly IOutputMapper<DishDTO, Dish> _outputMapper;
 

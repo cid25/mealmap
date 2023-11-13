@@ -30,6 +30,7 @@ public class MealsController : ControllerBase
     /// <response code="204">No Meals Found</response>
     /// <param name="fromDate">Date from which to include meals.</param>
     /// <param name="toDate">Date until which to include meals.</param>
+    /// <param name="responder"></param>
     [HttpGet(Name = nameof(GetMeals))]
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<MealDTO>), StatusCodes.Status200OK)]
