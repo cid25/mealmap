@@ -14,7 +14,7 @@ public record Course
     public bool MainCourse { get; internal init; }
 
     [Range(1, int.MaxValue)]
-    public int Attendees { get; internal init; }
+    public int Attendees { get; internal init; } = 1;
 
     public Guid DishId { get; internal init; }
 
@@ -22,7 +22,6 @@ public record Course
     {
         Id = Guid.NewGuid();
         (Index, MainCourse, DishId) = (index, mainCourse, dishId);
-        Attendees = 1;
     }
 
     internal Course(int index, bool mainCourse, int attendees, Guid dishId)

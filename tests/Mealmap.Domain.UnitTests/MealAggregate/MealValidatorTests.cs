@@ -6,17 +6,23 @@ namespace Mealmap.Domain.UnitTests.MealAggregate;
 
 public class MealValidatorTests
 {
+    private readonly Meal _meal;
+
+    public MealValidatorTests()
+    {
+        _meal = new Meal(DateOnly.FromDateTime(DateTime.Now));
+        _meal.AddCourse(index: 1, mainCourse: true, attendees: 1, dishId: Guid.NewGuid());
+    }
+
     [Fact]
     public void ValidateAsync_WhenDishInCourseValid_ReturnsValidResult()
     {
         // Arrange
-        var meal = new Meal(DateOnly.FromDateTime(DateTime.Now));
-        meal.AddCourse(index: 1, mainCourse: true, attendees: 1, dishId: Guid.NewGuid());
-        var repository = Mock.Of<IRepository<Dish>>(m => m.GetSingleById(It.IsAny<Guid>()) == new Dish("fakeName"));
+        var repository = Mock.Of<IRepository<Dish>>(m => m.GetSingleById(It.IsAny<Guid>()) == new Dish("dummyName"));
         var sut = new MealValidator(repository);
 
         // Act
-        var result = sut.ValidateAsync(meal);
+        var result = sut.ValidateAsync(_meal);
 
         // Assert
         result.Result.IsValid.Should().BeTrue();
@@ -27,13 +33,11 @@ public class MealValidatorTests
     public void ValidateAsync_WhenDishInCourseNotFound_ReturnsErrorResult()
     {
         // Arrange
-        var meal = new Meal(DateOnly.FromDateTime(DateTime.Now));
-        meal.AddCourse(index: 1, mainCourse: true, attendees: 1, dishId: Guid.NewGuid());
         var repository = Mock.Of<IRepository<Dish>>(m => m.GetSingleById(It.IsAny<Guid>()) == null);
         var sut = new MealValidator(repository);
 
         // Act
-        var result = sut.ValidateAsync(meal);
+        var result = sut.ValidateAsync(_meal);
 
         // Assert
         result.Result.IsValid.Should().BeFalse();

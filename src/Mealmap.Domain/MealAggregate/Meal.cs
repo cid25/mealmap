@@ -32,26 +32,28 @@ public class Meal : EntityBase
     /// <exception cref="DomainValidationException"></exception>
     public void AddCourse(int index, bool mainCourse, int attendees, Guid dishId)
     {
-        if (mainCourse)
-            ValidateNoExistingMainCourse();
 
         Course course = new(index, mainCourse, attendees, dishId);
         AddCourse(course);
+    }
+
+    /// <exception cref="DomainValidationException"></exception>
+    internal void AddCourse(Course course)
+    {
+        if (course.MainCourse)
+            ValidateNoExistingMainCourse();
+
+        Course? courseAtSameIndex = CourseAtSameIndex(course.Index);
+        if (courseAtSameIndex != null)
+            ShiftIndexFor(courseAtSameIndex);
+
+        _courses.Add(course);
     }
 
     private void ValidateNoExistingMainCourse()
     {
         if (_courses.Where(c => c.MainCourse).Any())
             throw new DomainValidationException("There may only be one main course.");
-    }
-
-    private void AddCourse(Course course)
-    {
-        Course? courseAtSameIndex = CourseAtSameIndex(course.Index);
-        if (courseAtSameIndex != null)
-            ShiftIndexFor(courseAtSameIndex);
-
-        _courses.Add(course);
     }
 
     private Course? CourseAtSameIndex(int index)

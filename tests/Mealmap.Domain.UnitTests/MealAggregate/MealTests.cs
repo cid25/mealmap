@@ -5,13 +5,21 @@ namespace Mealmap.Domain.UnitTests.MealAggregate;
 
 public class MealTests
 {
+    private readonly Meal _meal;
+
+    public MealTests()
+    {
+        _meal = new Meal(DateOnly.FromDateTime(DateTime.Now));
+    }
+
     [Fact]
     public void AddCourse_WhenAddingSecondMainCourse_ThrowsDomainValidationException()
     {
-        Meal meal = new(DateOnly.FromDateTime(DateTime.Now));
-        meal.AddCourse(index: 1, mainCourse: true, attendees: 1, dishId: Guid.NewGuid());
+        var course = (new TestCourseBuilder()).AsMainCourse().Build();
+        _meal.AddCourse(course);
 
-        Action act = () => meal.AddCourse(index: 2, mainCourse: true, attendees: 1, dishId: Guid.NewGuid());
+        var anotherMainCourse = (new TestCourseBuilder()).AsMainCourse().Build();
+        Action act = () => _meal.AddCourse(anotherMainCourse);
 
         act.Should().Throw<DomainValidationException>();
     }
@@ -19,32 +27,49 @@ public class MealTests
     [Fact]
     public void SetOrderOfCourses_WhenMultipleCoursesSameIndex_ShiftsCourse()
     {
-        var someDate = DateOnly.FromDateTime(DateTime.Now);
-        var someDishId = Guid.NewGuid();
-        var meal = new Meal(someDate);
-        meal.AddCourse(index: 1, mainCourse: false, attendees: 1, dishId: someDishId);
-        meal.AddCourse(index: 2, mainCourse: true, attendees: 1, dishId: someDishId);
-        meal.AddCourse(index: 4, mainCourse: false, attendees: 1, dishId: someDishId);
+        _meal.AddCourse((new TestCourseBuilder()).WithIndex(1).Build());
+        _meal.AddCourse((new TestCourseBuilder()).WithIndex(2).Build());
+        _meal.AddCourse((new TestCourseBuilder()).WithIndex(4).Build());
 
-        meal.AddCourse(index: 2, mainCourse: false, attendees: 1, dishId: someDishId);
+        _meal.AddCourse((new TestCourseBuilder()).WithIndex(2).Build());
 
-        meal.Courses.Where(x => x.Index == 2).Count().Should().Be(1);
-        meal.Courses.Where(x => x.Index == 3).Count().Should().Be(1);
-        meal.Courses.Where(x => x.Index == 4).Count().Should().Be(1);
+        _meal.Courses.Where(x => x.Index == 2).Count().Should().Be(1);
+        _meal.Courses.Where(x => x.Index == 3).Count().Should().Be(1);
+        _meal.Courses.Where(x => x.Index == 4).Count().Should().Be(1);
     }
 
     [Fact]
     public void RemoveAllCourses_PurgesCourses()
     {
-        var someDate = DateOnly.FromDateTime(DateTime.Now);
-        var someDishId = Guid.NewGuid();
-        var meal = new Meal(someDate);
-        meal.AddCourse(index: 1, mainCourse: false, attendees: 1, dishId: someDishId);
-        meal.AddCourse(index: 2, mainCourse: true, attendees: 1, dishId: someDishId);
-        meal.AddCourse(index: 4, mainCourse: false, attendees: 1, dishId: someDishId);
+        _meal.AddCourse((new TestCourseBuilder()).Build());
+        _meal.AddCourse((new TestCourseBuilder()).Build());
+        _meal.AddCourse((new TestCourseBuilder()).Build());
 
-        meal.RemoveAllCourses();
+        _meal.RemoveAllCourses();
 
-        meal.Courses.Should().HaveCount(0);
+        _meal.Courses.Should().HaveCount(0);
+    }
+
+    private class TestCourseBuilder
+    {
+        private int _index = 1;
+        private bool _mainCourse = false;
+
+        public TestCourseBuilder WithIndex(int index)
+        {
+            _index = index;
+            return this;
+        }
+
+        public TestCourseBuilder AsMainCourse()
+        {
+            _mainCourse = true;
+            return this;
+        }
+
+        public Course Build()
+        {
+            return new Course(index: _index, mainCourse: _mainCourse, attendees: 1, dishId: Guid.NewGuid());
+        }
     }
 }

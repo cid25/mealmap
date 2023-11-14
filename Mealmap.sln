@@ -16,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Domain", "src\Mealm
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Infrastructure", "src\Mealmap.Infrastructure\Mealmap.Infrastructure.csproj", "{83990975-CBA1-4BC6-B8A9-586768B0378F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.BoundaryTests", "tests\Mealmap.Api.BoundaryTests\Mealmap.Api.BoundaryTests.csproj", "{2814B880-D0A4-415A-95F8-02725B204B2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.IntegrationTests", "tests\Mealmap.Api.IntegrationTests\Mealmap.Api.IntegrationTests.csproj", "{2814B880-D0A4-415A-95F8-02725B204B2B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Api.UnitTests", "tests\Mealmap.Api.UnitTests\Mealmap.Api.UnitTests.csproj", "{C912D383-81B7-4E07-8286-3A00E7B05C80}"
 EndProject
@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Domain.UnitTests", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Infrastructure.IntegrationTests", "tests\Mealmap.Infrastructure.IntegrationTests\Mealmap.Infrastructure.IntegrationTests.csproj", "{72D5BC9D-4304-476F-847C-49BF7DB8278C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mealmap.Migrations", "src\Mealmap.Migrations\Mealmap.Migrations.csproj", "{2479A09A-11F4-4CE0-8F99-18EB95DF6397}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mealmap.Migrations", "src\Mealmap.Migrations\Mealmap.Migrations.csproj", "{2479A09A-11F4-4CE0-8F99-18EB95DF6397}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
