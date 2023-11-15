@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Mealmap.Api.Dishes;
+﻿using Mealmap.Api.Dishes;
 using Mealmap.Api.Meals;
 using Mealmap.Api.Settings;
 using Mealmap.Api.Shared;
@@ -12,9 +11,7 @@ using Mealmap.Infrastructure.DataAccess;
 using Mealmap.Infrastructure.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
-using Microsoft.OpenApi.Models;
 using Serilog;
-using Swashbuckle.AspNetCore.Filters;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -79,27 +76,12 @@ try
         );
     builder.Services.AddProblemDetails();
 
-    // Add Swashbuckle services
+    // Add Swashbuckle/Swagger
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerOperationExamples();
-    builder.Services.AddSwaggerGen(options =>
-        {
-            options.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Version = "v1",
-                Title = "Mealmap API",
-                Description = "An API for managing dishes and meals."
-            });
-
-            options.DocumentFilter<ServersDocumentFilter>();
-            options.OperationFilter<IfMatchHeaderFilter>();
-            options.CustomSchemaIds(type => type.Name.Replace("DTO", string.Empty));
-            options.ExampleFilters();
-
-            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-        }
-    );
+    SwaggerConfig swaggerConfig = new(builder.Configuration);
+    builder.Services.AddSingleton(swaggerConfig);
+    builder.Services.AddSwaggerGen(swaggerConfig.ConfigureSwaggerGen);
 
     var app = builder.Build();
 
@@ -108,11 +90,7 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger(c => c.RouteTemplate = "api/swagger/{documentname}/swagger.json");
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "Mealmap API");
-            c.RoutePrefix = "api/swagger";
-        });
+        app.UseSwaggerUI(app.Services.GetRequiredService<SwaggerConfig>().ConfigureSwaggerUI);
     }
 
     app.UseExceptionHandler("/api/error");
