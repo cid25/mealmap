@@ -39,7 +39,15 @@ public class UpdateMealCommandProcessor : ICommandProcessor<UpdateMealCommand, M
         if (_validator.Validate(command.Dto) is var validationResult && validationResult.Errors.Any())
             return notification.WithValidationErrorsFrom(validationResult);
 
-        UpdatePropertiesFromRequest(meal, command);
+        try
+        {
+            UpdatePropertiesFromRequest(meal, command);
+        }
+        catch (FormatException)
+        {
+            return notification.WithVersionMismatchError($"The version {command.Version} is not valid.");
+        }
+
         _repository.Update(meal);
 
         try

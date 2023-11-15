@@ -71,7 +71,7 @@ public class MealsController : ControllerBase
         var query = new MealQuery(id);
         var result = await responder.RespondTo(query);
 
-        if (result == null) return NotFound($"Meal with id does not exist.");
+        if (result == null) return NotFound($"Meal with id {id} does not exist.");
 
         return result;
     }

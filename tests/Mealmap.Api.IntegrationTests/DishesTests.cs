@@ -1,5 +1,4 @@
-﻿using Mealmap.Infrastructure.DataAccess;
-using SystemHeaders = System.Net.Http.Headers;
+﻿using SystemHeaders = System.Net.Http.Headers;
 
 namespace Mealmap.Api.IntegrationTests;
 
@@ -7,17 +6,12 @@ namespace Mealmap.Api.IntegrationTests;
 [Collection("InSequence")]
 public class DishesTests
 {
-    private readonly MealmapDbContext _context;
-
-    public DishesTests()
-    {
-        _context = DatabaseSeeder.Init();
-    }
 
     [Fact]
     public async void PutDishImage_WhenImageUploaded_ReturnsNeitherBodyNorContentType()
     {
         // Arrange
+        DatabaseSeeder.Init();
         var factory = new MockableWebApplicationFactory(null);
 
         var dummyContent = new ByteArrayContent(new byte[1]);
@@ -37,6 +31,7 @@ public class DishesTests
     public async void PutDishImage_WhenFileNotSupportedImageType_ReturnsUnsupportedMediaType()
     {
         // Arrange
+        DatabaseSeeder.Init();
         var factory = new MockableWebApplicationFactory(null);
 
         var unsupportedImageType = "image/tiff";
@@ -55,6 +50,7 @@ public class DishesTests
     public async void GetDishImage_ReturnsCorrectContentTypeAndStatusOk()
     {
         // Arrange
+        DatabaseSeeder.Init();
         var factory = new MockableWebApplicationFactory(null);
 
         var dishWithImage = DatabaseSeeder.Dishes.Where(d => d.Image != null).First();
@@ -71,6 +67,7 @@ public class DishesTests
     public async void GetDishImage_WhenDishHasNoImage_ReturnsNoContent()
     {
         // Arrange
+        DatabaseSeeder.Init();
         var factory = new MockableWebApplicationFactory(null);
 
         var dishWithoutImage = DatabaseSeeder.Dishes.Where(d => d.Image == null).First();
@@ -86,6 +83,7 @@ public class DishesTests
     public async void GetDishImage_WhenDishDoesntExist_ReturnsNotFound()
     {
         // Arrange
+        DatabaseSeeder.Init();
         var factory = new MockableWebApplicationFactory(null);
 
         var nonExistingId = Guid.NewGuid();

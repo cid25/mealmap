@@ -18,7 +18,7 @@ internal static class DatabaseSeeder
     ///  Injects the common set of seed data into an external SQL Server database.
     /// </summary>
     /// <returns>The dbContext for usage in tests.</returns>
-    public static MealmapDbContext Init()
+    public static MealmapDbContext Init(bool withData = true)
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
         var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
@@ -26,16 +26,28 @@ internal static class DatabaseSeeder
             .Options;
         var context = new MealmapDbContext(dbOptions);
 
-        DatabaseSeeder.InjectSeedData(context);
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
+
+        if (withData) DatabaseSeeder.InjectSeedData(context);
 
         return context;
     }
 
+    public static Dish GetRandomDish()
+    {
+        var index = _faker.Random.Number(Dishes.Count - 1);
+        return Dishes.ElementAt(index);
+    }
+
+    public static Meal GetRandomMeal()
+    {
+        var index = _faker.Random.Number(Dishes.Count - 1);
+        return Meals.ElementAt(index);
+    }
+
     private static void InjectSeedData(MealmapDbContext context)
     {
-        context.Database.EnsureDeleted();
-        context.Database.EnsureCreated();
-
         GenerateData();
         context.AddRange(DatabaseSeeder.Dishes);
         context.AddRange(DatabaseSeeder.Meals);
@@ -74,12 +86,6 @@ internal static class DatabaseSeeder
         }
     }
 
-    private static Dish GetRandomDish()
-    {
-        var index = _faker.Random.Number(Dishes.Count - 1);
-        return Dishes.ElementAt(index);
-    }
-
     private static void GenerateMeals()
     {
         var startDate = new DateOnly(2020, 1, 1);
@@ -88,7 +94,7 @@ internal static class DatabaseSeeder
         {
             Meal meal = new(startDate.AddDays(i));
 
-            for (var j = 0; j < _faker.Random.Number(0, 3); j++)
+            for (var j = 1; j < _faker.Random.Number(4); j++)
                 meal.AddCourse(index: j, mainCourse: j == 0, attendees: _faker.Random.Number(1, 6), dishId: GetRandomDish().Id);
 
             Meals.Add(meal);
