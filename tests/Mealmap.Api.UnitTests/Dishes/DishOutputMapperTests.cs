@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Mealmap.Api.Dishes;
-using Mealmap.Api.Shared;
+using Mealmap.Api.Common;
 using Mealmap.Domain.DishAggregate;
 
 namespace Mealmap.Api.UnitTests.Dishes;

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Mealmap.Api.Meals;
-using Mealmap.Api.Shared;
+using Mealmap.Api.Common;
 
 namespace Mealmap.Api.UnitTests.Meals;
 

@@ -1,4 +1,4 @@
-﻿namespace Mealmap.Api.Shared;
+﻿namespace Mealmap.Api.Common;
 
 public class HostingOptions
 {

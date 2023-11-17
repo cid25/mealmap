@@ -1,5 +1,5 @@
 ﻿using Mealmap.Api.Meals;
-using Mealmap.Api.Shared;
+using Mealmap.Api.Common;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
 using Mealmap.Domain.DishAggregate;

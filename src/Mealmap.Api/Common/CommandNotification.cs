@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace Mealmap.Api.Shared;
+namespace Mealmap.Api.Common;
 
 public class CommandNotification<TResponse>
 {

@@ -1,4 +1,4 @@
-﻿using Mealmap.Api.Shared;
+﻿using Mealmap.Api.Common;
 using Mealmap.Api.Swagger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

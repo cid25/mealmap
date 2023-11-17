@@ -1,4 +1,4 @@
-﻿namespace Mealmap.Api.Shared;
+﻿namespace Mealmap.Api.Common;
 
 public class CommandLoggerDecorator<TCommand, TResponse>(ILogger<CommandLoggerDecorator<TCommand, TResponse>> logger, ICommandProcessor<TCommand, TResponse> innerProcessor) : ICommandProcessor<TCommand, TResponse>
     where TCommand : class

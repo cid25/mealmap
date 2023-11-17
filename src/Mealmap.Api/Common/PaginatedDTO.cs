@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Mealmap.Api.Shared
+namespace Mealmap.Api.Common
 {
     public class PaginatedDTO<T>
         where T : class

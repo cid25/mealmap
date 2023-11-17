@@ -1,4 +1,4 @@
-﻿using Mealmap.Api.Shared;
+﻿using Mealmap.Api.Common;
 
 namespace Mealmap.Api.Meals;
 

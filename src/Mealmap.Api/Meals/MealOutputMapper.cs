@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Mealmap.Api.Shared;
+using Mealmap.Api.Common;
 using Mealmap.Domain.MealAggregate;
 
 namespace Mealmap.Api.Meals;
