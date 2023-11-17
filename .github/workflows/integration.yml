@@ -47,7 +47,7 @@ jobs:
     - name: Unit Tests
       run: dotnet test --no-build --verbosity normal --filter "FullyQualifiedName~UnitTests"
     - name: Spin up database
-      run: docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=MealIntTest!" -p 1433:1433 --name mealmapsql --hostname mealmapsql -d mcr.microsoft.com/mssql/server:2022-latest
+      run: docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=MealIntTest!" -p 5001:1433 --name mealmapsql --hostname mealmapsql -d mcr.microsoft.com/mssql/server:2022-latest
     - name: Infrastructure Integration Tests
       working-directory: tests/Mealmap.Infrastructure.IntegrationTests
       run: dotnet test --no-build --verbosity normal
