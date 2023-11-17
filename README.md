@@ -6,7 +6,7 @@ It is a "productively" used application, but also a playground to tinker with to
 
 Tech Stack:
 
-- Frontend - Angular
-- RESTful API - ASP.NET Core 7 MVC and EF Core 7
+- Frontend - Angular v16
+- RESTful API - ASP.NET Core v8 MVC and EF Core v8
 - Infrastructure - Terraform and Azure
 - Orchestration - GitHub Actions
