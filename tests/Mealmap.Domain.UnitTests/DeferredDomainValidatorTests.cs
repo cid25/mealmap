@@ -1,8 +1,8 @@
 ﻿using Mealmap.Domain.Common;
-using Mealmap.Domain.MealAggregate;
 using Mealmap.Domain.Common.Validation;
+using Mealmap.Domain.MealAggregate;
 
-namespace Mealmap.Infrastructure.IntegrationTests.DataAccess;
+namespace Mealmap.Domain.UnitTests;
 
 public class DeferredDomainValidatorTests
 {
