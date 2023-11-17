@@ -20,7 +20,9 @@ internal static class DatabaseSeeder
     /// <returns>The dbContext for usage in tests.</returns>
     public static MealmapDbContext Init(bool withData = true)
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("settings.json")
+            .Build();
         var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
             .UseSqlServer(configuration.GetConnectionString("MealmapDb"))
             .Options;
