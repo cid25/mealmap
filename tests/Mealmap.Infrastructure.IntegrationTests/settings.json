@@ -1,5 +1,5 @@
 {
   "ConnectionStrings": {
-    "MealmapDb": "Data Source=localhost;Initial Catalog=mealmap;Encrypt=True;TrustServerCertificate=True;User ID=sa;Password=MealIntTest!"
+    "MealmapDb": "Data Source=localhost;Initial Catalog=mealmap;Encrypt=False;User ID=sa;Password=MealIntTest!"
   }
 }
