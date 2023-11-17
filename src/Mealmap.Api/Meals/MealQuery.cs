@@ -1,11 +1,6 @@
 ﻿namespace Mealmap.Api.Meals;
 
-public class MealQuery
+public class MealQuery(Guid id)
 {
-    public Guid Id { get; init; }
-
-    public MealQuery(Guid id)
-    {
-        Id = id;
-    }
+    public Guid Id { get; init; } = id;
 }

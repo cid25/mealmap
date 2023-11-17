@@ -1,11 +1,6 @@
 ﻿namespace Mealmap.Api.Shared;
 
-public abstract class TransferObjectCommand<TDataTransferObject>
+public abstract class TransferObjectCommand<TDataTransferObject>(TDataTransferObject dto)
 {
-    public TDataTransferObject Dto { get; protected set; }
-
-    public TransferObjectCommand(TDataTransferObject dto)
-    {
-        Dto = dto;
-    }
+    public TDataTransferObject Dto { get; protected set; } = dto;
 }

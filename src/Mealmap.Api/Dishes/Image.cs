@@ -1,10 +1,9 @@
 ﻿namespace Mealmap.Api.Dishes;
 
-#pragma warning disable CS8618
 public record Image
 {
 
-    private string _contentType;
+    private string _contentType = String.Empty;
 
     public byte[] Content { get; init; }
 
@@ -25,5 +24,3 @@ public record Image
         ContentType = contentType;
     }
 }
-#pragma warning restore CS8618
-

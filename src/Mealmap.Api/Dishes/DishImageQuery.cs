@@ -1,11 +1,6 @@
 ﻿namespace Mealmap.Api.Dishes;
 
-public class DishImageQuery
+public class DishImageQuery(Guid id)
 {
-    public Guid Id { get; init; }
-
-    public DishImageQuery(Guid id)
-    {
-        Id = id;
-    }
+    public Guid Id { get; init; } = id;
 }

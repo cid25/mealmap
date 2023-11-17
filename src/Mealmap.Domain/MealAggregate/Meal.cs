@@ -7,7 +7,7 @@ public class Meal : EntityBase
 {
     public DateOnly DiningDate { get; set; }
 
-    private List<Course> _courses = new();
+    private List<Course> _courses = [];
 
     public IReadOnlyCollection<Course> Courses
     {
@@ -26,7 +26,7 @@ public class Meal : EntityBase
 
     public void RemoveAllCourses()
     {
-        _courses = new List<Course>();
+        _courses = [];
     }
 
     /// <exception cref="DomainValidationException"></exception>

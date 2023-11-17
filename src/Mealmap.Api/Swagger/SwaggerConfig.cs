@@ -88,7 +88,7 @@ public class SwaggerConfig
                         Id = "oauth2"
                     }
                 },
-                new[] {"access"}
+                ["access"]
             }
         };
     }

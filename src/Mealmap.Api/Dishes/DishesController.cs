@@ -13,14 +13,9 @@ namespace Mealmap.Api.Dishes;
 [RequiredScope("access")]
 [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
 [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-public class DishesController : ControllerBase
+public class DishesController(IRequestContext context)
+    : ControllerBase
 {
-    private readonly IRequestContext _context;
-
-    public DishesController(IRequestContext context)
-    {
-        _context = context;
-    }
 
     /// <summary>
     /// Lists dishes.
@@ -131,10 +126,10 @@ public class DishesController : ControllerBase
         [FromServices] ICommandProcessor<UpdateDishCommand, DishDTO> processor
     )
     {
-        if (string.IsNullOrEmpty(_context.IfMatchHeader))
+        if (string.IsNullOrEmpty(context.IfMatchHeader))
             return new StatusCodeResult(StatusCodes.Status428PreconditionRequired);
 
-        var command = new UpdateDishCommand(id, _context.IfMatchHeader, dto);
+        var command = new UpdateDishCommand(id, context.IfMatchHeader, dto);
         var result = await processor.Process(command);
 
         if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.VersionMismatch))
@@ -279,8 +274,8 @@ public class DishesController : ControllerBase
             action: action,
             controller: null,
             values: values,
-            protocol: _context.Scheme,
-            host: _context.Host
+            protocol: context.Scheme,
+            host: context.Host
         );
     }
 }

@@ -19,8 +19,8 @@ public class SwaggerDocumentFilterTests
     public void Apply_WhenSingleAddressAndHost_AddsProperServer()
     {
         var filter = setupFilter(
-            addresses: new string[] { "https://localhost:5001" },
-            hosts: new string[] { "test.com" }
+            addresses: ["https://localhost:5001"],
+            hosts: ["test.com"]
         );
         var (servers, swaggerDoc) = mockDocument();
 
@@ -33,8 +33,8 @@ public class SwaggerDocumentFilterTests
     public void Apply_WhenTwoAddressesAndHosts_AddsFourServers()
     {
         var filter = setupFilter(
-            addresses: new string[] { "https://localhost:5001", "http://localhost:5002" },
-            hosts: new string[] { "test.com", "example.com" }
+            addresses: ["https://localhost:5001", "http://localhost:5002"],
+            hosts: ["test.com", "example.com"]
         );
         var (servers, swaggerDoc) = mockDocument();
 
@@ -49,8 +49,8 @@ public class SwaggerDocumentFilterTests
     public void Apply_WhenAddressHasStandardPort_ServerHasNone(string schema)
     {
         var filter = setupFilter(
-            addresses: new string[] { schema + "://localhost" },
-            hosts: new string[] { "test.com" }
+            addresses: [schema + "://localhost"],
+            hosts: ["test.com"]
         );
         var (servers, swaggerDoc) = mockDocument();
 

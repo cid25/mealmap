@@ -11,8 +11,8 @@ internal static class DatabaseSeeder
 {
     private static readonly Faker _faker = new();
 
-    public static List<Dish> Dishes = new();
-    public static List<Meal> Meals = new();
+    public static List<Dish> Dishes = [];
+    public static List<Meal> Meals = [];
 
     /// <summary>
     ///  Injects the common set of seed data into an external SQL Server database.

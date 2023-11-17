@@ -65,7 +65,7 @@ public class UpdateMealCommandProcessorTests
         var result = await processor.Process(new UpdateMealCommand(aGuid, aVersion, dto));
 
         // Assert
-        result.Errors.Should().HaveCount(1);
+        result.Errors.Should().ContainSingle();
         result.Errors[0].ErrorCode.Should().Be(CommandErrorCodes.NotFound);
     }
 
@@ -90,14 +90,14 @@ public class UpdateMealCommandProcessorTests
         MealDTO dto = new()
         {
             DiningDate = DateOnly.FromDateTime(DateTime.Now),
-            Courses = new[] { new CourseDTO() { Index = 1, DishId = Guid.NewGuid(), MainCourse = true } }
+            Courses = [new() { Index = 1, DishId = Guid.NewGuid(), MainCourse = true }]
         };
 
         // Act
         var result = await processor.Process(new UpdateMealCommand(aGuid, aVersion, dto));
 
         // Assert
-        result.Errors.Should().HaveCount(1);
+        result.Errors.Should().ContainSingle();
         result.Errors[0].ErrorCode.Should().Be(CommandErrorCodes.NotValid);
     }
 
@@ -126,7 +126,7 @@ public class UpdateMealCommandProcessorTests
         var result = await processor.Process(new UpdateMealCommand(aGuid, aVersion, dto));
 
         // Assert
-        result.Errors.Should().HaveCount(1);
+        result.Errors.Should().ContainSingle();
         result.Errors[0].ErrorCode.Should().Be(CommandErrorCodes.VersionMismatch);
     }
 
@@ -155,7 +155,7 @@ public class UpdateMealCommandProcessorTests
         var result = await processor.Process(new UpdateMealCommand(aGuid, aVersion, dto));
 
         // Assert
-        result.Errors.Should().HaveCount(1);
+        result.Errors.Should().ContainSingle();
         result.Errors[0].ErrorCode.Should().Be(CommandErrorCodes.NotValid);
     }
 }

@@ -5,33 +5,18 @@ using Mealmap.Domain.DishAggregate;
 
 namespace Mealmap.Api.Dishes;
 
-public class CreateDishCommandProcessor : ICommandProcessor<CreateDishCommand, DishDTO>
+public class CreateDishCommandProcessor(
+    IRepository<Dish> repository,
+    IUnitOfWork unitOfWork,
+    IOutputMapper<DishDTO, Dish> outputMapper,
+    ILogger<CreateDishCommandProcessor> logger,
+    DishDataTransferObjectValidator validator) : ICommandProcessor<CreateDishCommand, DishDTO>
 {
-    private readonly IRepository<Dish> _repository;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IOutputMapper<DishDTO, Dish> _outputMapper;
-    private readonly ILogger<CreateDishCommandProcessor> _logger;
-    private readonly DishDataTransferObjectValidator _validator;
-
-    public CreateDishCommandProcessor(
-        IRepository<Dish> repository,
-        IUnitOfWork unitOfWork,
-        IOutputMapper<DishDTO, Dish> outputMapper,
-        ILogger<CreateDishCommandProcessor> logger,
-        DishDataTransferObjectValidator validator)
-    {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
-        _outputMapper = outputMapper;
-        _logger = logger;
-        _validator = validator;
-    }
-
     public async Task<CommandNotification<DishDTO>> Process(CreateDishCommand command)
     {
         CommandNotification<DishDTO> notification = new();
 
-        if (_validator.Validate(command.Dto) is var validationResult && validationResult.Errors.Any())
+        if (validator.Validate(command.Dto) is var validationResult && validationResult.Errors.Count != 0)
             return notification.WithValidationErrorsFrom(validationResult);
 
         Dish dish = new(command.Dto.Name);
@@ -45,19 +30,19 @@ public class CreateDishCommandProcessor : ICommandProcessor<CreateDishCommand, D
             return notification.WithValidationError(ex.Message);
         }
 
-        _repository.Add(dish);
+        repository.Add(dish);
 
         try
         {
-            await _unitOfWork.SaveTransactionAsync();
+            await unitOfWork.SaveTransactionAsync();
         }
         catch (DomainValidationException ex)
         {
             return notification.WithValidationError(ex.Message);
         }
 
-        _logger.LogInformation("Created dish with id {Id}", dish.Id);
-        notification.Result = _outputMapper.FromEntity(dish);
+        logger.LogInformation("Created dish with id {Id}", dish.Id);
+        notification.Result = outputMapper.FromEntity(dish);
 
         return notification;
     }

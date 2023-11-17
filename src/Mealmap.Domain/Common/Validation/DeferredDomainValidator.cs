@@ -1,15 +1,8 @@
 ﻿namespace Mealmap.Domain.Common.Validation;
 
 /// <inheritdoc cref="IDeferredDomainValidator" />
-public class DeferredDomainValidator : IDeferredDomainValidator
+public class DeferredDomainValidator(IServiceProvider provider) : IDeferredDomainValidator
 {
-    private readonly IServiceProvider _provider;
-
-    public DeferredDomainValidator(IServiceProvider provider)
-    {
-        _provider = provider;
-    }
-
     public async Task ValidateEntitiesAsync(IReadOnlyCollection<EntityBase> entities)
     {
         foreach (var entity in entities)
@@ -30,7 +23,7 @@ public class DeferredDomainValidator : IDeferredDomainValidator
     {
         var entityType = entity!.GetType();
         var validatorType = typeof(AbstractEntityValidator<>).MakeGenericType(entityType);
-        var validator = (IEntityValidator?)_provider.GetService(validatorType);
+        var validator = (IEntityValidator?)provider.GetService(validatorType);
 
         return validator;
     }

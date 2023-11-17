@@ -4,5 +4,5 @@ public class HostingOptions
 {
     public const string SectionName = "Hosting";
 
-    public string[] Hosts { get; set; } = { string.Empty };
+    public string[] Hosts { get; set; } = [string.Empty];
 }

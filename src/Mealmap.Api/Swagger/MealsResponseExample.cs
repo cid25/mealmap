@@ -7,13 +7,13 @@ public class MealsResponseExample : IExamplesProvider<IEnumerable<MealDTO>>
 {
     public IEnumerable<MealDTO> GetExamples()
     {
-        MealDTO[] result = {
-            new MealDTO()
+        MealDTO[] result = [
+            new()
             {
                 Id = Guid.NewGuid(),
                 ETag = "AAAAAAAAB9E=",
                 DiningDate = DateOnly.FromDateTime(DateTime.Now),
-                Courses = new[] {
+                Courses = [
                     new CourseDTO()
                     {
                         Index = 1,
@@ -28,14 +28,14 @@ public class MealsResponseExample : IExamplesProvider<IEnumerable<MealDTO>>
                         MainCourse = false,
                         Attendees = 2
                     },
-                }
+                ]
             },
-            new MealDTO()
+            new()
             {
                 Id = Guid.NewGuid(),
                 ETag = "AAACAAAADFF=",
                 DiningDate = DateOnly.FromDateTime(DateTime.Now).AddDays(1),
-                Courses = new[] {
+                Courses = [
                     new CourseDTO()
                     {
                         Index = 1,
@@ -50,9 +50,9 @@ public class MealsResponseExample : IExamplesProvider<IEnumerable<MealDTO>>
                         MainCourse = true,
                         Attendees = 4
                     },
-                }
+                ]
             }
-        };
+        ];
 
         return result;
     }

@@ -13,10 +13,10 @@ public class MealDataTransferObjectValidatorTests
         var guid = Guid.NewGuid();
         MealDTO dto = new()
         {
-            Courses = new CourseDTO[2] {
-                new CourseDTO() { Index = 1, MainCourse = true, DishId = guid },
-                new CourseDTO() { Index = 2, MainCourse = false, DishId = guid },
-            }
+            Courses = [
+                new() { Index = 1, MainCourse = true, DishId = guid },
+                new() { Index = 2, MainCourse = false, DishId = guid },
+            ]
         };
         var sut = new MealDataTransferObjectValidator(Mock.Of<IRepository<Dish>>(m =>
             m.GetSingleById(guid) == new Dish("dummy")));
@@ -34,10 +34,10 @@ public class MealDataTransferObjectValidatorTests
         // Arrange
         MealDTO dto = new()
         {
-            Courses = new CourseDTO[2] {
-                new CourseDTO() { Index = 1, MainCourse = true, DishId = Guid.NewGuid() },
-                new CourseDTO() { Index = 2, MainCourse = false, DishId = Guid.NewGuid() },
-            }
+            Courses = [
+                new() { Index = 1, MainCourse = true, DishId = Guid.NewGuid() },
+                new() { Index = 2, MainCourse = false, DishId = Guid.NewGuid() },
+            ]
         };
         var sut = new MealDataTransferObjectValidator(Mock.Of<IRepository<Dish>>(m =>
             m.GetSingleById(It.IsAny<Guid>()) == null));
@@ -56,11 +56,11 @@ public class MealDataTransferObjectValidatorTests
         // Arrange
         MealDTO dto = new()
         {
-            Courses = new CourseDTO[3] {
-                new CourseDTO() { Index = 1, MainCourse = true, DishId = Guid.NewGuid() },
-                new CourseDTO() { Index = 2, MainCourse = false, DishId = Guid.NewGuid() },
-                new CourseDTO() { Index = 3, MainCourse = false, DishId = Guid.NewGuid() },
-            }
+            Courses = [
+                new() { Index = 1, MainCourse = true, DishId = Guid.NewGuid() },
+                new() { Index = 2, MainCourse = false, DishId = Guid.NewGuid() },
+                new() { Index = 3, MainCourse = false, DishId = Guid.NewGuid() },
+            ]
         };
 
         var sut = new MealDataTransferObjectValidator(Mock.Of<IRepository<Dish>>(m =>
@@ -79,11 +79,11 @@ public class MealDataTransferObjectValidatorTests
         // Arrange
         MealDTO dto = new()
         {
-            Courses = new CourseDTO[3] {
-                new CourseDTO() { Index = 1, MainCourse = true, DishId = Guid.NewGuid() },
-                new CourseDTO() { Index = 2, MainCourse = true, DishId = Guid.NewGuid() },
-                new CourseDTO() { Index = 3, MainCourse = false, DishId = Guid.NewGuid() },
-            }
+            Courses = [
+                new() { Index = 1, MainCourse = true, DishId = Guid.NewGuid() },
+                new() { Index = 2, MainCourse = true, DishId = Guid.NewGuid() },
+                new() { Index = 3, MainCourse = false, DishId = Guid.NewGuid() },
+            ]
         };
 
         var sut = new MealDataTransferObjectValidator(Mock.Of<IRepository<Dish>>(m =>
@@ -94,6 +94,6 @@ public class MealDataTransferObjectValidatorTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
+        result.Errors.Should().ContainSingle();
     }
 }
