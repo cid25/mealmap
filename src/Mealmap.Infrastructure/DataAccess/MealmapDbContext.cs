@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Mealmap.Infrastructure.DataAccess;
 
-public class MealmapDbContext : DbContext
+public class MealmapDbContext(DbContextOptions<MealmapDbContext> options) : DbContext(options)
 {
     public const string SCHEMA = "mealmap";
 
@@ -27,9 +27,6 @@ public class MealmapDbContext : DbContext
             }
         };
     }
-
-    public MealmapDbContext(DbContextOptions<MealmapDbContext> options)
-        : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

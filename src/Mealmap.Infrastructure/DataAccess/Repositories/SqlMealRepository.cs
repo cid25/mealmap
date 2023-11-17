@@ -1,19 +1,12 @@
-﻿using Mealmap.Domain.MealAggregate;
-using Mealmap.Domain.Common.DataAccess;
+﻿using Mealmap.Domain.Common.DataAccess;
+using Mealmap.Domain.MealAggregate;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Infrastructure.DataAccess.Repositories;
 
-public class SqlMealRepository : IMealRepository
+public class SqlMealRepository(MealmapDbContext dbContext) : IMealRepository
 {
-    private MealmapDbContext _dbContext { get; }
-    internal DbSet<Meal> dbSet { get; }
-
-    public SqlMealRepository(MealmapDbContext dbContext)
-    {
-        _dbContext = dbContext;
-        dbSet = dbContext.Set<Meal>();
-    }
+    internal DbSet<Meal> dbSet { get; } = dbContext.Set<Meal>();
 
     public IEnumerable<Meal> GetAll(DateOnly? fromDate = null, DateOnly? toDate = null)
     {
@@ -58,25 +51,23 @@ public class SqlMealRepository : IMealRepository
         var removable = dbSet.Find(meal.Id);
 
         if (removable != null)
-        {
             dbSet.Remove(removable);
-        }
     }
 
     private void MarkCoursesForReplacement()
     {
-        foreach (var course in _dbContext.ChangeTracker.Entries().
+        foreach (var course in dbContext.ChangeTracker.Entries().
            Where(e => e.Entity is Course && e.State == EntityState.Modified))
             course.State = EntityState.Added;
     }
 
     private void MarkMealForVersionUpdate(Meal meal)
     {
-        _dbContext.Entry(meal).Property(d => d.DiningDate).IsModified = true;
+        dbContext.Entry(meal).Property(d => d.DiningDate).IsModified = true;
     }
 
     private void AdoptVersionFromClient(Meal meal)
     {
-        _dbContext.Entry(meal).OriginalValues[nameof(Meal.Version)] = meal.Version;
+        dbContext.Entry(meal).OriginalValues[nameof(Meal.Version)] = meal.Version;
     }
 }
