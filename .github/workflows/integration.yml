@@ -52,5 +52,5 @@ jobs:
       working-directory: tests/Mealmap.Infrastructure.IntegrationTests
       run: dotnet test --no-build --verbosity normal
     - name: API Integration Tests
-      working-directory: tests/Mealmap.Mealmap.Api.IntegrationTests
+      working-directory: tests/Mealmap.Api.IntegrationTests
       run: dotnet test --no-build --verbosity normal
