@@ -24,7 +24,11 @@ public class SqlMealRepositoryTests
         var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
             .UseSqlServer(
                 configuration.GetConnectionString("MealmapDb"),
-                b => b.MigrationsAssembly("Mealmap.Migrations")
+                b =>
+                {
+                    b.MigrationsAssembly("Mealmap.Migrations");
+                    b.EnableRetryOnFailure();
+                }
             )
             .Options;
         _dbContext = new MealmapDbContext(dbOptions);

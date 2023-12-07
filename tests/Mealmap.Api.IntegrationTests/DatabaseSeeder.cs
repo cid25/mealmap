@@ -26,8 +26,12 @@ internal static class DatabaseSeeder
         var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
             .UseSqlServer(
                 configuration.GetConnectionString("MealmapDb"),
-                b => b.MigrationsAssembly("Mealmap.Migrations")
-                )
+                b =>
+                {
+                    b.MigrationsAssembly("Mealmap.Migrations");
+                    b.EnableRetryOnFailure();
+                }
+            )
             .Options;
         var context = new MealmapDbContext(dbOptions);
 
