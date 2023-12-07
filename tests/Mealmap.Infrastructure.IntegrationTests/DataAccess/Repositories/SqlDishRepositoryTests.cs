@@ -21,7 +21,10 @@ public class SqlDishRepositoryTests
             .AddJsonFile("settings.json")
             .Build();
         var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
-            .UseSqlServer(configuration.GetConnectionString("MealmapDb"))
+            .UseSqlServer(
+                configuration.GetConnectionString("MealmapDb"),
+                b => b.MigrationsAssembly("Mealmap.Migrations")
+            )
             .LogTo(msg => Debug.WriteLine(msg))
             .EnableSensitiveDataLogging()
             .Options;

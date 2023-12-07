@@ -22,7 +22,10 @@ public class SqlMealRepositoryTests
             .AddJsonFile("settings.json")
             .Build();
         var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
-            .UseSqlServer(configuration.GetConnectionString("MealmapDb"))
+            .UseSqlServer(
+                configuration.GetConnectionString("MealmapDb"),
+                b => b.MigrationsAssembly("Mealmap.Migrations")
+            )
             .Options;
         _dbContext = new MealmapDbContext(dbOptions);
         _repository = new SqlMealRepository(_dbContext);
