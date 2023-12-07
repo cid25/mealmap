@@ -9,11 +9,11 @@ public class IfMatchHeaderFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        List<string> applicableMethods = new()
-        {
+        List<string> applicableMethods =
+        [
             nameof(DishesController.PutDish),
             nameof(MealsController.PutMeal),
-        };
+        ];
 
         if (applicableMethods.Contains(operation.OperationId))
         {

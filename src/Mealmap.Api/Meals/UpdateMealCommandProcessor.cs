@@ -1,42 +1,29 @@
-﻿using Mealmap.Api.Shared;
+﻿using Mealmap.Api.Common;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
 using Mealmap.Domain.MealAggregate;
 
 namespace Mealmap.Api.Meals;
 
-public class UpdateMealCommandProcessor : ICommandProcessor<UpdateMealCommand, MealDTO>
+public class UpdateMealCommandProcessor(
+    IMealRepository repository,
+    IUnitOfWork unitOfWork,
+    IOutputMapper<MealDTO, Meal> outputMapper,
+    ILogger<UpdateMealCommandProcessor> logger,
+    MealDataTransferObjectValidator validator
+)
+    : ICommandProcessor<UpdateMealCommand, MealDTO>
 {
-    private readonly IMealRepository _repository;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
-    private readonly ILogger<UpdateMealCommandProcessor> _logger;
-    private readonly MealDataTransferObjectValidator _validator;
-
-    public UpdateMealCommandProcessor(
-        IMealRepository repository,
-        IUnitOfWork unitOfWork,
-        IOutputMapper<MealDTO, Meal> outputMapper,
-        ILogger<UpdateMealCommandProcessor> logger,
-        MealDataTransferObjectValidator validator)
-    {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
-        _outputMapper = outputMapper;
-        _logger = logger;
-        _validator = validator;
-    }
-
     public async Task<CommandNotification<MealDTO>> Process(UpdateMealCommand command)
     {
         CommandNotification<MealDTO> notification = new();
 
-        var meal = _repository.GetSingleById(command.Id);
+        var meal = repository.GetSingleById(command.Id);
 
         if (meal == null)
             return notification.WithNotFoundError("Meal with id not found.");
 
-        if (_validator.Validate(command.Dto) is var validationResult && validationResult.Errors.Any())
+        if (validator.Validate(command.Dto) is var validationResult && validationResult.Errors.Count != 0)
             return notification.WithValidationErrorsFrom(validationResult);
 
         try
@@ -48,11 +35,11 @@ public class UpdateMealCommandProcessor : ICommandProcessor<UpdateMealCommand, M
             return notification.WithVersionMismatchError($"The version {command.Version} is not valid.");
         }
 
-        _repository.Update(meal);
+        repository.Update(meal);
 
         try
         {
-            await _unitOfWork.SaveTransactionAsync();
+            await unitOfWork.SaveTransactionAsync();
         }
         catch (DomainValidationException ex)
         {
@@ -63,8 +50,8 @@ public class UpdateMealCommandProcessor : ICommandProcessor<UpdateMealCommand, M
             return notification.WithVersionMismatchError();
         }
 
-        _logger.LogInformation("Updated Meal with id {Id}", meal.Id);
-        notification.Result = _outputMapper.FromEntity(meal);
+        logger.LogInformation("Updated Meal with id {Id}", meal.Id);
+        notification.Result = outputMapper.FromEntity(meal);
 
         return notification;
     }

@@ -39,16 +39,18 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
     - name: Unit Tests
-      run: dotnet test --no-build --verbosity normal --filter "FullyQualifiedName!~IntegrationTests"
+      run: dotnet test --no-build --verbosity normal --filter "FullyQualifiedName~UnitTests"
     - name: Spin up database
-      run: docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=MealIntTest!" -p 1433:1433 --name mealmapsql --hostname mealmapsql -d mcr.microsoft.com/mssql/server:2022-latest
+      run: docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=MealIntTest!" -p 5001:1433 --name mealmapsql --hostname mealmapsql -d mcr.microsoft.com/mssql/server:2022-latest
     - name: Infrastructure Integration Tests
-      run: dotnet test --no-build --verbosity normal --filter "FullyQualifiedName~Mealmap.Infrastructure.IntegrationTests"
+      working-directory: tests/Mealmap.Infrastructure.IntegrationTests
+      run: dotnet test --no-build --verbosity normal
     - name: API Integration Tests
-      run: dotnet test --no-build --verbosity normal --filter "FullyQualifiedName~Mealmap.Api.IntegrationTests"
+      working-directory: tests/Mealmap.Api.IntegrationTests
+      run: dotnet test --no-build --verbosity normal

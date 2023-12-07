@@ -1,8 +1,8 @@
 ﻿using Mealmap.Domain.Common;
-using Mealmap.Domain.MealAggregate;
 using Mealmap.Domain.Common.Validation;
+using Mealmap.Domain.MealAggregate;
 
-namespace Mealmap.Infrastructure.IntegrationTests.DataAccess;
+namespace Mealmap.Domain.UnitTests;
 
 public class DeferredDomainValidatorTests
 {
@@ -84,14 +84,9 @@ public class DeferredDomainValidatorTests
     }
 }
 
-internal class DummyEntity : EntityBase
+internal class DummyEntity(bool isValid) : EntityBase
 {
-    public bool IsValid { get; set; }
-
-    public DummyEntity(bool isValid)
-    {
-        this.IsValid = isValid;
-    }
+    public bool IsValid { get; set; } = isValid;
 }
 
 internal class DummyEntityValidator : AbstractEntityValidator<DummyEntity>

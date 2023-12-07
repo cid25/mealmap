@@ -1,11 +1,8 @@
-﻿namespace Mealmap.Api.Shared;
+﻿namespace Mealmap.Api.Common;
 
-public class RequestContext : IRequestContext
+public class RequestContext(IHttpContextAccessor httpContextAccessor) : IRequestContext
 {
-    private readonly HttpContext? _context;
-
-    public RequestContext(IHttpContextAccessor httpContextAccessor)
-        => _context = httpContextAccessor.HttpContext;
+    private readonly HttpContext? _context = httpContextAccessor.HttpContext;
 
     public string Scheme => _context != null ? _context.Request.Scheme : string.Empty;
 
@@ -15,5 +12,5 @@ public class RequestContext : IRequestContext
 
     public string Method => _context != null ? _context.Request.Method : string.Empty;
 
-    public string? IfMatchHeader => _context != null && _context.Request.Headers.IfMatch.Any() ? _context?.Request.Headers.IfMatch.First() : null;
+    public string? IfMatchHeader => _context != null && _context.Request.Headers.IfMatch.Count != 0 ? _context?.Request.Headers.IfMatch.First() : null;
 }

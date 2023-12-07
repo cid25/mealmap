@@ -6,13 +6,8 @@ namespace Mealmap.Api.Settings;
 [ApiController]
 [Route("api/[controller]")]
 [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-public class SettingsController : ControllerBase
+public class SettingsController(IOptions<AngularOptions> settings) : ControllerBase
 {
-    private readonly IOptions<AngularOptions> _settings;
-
-    public SettingsController(IOptions<AngularOptions> settings)
-        => _settings = settings;
-
     /// <summary>
     /// Returns settings for Angular.
     /// </summary>
@@ -23,6 +18,6 @@ public class SettingsController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public ActionResult<AngularOptions> GetSettings()
     {
-        return Ok(_settings.Value);
+        return Ok(settings.Value);
     }
 }

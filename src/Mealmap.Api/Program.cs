@@ -1,7 +1,7 @@
 ﻿using Mealmap.Api.Dishes;
 using Mealmap.Api.Meals;
 using Mealmap.Api.Settings;
-using Mealmap.Api.Shared;
+using Mealmap.Api.Common;
 using Mealmap.Api.Swagger;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;

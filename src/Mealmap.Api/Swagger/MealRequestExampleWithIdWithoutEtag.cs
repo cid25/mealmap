@@ -12,7 +12,7 @@ public class MealRequestExampleWithIdWithoutEtag : IExamplesProvider<MealDTO>
         {
             Id = Guid.NewGuid(),
             DiningDate = DateOnly.FromDateTime(DateTime.Now),
-            Courses = new[] {
+            Courses = [
                 new CourseDTO()
                 {
                     Index = 1,
@@ -27,7 +27,7 @@ public class MealRequestExampleWithIdWithoutEtag : IExamplesProvider<MealDTO>
                     MainCourse = false,
                     Attendees = 2
                 },
-            }
+            ]
         };
     }
 }

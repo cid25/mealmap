@@ -1,24 +1,17 @@
-﻿using Mealmap.Api.Shared;
+﻿using Mealmap.Api.Common;
 using Mealmap.Domain.MealAggregate;
 
 namespace Mealmap.Api.Meals;
 
-public class MealsQueryResponder : IQueryResponder<MealsQuery, IEnumerable<MealDTO>>
+public class MealsQueryResponder(IMealRepository repository, IOutputMapper<MealDTO, Meal> outputMapper)
+    : IQueryResponder<MealsQuery, IEnumerable<MealDTO>>
 {
-    private readonly IMealRepository _repository;
-    private readonly IOutputMapper<MealDTO, Meal> _outputMapper;
-
-    public MealsQueryResponder(IMealRepository repository, IOutputMapper<MealDTO, Meal> outputMapper)
-    {
-        _repository = repository;
-        _outputMapper = outputMapper;
-    }
-
     public async Task<IEnumerable<MealDTO>> RespondTo(MealsQuery query)
     {
-        var meals = _repository.GetAll(query.FromDate, query.ToDate);
+        var meals = repository.GetAll(query.FromDate, query.ToDate);
 
-        if (!meals.Any()) return Enumerable.Empty<MealDTO>();
-        return _outputMapper.FromEntities(meals);
+        if (!meals.Any())
+            return Enumerable.Empty<MealDTO>();
+        return outputMapper.FromEntities(meals);
     }
 }

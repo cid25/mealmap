@@ -1,4 +1,4 @@
-﻿using Mealmap.Api.Shared;
+﻿using Mealmap.Api.Common;
 using Mealmap.Domain.DishAggregate;
 using Microsoft.EntityFrameworkCore;
 

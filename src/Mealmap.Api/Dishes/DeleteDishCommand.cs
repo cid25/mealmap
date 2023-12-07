@@ -1,9 +1,6 @@
 ﻿namespace Mealmap.Api.Dishes;
 
-public class DeleteDishCommand
+public class DeleteDishCommand(Guid id)
 {
-    public Guid Id { get; init; }
-
-    public DeleteDishCommand(Guid id)
-        => Id = id;
+    public Guid Id { get; init; } = id;
 }

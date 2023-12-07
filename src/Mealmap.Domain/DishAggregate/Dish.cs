@@ -6,7 +6,7 @@ namespace Mealmap.Domain.DishAggregate;
 
 public class Dish : EntityBase
 {
-    private List<Ingredient> _ingredients = new();
+    private List<Ingredient> _ingredients = [];
 
     [MaxLength(50)]
     public string Name { get; set; }
@@ -65,13 +65,13 @@ public class Dish : EntityBase
 
     public void ReplaceIngredientsWith(ICollection<Ingredient> ingredients)
     {
-        _ingredients = ingredients.ToList();
+        _ingredients = [.. ingredients];
     }
 
     /// <exception cref="DomainValidationException"></exception>
     public void RemoveIngredient(decimal quantity, string unitOfMeasurement, string description)
     {
-        if (!Ingredients.Any()) return;
+        if (Ingredients.Count == 0) return;
 
         var ingredient = _ingredients.First((ingredient) =>
             ingredient.Quantity == quantity && ingredient.UnitOfMeasurement == unitOfMeasurement && ingredient.Description == description);
@@ -86,6 +86,6 @@ public class Dish : EntityBase
 
     public void RemoveAllIngredients()
     {
-        _ingredients = new List<Ingredient>();
+        _ingredients = [];
     }
 }

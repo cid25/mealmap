@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Mealmap.Api.Dishes;
-using Mealmap.Api.Shared;
+using Mealmap.Api.Common;
 using Mealmap.Domain.DishAggregate;
 
 namespace Mealmap.Api.UnitTests.Dishes;
@@ -44,7 +44,7 @@ public class DishOutputMapperTests
             _baseMapper,
             Mock.Of<IRequestContext>(m => m.Scheme == "https" && m.Host == "test.com" && m.Port == 443)
         );
-        List<Dish> dtos = new();
+        List<Dish> dtos = [];
 
         for (var i = 0; i < 10; i++)
             dtos.Add(new Dish("Dish" + i, null, i));

@@ -1,50 +1,37 @@
-﻿using Mealmap.Api.Shared;
+﻿using Mealmap.Api.Common;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
 using Mealmap.Domain.DishAggregate;
 
 namespace Mealmap.Api.Dishes;
 
-public class UpdateDishCommandProcessor : ICommandProcessor<UpdateDishCommand, DishDTO>
+public class UpdateDishCommandProcessor(
+    IRepository<Dish> repository,
+    IUnitOfWork unitOfWork,
+    IOutputMapper<DishDTO, Dish> outputMapper,
+    ILogger<UpdateDishCommandProcessor> logger,
+    DishDataTransferObjectValidator validator
+)
+    : ICommandProcessor<UpdateDishCommand, DishDTO>
 {
-    private readonly IRepository<Dish> _repository;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<UpdateDishCommandProcessor> _logger;
-    private readonly IOutputMapper<DishDTO, Dish> _outputMapper;
-    private readonly DishDataTransferObjectValidator _validator;
-
-    public UpdateDishCommandProcessor(
-        IRepository<Dish> repository,
-        IUnitOfWork unitOfWork,
-        IOutputMapper<DishDTO, Dish> outputMapper,
-        ILogger<UpdateDishCommandProcessor> logger,
-        DishDataTransferObjectValidator validator)
-    {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
-        _outputMapper = outputMapper;
-        _logger = logger;
-        _validator = validator;
-    }
-
     public async Task<CommandNotification<DishDTO>> Process(UpdateDishCommand command)
     {
         CommandNotification<DishDTO> notification = new();
 
-        var dish = _repository.GetSingleById(command.Id);
+        var dish = repository.GetSingleById(command.Id);
 
         if (dish == null)
             return notification.WithNotFoundError("Dish with id not found.");
 
-        if (_validator.Validate(command.Dto) is var validationResult && validationResult.Errors.Any())
+        if (validator.Validate(command.Dto) is var validationResult && validationResult.Errors.Count != 0)
             return notification.WithValidationErrorsFrom(validationResult);
 
         SetPropertiesFromRequest(dish, command);
-        _repository.Update(dish);
+        repository.Update(dish);
 
         try
         {
-            await _unitOfWork.SaveTransactionAsync();
+            await unitOfWork.SaveTransactionAsync();
         }
         catch (DomainValidationException ex)
         {
@@ -55,8 +42,8 @@ public class UpdateDishCommandProcessor : ICommandProcessor<UpdateDishCommand, D
             return notification.WithVersionMismatchError();
         }
 
-        _logger.LogInformation("Updated Dish with id {Id}", dish.Id);
-        notification.Result = _outputMapper.FromEntity(dish);
+        logger.LogInformation("Updated Dish with id {Id}", dish.Id);
+        notification.Result = outputMapper.FromEntity(dish);
 
         return notification;
     }

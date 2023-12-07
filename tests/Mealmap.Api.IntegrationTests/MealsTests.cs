@@ -112,7 +112,7 @@ public class MealsTests
         MealDTO meal = new()
         {
             DiningDate = freeDiningDate,
-            Courses = new[] {
+            Courses = [
                 new CourseDTO()
                 {
                     Index = 1,
@@ -120,7 +120,7 @@ public class MealsTests
                     MainCourse = true,
                     Attendees = 2
                 }
-            }
+            ]
         };
         // Act
         var response = await factory.CreateClient().PostAsJsonAsync("/api/meals/", meal);
@@ -141,7 +141,7 @@ public class MealsTests
         MealDTO meal = new()
         {
             DiningDate = DateOnly.MinValue,
-            Courses = new[] {
+            Courses = [
                 new CourseDTO()
                 {
                     Index = 1,
@@ -149,7 +149,7 @@ public class MealsTests
                     MainCourse = true,
                     Attendees = 2
                 }
-            }
+            ]
         };
         // Act
         var response = await factory.CreateClient().PostAsJsonAsync("/api/meals/", meal);
@@ -310,15 +310,15 @@ public class MealsTests
         MealDTO updatedMeal = new()
         {
             DiningDate = existingMeal!.DiningDate,
-            Courses = new CourseDTO[1] {
-                new CourseDTO()
+            Courses = [
+                new()
                 {
                     Index = 1,
                     DishId = nonExistingDishId,
                     MainCourse = true,
                     Attendees = 2
                 }
-            }
+            ]
         };
 
         // Act

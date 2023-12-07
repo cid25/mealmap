@@ -1,14 +1,14 @@
 ﻿using FluentValidation.Results;
 
-namespace Mealmap.Api.Shared;
+namespace Mealmap.Api.Common;
 
 public class CommandNotification<TResponse>
 {
-    public List<CommandError> Errors { get; } = new();
+    public List<CommandError> Errors { get; } = [];
 
-    public bool Succeeded { get => !Errors.Any(); }
+    public bool Succeeded { get => Errors.Count == 0; }
 
-    public bool Failed { get => Errors.Any(); }
+    public bool Failed { get => Errors.Count != 0; }
 
     public TResponse? Result { get; set; }
 

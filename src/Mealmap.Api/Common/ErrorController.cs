@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Mealmap.Api.Shared;
+namespace Mealmap.Api.Common;
 
 [ApiExplorerSettings(IgnoreApi = true)]
 public class ErrorController : ControllerBase

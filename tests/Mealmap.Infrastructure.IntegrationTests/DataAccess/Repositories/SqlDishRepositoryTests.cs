@@ -17,9 +17,18 @@ public class SqlDishRepositoryTests
 
     public SqlDishRepositoryTests()
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("settings.json")
+            .Build();
         var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
-            .UseSqlServer(configuration.GetConnectionString("MealmapDb"))
+            .UseSqlServer(
+                configuration.GetConnectionString("MealmapDb"),
+                b =>
+                {
+                    b.MigrationsAssembly("Mealmap.Migrations");
+                    b.EnableRetryOnFailure([0]);
+                }
+            )
             .LogTo(msg => Debug.WriteLine(msg))
             .EnableSensitiveDataLogging()
             .Options;
@@ -44,7 +53,7 @@ public class SqlDishRepositoryTests
         _dishes[0] = dishWithoutImage;
 
         Dish dishWithImage = new("Sailors Surprise", "The darkest, wettest dream of every boatsman.", 4);
-        dishWithImage.SetImage(new byte[] { 0x01 }, "image/jpeg");
+        dishWithImage.SetImage([0x01], "image/jpeg");
         dishWithImage.AddIngredient(800, "Mililiter", "Seawater");
         dishWithImage.AddIngredient(6, "Piece", "Sea cucumber");
         dishWithImage.AddIngredient(8, "Piece", "Crab meat");
@@ -251,6 +260,6 @@ public class SqlDishRepositoryTests
         _dbContext.SaveChanges();
 
         // Assert
-        _repository.dbSet.Count().Should().Be(expectedCount - 1);
+        _repository.dbSet.Should().HaveCount(expectedCount - 1);
     }
 }

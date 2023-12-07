@@ -1,13 +1,7 @@
 ﻿namespace Mealmap.Api.Meals;
 
-public class MealsQuery
+public class MealsQuery(DateOnly? fromDate, DateOnly? toDate)
 {
-    public DateOnly? FromDate { get; init; }
-    public DateOnly? ToDate { get; init; }
-
-    public MealsQuery(DateOnly? fromDate, DateOnly? toDate)
-    {
-        FromDate = fromDate;
-        ToDate = toDate;
-    }
+    public DateOnly? FromDate { get; init; } = fromDate;
+    public DateOnly? ToDate { get; init; } = toDate;
 }

@@ -18,9 +18,18 @@ public class SqlMealRepositoryTests
 
     public SqlMealRepositoryTests()
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("settings.json")
+            .Build();
         var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
-            .UseSqlServer(configuration.GetConnectionString("MealmapDb"))
+            .UseSqlServer(
+                configuration.GetConnectionString("MealmapDb"),
+                b =>
+                {
+                    b.MigrationsAssembly("Mealmap.Migrations");
+                    b.EnableRetryOnFailure([0]);
+                }
+            )
             .Options;
         _dbContext = new MealmapDbContext(dbOptions);
         _repository = new SqlMealRepository(_dbContext);
@@ -110,7 +119,7 @@ public class SqlMealRepositoryTests
         var result = _repository.GetSingleById(existingGuid);
 
         result.Should().NotBeNull();
-        result!.Courses.Should().HaveCount(1);
+        result!.Courses.Should().ContainSingle();
     }
 
     [Fact]
@@ -192,7 +201,7 @@ public class SqlMealRepositoryTests
 
         _dbContext.ChangeTracker.Clear();
         var result = _dbContext.Find<Meal>(meal.Id);
-        result!.Courses.Should().HaveCount(0);
+        result!.Courses.Should().BeEmpty();
         result.Version.AsBytes().Should().NotEqual(originalVersion.AsBytes());
     }
 
@@ -205,7 +214,7 @@ public class SqlMealRepositoryTests
         _repository.Remove(meal);
         _dbContext.SaveChanges();
 
-        _repository.dbSet.Count().Should().Be(expectedCount - 1);
+        _repository.dbSet.Should().HaveCount(expectedCount - 1);
     }
 
     [Fact]
@@ -217,7 +226,7 @@ public class SqlMealRepositoryTests
         _repository.Remove(meal!);
         _dbContext.SaveChanges();
 
-        _repository.dbSet.Count().Should().Be(expectedCount - 1);
+        _repository.dbSet.Should().HaveCount(expectedCount - 1);
     }
 }
 

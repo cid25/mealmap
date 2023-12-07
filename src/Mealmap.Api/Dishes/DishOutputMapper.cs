@@ -1,31 +1,23 @@
 ﻿using AutoMapper;
-using Mealmap.Api.Shared;
+using Mealmap.Api.Common;
 using Mealmap.Domain.DishAggregate;
 
 namespace Mealmap.Api.Dishes;
 
-public class DishOutputMapper : IOutputMapper<DishDTO, Dish>
+public class DishOutputMapper(IMapper mapper, IRequestContext requestContext)
+    : IOutputMapper<DishDTO, Dish>
 {
-    private readonly IMapper _mapper;
-    private readonly IRequestContext _context;
-
-    public DishOutputMapper(IMapper mapper, IRequestContext requestContext)
-    {
-        _mapper = mapper;
-        _context = requestContext;
-    }
-
     public DishDTO FromEntity(Dish entity)
     {
-        var dto = _mapper.Map<DishDTO>(entity);
+        var dto = mapper.Map<DishDTO>(entity);
 
         if (entity.Image != null)
         {
             var builder = new UriBuilder()
             {
-                Scheme = _context.Scheme,
-                Host = _context.Host,
-                Port = _context.Port,
+                Scheme = requestContext.Scheme,
+                Host = requestContext.Host,
+                Port = requestContext.Port,
                 Path = "/api/dishes/" + dto.Id + "/image"
             };
 
@@ -37,7 +29,7 @@ public class DishOutputMapper : IOutputMapper<DishDTO, Dish>
 
     public IEnumerable<DishDTO> FromEntities(IEnumerable<Dish> entities)
     {
-        List<DishDTO> dtos = new();
+        List<DishDTO> dtos = [];
 
         dtos.AddRange(entities.Select(FromEntity));
 

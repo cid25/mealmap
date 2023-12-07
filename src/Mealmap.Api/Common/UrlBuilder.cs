@@ -1,14 +1,7 @@
-﻿namespace Mealmap.Api.Shared;
+﻿namespace Mealmap.Api.Common;
 
-public class UrlBuilder
+public class UrlBuilder(IRequestContext context)
 {
-    private readonly IRequestContext _context;
-
-    public UrlBuilder(IRequestContext context)
-    {
-        _context = context;
-    }
-
     public Uri NextPage(string basePath, Guid next, int limit, params (string key, string value)[] parameters)
     {
         var builder = RawBuilder();
@@ -29,9 +22,9 @@ public class UrlBuilder
     {
         return new UriBuilder()
         {
-            Scheme = _context.Scheme,
-            Host = _context.Host,
-            Port = _context.Port
+            Scheme = context.Scheme,
+            Host = context.Host,
+            Port = context.Port
         };
     }
 

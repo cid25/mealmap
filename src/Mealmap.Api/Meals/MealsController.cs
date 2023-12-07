@@ -1,5 +1,5 @@
 ﻿using Mealmap.Api.Dishes;
-using Mealmap.Api.Shared;
+using Mealmap.Api.Common;
 using Mealmap.Api.Swagger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,15 +14,8 @@ namespace Mealmap.Api.Meals;
 [RequiredScope("access")]
 [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
 [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-public class MealsController : ControllerBase
+public class MealsController(IRequestContext context) : ControllerBase
 {
-    private readonly IRequestContext _context;
-
-    public MealsController(IRequestContext context)
-    {
-        _context = context;
-    }
-
     /// <summary>
     /// Lists meals.
     /// </summary>
@@ -129,10 +122,10 @@ public class MealsController : ControllerBase
         [FromServices] ICommandProcessor<UpdateMealCommand, MealDTO> processor
     )
     {
-        if (string.IsNullOrEmpty(_context.IfMatchHeader))
+        if (string.IsNullOrEmpty(context.IfMatchHeader))
             return new StatusCodeResult(StatusCodes.Status428PreconditionRequired);
 
-        var command = new UpdateMealCommand(id, _context.IfMatchHeader, dto);
+        var command = new UpdateMealCommand(id, context.IfMatchHeader, dto);
         var result = await processor.Process(command);
 
         if (result.Errors.Any(e => e.ErrorCode == CommandErrorCodes.VersionMismatch))

@@ -3,19 +3,12 @@
 namespace Mealmap.Domain.Common.DataAccess;
 
 /// <inheritdoc cref="IUnitOfWork" />
-public abstract class AbstractUnitOfWork : IUnitOfWork
+public abstract class AbstractUnitOfWork(IDeferredDomainValidator validator) : IUnitOfWork
 {
-    private readonly IDeferredDomainValidator _validator;
-
-    public AbstractUnitOfWork(IDeferredDomainValidator validator)
-    {
-        _validator = validator;
-    }
-
     /// <inheritdoc cref="IUnitOfWork.SaveTransactionAsync" />
     public async Task SaveTransactionAsync()
     {
-        await _validator.ValidateEntitiesAsync(GetModifiedEntities());
+        await validator.ValidateEntitiesAsync(GetModifiedEntities());
         await SaveChangesAsync();
     }
 

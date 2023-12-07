@@ -11,8 +11,8 @@ internal static class DatabaseSeeder
 {
     private static readonly Faker _faker = new();
 
-    public static List<Dish> Dishes = new();
-    public static List<Meal> Meals = new();
+    public static List<Dish> Dishes = [];
+    public static List<Meal> Meals = [];
 
     /// <summary>
     ///  Injects the common set of seed data into an external SQL Server database.
@@ -20,9 +20,18 @@ internal static class DatabaseSeeder
     /// <returns>The dbContext for usage in tests.</returns>
     public static MealmapDbContext Init(bool withData = true)
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("settings.json")
+            .Build();
         var dbOptions = new DbContextOptionsBuilder<MealmapDbContext>()
-            .UseSqlServer(configuration.GetConnectionString("MealmapDb"))
+            .UseSqlServer(
+                configuration.GetConnectionString("MealmapDb"),
+                b =>
+                {
+                    b.MigrationsAssembly("Mealmap.Migrations");
+                    b.EnableRetryOnFailure([0]);
+                }
+            )
             .Options;
         var context = new MealmapDbContext(dbOptions);
 

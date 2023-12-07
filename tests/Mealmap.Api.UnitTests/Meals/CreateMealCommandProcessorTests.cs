@@ -1,5 +1,5 @@
 ﻿using Mealmap.Api.Meals;
-using Mealmap.Api.Shared;
+using Mealmap.Api.Common;
 using Mealmap.Domain.Common.DataAccess;
 using Mealmap.Domain.Common.Validation;
 using Mealmap.Domain.DishAggregate;
@@ -50,7 +50,7 @@ public class CreateMealCommandProcessorTests
         MealDTO dto = new()
         {
             DiningDate = DateOnly.FromDateTime(DateTime.Now),
-            Courses = new[] { new CourseDTO() { Index = 1, DishId = Guid.NewGuid(), MainCourse = true } }
+            Courses = [new CourseDTO() { Index = 1, DishId = Guid.NewGuid(), MainCourse = true }]
         };
 
         var result = await processor.Process(new CreateMealCommand(dto));

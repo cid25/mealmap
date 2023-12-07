@@ -5,23 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mealmap.Infrastructure.DataAccess;
 
-public class UnitOfWork : AbstractUnitOfWork
+public class UnitOfWork(IDeferredDomainValidator validator, MealmapDbContext context) : AbstractUnitOfWork(validator)
 {
-    private readonly MealmapDbContext _context;
-
-    public UnitOfWork(IDeferredDomainValidator validator, MealmapDbContext context)
-        : base(validator)
-    {
-        _context = context;
-    }
-
     /// <exception cref="ConcurrentUpdateException"></exception>
     /// <exception cref="DbUpdateException"></exception>
     protected override async Task SaveChangesAsync()
     {
         try
         {
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException ex)
         {
@@ -35,7 +27,7 @@ public class UnitOfWork : AbstractUnitOfWork
 
     protected override IReadOnlyCollection<EntityBase> GetModifiedEntities()
     {
-        return _context.ChangeTracker.Entries()
+        return context.ChangeTracker.Entries()
             .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
             .Select(e => e.Entity)
             .OfType<EntityBase>()

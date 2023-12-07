@@ -5,7 +5,7 @@ using Mealmap.Domain.Common;
 using Mealmap.Domain.DishAggregate;
 using Mealmap.Domain.MealAggregate;
 
-namespace Mealmap.Api.Shared;
+namespace Mealmap.Api.Common;
 
 public class AutomapperProfile : Profile
 {

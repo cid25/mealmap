@@ -1,9 +1,6 @@
 ﻿namespace Mealmap.Api.Dishes;
 
-public class DeleteMealCommand
+public class DeleteMealCommand(Guid id)
 {
-    public Guid Id { get; init; }
-
-    public DeleteMealCommand(Guid id)
-        => Id = id;
+    public Guid Id { get; init; } = id;
 }

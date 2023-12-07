@@ -9,10 +9,10 @@ public class DishDataTransferObjectValidatorTests
     {
         DishDTO dish = new("dummy")
         {
-            Ingredients = new[] {
+            Ingredients = [
                 new IngredientDTO(1, "Gram", "Fake"),
                 new IngredientDTO(2, "Kilogram", "Stub")
-            }
+            ]
         };
 
         var sut = new DishDataTransferObjectValidator();
@@ -27,10 +27,10 @@ public class DishDataTransferObjectValidatorTests
     {
         DishDTO dish = new("dummy")
         {
-            Ingredients = new[] {
+            Ingredients = [
                 new IngredientDTO(0, "Gram", "Fake"),
                 new IngredientDTO(-1, "Kilogram", "Stub")
-            }
+            ]
         };
 
         var sut = new DishDataTransferObjectValidator();
