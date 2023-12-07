@@ -29,7 +29,7 @@ internal static class DatabaseSeeder
                 b =>
                 {
                     b.MigrationsAssembly("Mealmap.Migrations");
-                    b.EnableRetryOnFailure();
+                    b.EnableRetryOnFailure([0]);
                 }
             )
             .Options;

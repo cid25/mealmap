@@ -26,7 +26,7 @@ public class SqlDishRepositoryTests
                 b =>
                 {
                     b.MigrationsAssembly("Mealmap.Migrations");
-                    b.EnableRetryOnFailure();
+                    b.EnableRetryOnFailure([0]);
                 }
             )
             .LogTo(msg => Debug.WriteLine(msg))

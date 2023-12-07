@@ -27,7 +27,7 @@ public class SqlMealRepositoryTests
                 b =>
                 {
                     b.MigrationsAssembly("Mealmap.Migrations");
-                    b.EnableRetryOnFailure();
+                    b.EnableRetryOnFailure([0]);
                 }
             )
             .Options;
